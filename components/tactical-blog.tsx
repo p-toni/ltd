@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import type { Essay } from '@/lib/essays'
@@ -9,6 +9,81 @@ type MoodFilter = Essay['mood'][number] | 'all'
 
 const MAX_VISIBLE_ESSAYS = 5
 const MOOD_FILTERS: MoodFilter[] = ['all', 'contemplative', 'analytical', 'exploratory', 'critical']
+const INTERACTIVE_SELECTOR =
+  'a, button, [role="button"], [data-cursor-interactive], input, textarea, select, summary, label'
+const OFFSCREEN_CURSOR = { x: -100, y: -100 }
+
+interface CustomCursorProps {
+  position: { x: number; y: number }
+  moving: boolean
+  interactive: boolean
+  speed: number
+}
+
+function isInteractiveElement(target: EventTarget | null) {
+  if (!(target instanceof Element)) {
+    return false
+  }
+
+  return Boolean(target.closest(INTERACTIVE_SELECTOR))
+}
+
+const CustomCursor = memo(function CustomCursor({ position, moving, interactive, speed }: CustomCursorProps) {
+  const accent = 'var(--te-orange, #ff6600)'
+  const baseSize = 24
+  const clampedSpeed = Math.min(speed, 48)
+  const scale = interactive ? 1.12 : moving ? 1.06 : 1
+  const haloScale = 1.25 + Math.min(clampedSpeed / 160, 0.2)
+  const haloOpacity = moving ? Math.min(0.24 + clampedSpeed / 220, 0.45) : 0.16
+  const dotRadius = interactive ? 3 : moving ? 2.4 : 2.1
+  const dotFill = interactive ? '#ffffff' : accent
+
+  return (
+    <div
+      className="pointer-events-none fixed left-0 top-0 z-[9999]"
+      style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
+    >
+      <div className="relative -translate-x-1/2 -translate-y-1/2">
+        <svg
+          width={baseSize}
+          height={baseSize}
+          viewBox="0 0 24 24"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-80 transition-transform duration-200 ease-out"
+          style={{
+            transform: `scale(${scale * haloScale})`,
+            filter: 'blur(0.6px)',
+            mixBlendMode: 'screen',
+          }}
+        >
+          <line x1="12" y1="0" x2="12" y2="24" stroke={accent} strokeWidth="1" />
+          <line x1="0" y1="12" x2="24" y2="12" stroke={accent} strokeWidth="1" />
+          <circle cx="12" cy="12" r={dotRadius + 1.6} fill="none" stroke={accent} strokeWidth="0.8" opacity={haloOpacity} />
+        </svg>
+
+        <svg
+          width={baseSize}
+          height={baseSize}
+          viewBox="0 0 24 24"
+          className="relative block transition-transform duration-150 ease-out"
+          style={{ transform: `scale(${scale})` }}
+        >
+          <line x1="12" y1="0" x2="12" y2="24" stroke={accent} strokeWidth="1" />
+          <line x1="0" y1="12" x2="24" y2="12" stroke={accent} strokeWidth="1" />
+          <circle cx="12" cy="12" r={dotRadius} fill={dotFill} stroke={accent} strokeWidth="0.8" />
+        </svg>
+      </div>
+    </div>
+  )
+})
+CustomCursor.displayName = 'CustomCursor'
+
+function getTimestamp() {
+  if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+    return performance.now()
+  }
+
+  return Date.now()
+}
 
 interface TacticalBlogProps {
   essays: Essay[]
@@ -16,9 +91,44 @@ interface TacticalBlogProps {
 
 export default function TacticalBlog({ essays }: TacticalBlogProps) {
   const [currentTime, setCurrentTime] = useState('')
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
+  const [cursorPos, setCursorPos] = useState(OFFSCREEN_CURSOR)
+  const [cursorVisible, setCursorVisible] = useState(false)
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
   const [selectedEssayId, setSelectedEssayId] = useState<number | null>(() => essays[0]?.id ?? null)
+  const [isFinePointer, setIsFinePointer] = useState(false)
+  const [isCursorMoving, setIsCursorMoving] = useState(false)
+  const [isCursorInteractive, setIsCursorInteractive] = useState(false)
+  const [cursorSpeed, setCursorSpeed] = useState(0)
+
+  const movementTimeoutRef = useRef<number | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
+  const latestPointerRef = useRef<{ x: number; y: number; time: number } | null>(null)
+  const lastSampleRef = useRef<{ x: number; y: number; time: number } | null>(null)
+  const latestInteractiveRef = useRef(false)
+  const cursorVisibleRef = useRef(false)
+
+  const resetCursorState = useCallback(() => {
+    cursorVisibleRef.current = false
+    latestPointerRef.current = null
+    lastSampleRef.current = null
+    latestInteractiveRef.current = false
+
+    if (animationFrameRef.current !== null) {
+      window.cancelAnimationFrame(animationFrameRef.current)
+      animationFrameRef.current = null
+    }
+
+    if (movementTimeoutRef.current !== null) {
+      window.clearTimeout(movementTimeoutRef.current)
+      movementTimeoutRef.current = null
+    }
+
+    setCursorVisible(false)
+    setIsCursorMoving(false)
+    setIsCursorInteractive(false)
+    setCursorSpeed(0)
+    setCursorPos(OFFSCREEN_CURSOR)
+  }, [])
 
   useEffect(() => {
     const updateTime = () => {
@@ -35,13 +145,144 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
   }, [])
 
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      setCursorPos({ x: event.clientX, y: event.clientY })
+    if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
+      return
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
+    const mediaQuery = window.matchMedia('(pointer: fine)')
+    const handlePointerChange = (event: MediaQueryListEvent) => {
+      setIsFinePointer(event.matches)
+    }
+
+    setIsFinePointer(mediaQuery.matches)
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handlePointerChange)
+      return () => mediaQuery.removeEventListener('change', handlePointerChange)
+    }
+
+    mediaQuery.addListener(handlePointerChange)
+    return () => mediaQuery.removeListener(handlePointerChange)
   }, [])
+
+  useEffect(() => {
+    if (!isFinePointer) {
+      resetCursorState()
+      return
+    }
+
+    const updateCursorState = () => {
+      animationFrameRef.current = null
+
+      const latestPointer = latestPointerRef.current
+      if (!latestPointer) {
+        return
+      }
+
+      setCursorPos((prev) =>
+        prev.x === latestPointer.x && prev.y === latestPointer.y ? prev : { x: latestPointer.x, y: latestPointer.y },
+      )
+
+      const previousSample = lastSampleRef.current ?? latestPointer
+      const deltaTime = Math.max(latestPointer.time - previousSample.time, 16)
+      const deltaX = latestPointer.x - previousSample.x
+      const deltaY = latestPointer.y - previousSample.y
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
+
+      const velocity = distance / deltaTime
+      const normalizedSpeed = velocity * 16.6667
+      setCursorSpeed((prev) => prev * 0.6 + normalizedSpeed * 0.4)
+
+      const moving = normalizedSpeed > 0.45
+      setIsCursorMoving((prev) => (prev === moving ? prev : moving))
+
+      const interactive = latestInteractiveRef.current
+      setIsCursorInteractive((prev) => (prev === interactive ? prev : interactive))
+
+      lastSampleRef.current = { ...latestPointer }
+
+      if (movementTimeoutRef.current !== null) {
+        window.clearTimeout(movementTimeoutRef.current)
+      }
+
+      movementTimeoutRef.current = window.setTimeout(() => {
+        setIsCursorMoving(false)
+        setCursorSpeed((prev) => prev * 0.35)
+        movementTimeoutRef.current = null
+      }, 130)
+    }
+
+    const handleMouseMove = (event: MouseEvent) => {
+      latestPointerRef.current = { x: event.clientX, y: event.clientY, time: getTimestamp() }
+      latestInteractiveRef.current = isInteractiveElement(event.target)
+
+      if (!cursorVisibleRef.current) {
+        cursorVisibleRef.current = true
+        setCursorVisible(true)
+      }
+
+      if (animationFrameRef.current === null) {
+        animationFrameRef.current = window.requestAnimationFrame(updateCursorState)
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      if (animationFrameRef.current !== null) {
+        window.cancelAnimationFrame(animationFrameRef.current)
+        animationFrameRef.current = null
+      }
+      if (movementTimeoutRef.current !== null) {
+        window.clearTimeout(movementTimeoutRef.current)
+        movementTimeoutRef.current = null
+      }
+    }
+  }, [isFinePointer, resetCursorState])
+
+  useEffect(() => {
+    if (!isFinePointer) {
+      return
+    }
+
+    const handleMouseLeave = (event: MouseEvent) => {
+      if (!event.relatedTarget) {
+        resetCursorState()
+      }
+    }
+
+    const handleMouseEnter = (event: MouseEvent) => {
+      cursorVisibleRef.current = true
+      setCursorVisible(true)
+      const timestamp = getTimestamp()
+      const pointer = { x: event.clientX, y: event.clientY, time: timestamp }
+      latestPointerRef.current = pointer
+      lastSampleRef.current = pointer
+      setCursorPos({ x: pointer.x, y: pointer.y })
+    }
+
+    document.addEventListener('mouseleave', handleMouseLeave, { passive: true })
+    document.addEventListener('mouseenter', handleMouseEnter, { passive: true })
+    return () => {
+      document.removeEventListener('mouseleave', handleMouseLeave)
+      document.removeEventListener('mouseenter', handleMouseEnter)
+    }
+  }, [isFinePointer, resetCursorState])
+
+  useEffect(() => {
+    if (!isFinePointer) {
+      return
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== 'visible') {
+        resetCursorState()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [isFinePointer, resetCursorState])
 
   useEffect(() => {
     if (essays.length === 0) {
@@ -95,7 +336,10 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
   }
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-white font-mono text-black">
+    <div
+      className="h-screen w-screen overflow-hidden bg-white font-mono text-black"
+      style={isFinePointer ? { cursor: 'none' } : undefined}
+    >
       {/* Top System Bar */}
       <div className="flex h-8 items-center justify-between border-b border-black px-4 text-[10px] tracking-wider">
         <div className="flex items-center gap-6">
@@ -310,6 +554,15 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
           <span>READY</span>
         </div>
       </div>
+
+      {isFinePointer && cursorVisible && (
+        <CustomCursor
+          position={cursorPos}
+          moving={isCursorMoving}
+          interactive={isCursorInteractive}
+          speed={cursorSpeed}
+        />
+      )}
     </div>
   )
 }
