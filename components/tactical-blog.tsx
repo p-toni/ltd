@@ -4,10 +4,13 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import type { Essay } from '@/lib/essays'
+import { cn } from '@/lib/utils'
 
 type MoodFilter = Essay['mood'][number] | 'all'
 
-const MAX_VISIBLE_ESSAYS = 5
+const NAV_VISIBLE_LIMIT = 5
+const NAV_ITEM_HEIGHT = 48
+const NAV_ITEM_GAP = 4
 const MOOD_FILTERS: MoodFilter[] = ['all', 'contemplative', 'analytical', 'exploratory', 'critical']
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], [data-cursor-interactive], input, textarea, select, summary, label'
@@ -106,6 +109,8 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
   const lastSampleRef = useRef<{ x: number; y: number; time: number } | null>(null)
   const latestInteractiveRef = useRef(false)
   const cursorVisibleRef = useRef(false)
+  const navListMaxHeight =
+    NAV_VISIBLE_LIMIT * NAV_ITEM_HEIGHT + (NAV_VISIBLE_LIMIT - 1) * NAV_ITEM_GAP + NAV_ITEM_GAP * 2
 
   const resetCursorState = useCallback(() => {
     cursorVisibleRef.current = false
@@ -303,29 +308,40 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
     return essays.filter((essay) => essay.mood.includes(selectedMood))
   }, [essays, selectedMood])
 
-  const visibleEssays = useMemo(() => filteredEssays.slice(0, MAX_VISIBLE_ESSAYS), [filteredEssays])
+  const sortedEssays = useMemo(() => {
+    const list = [...filteredEssays]
+    list.sort((a, b) => {
+      if (a.pinned !== b.pinned) {
+        return a.pinned ? -1 : 1
+      }
+
+      if (a.publishedAt !== b.publishedAt) {
+        return b.publishedAt - a.publishedAt
+      }
+
+      return b.id - a.id
+    })
+    return list
+  }, [filteredEssays])
+
+  const pinnedCount = useMemo(() => sortedEssays.filter((essay) => essay.pinned).length, [sortedEssays])
 
   const selectedEssayFromState =
-    selectedEssayId !== null ? essays.find((essay) => essay.id === selectedEssayId) ?? null : null
+    selectedEssayId !== null ? sortedEssays.find((essay) => essay.id === selectedEssayId) ?? null : null
 
-  const fallbackEssay =
-    visibleEssays.length > 0 ? essays.find((essay) => essay.id === visibleEssays[0].id) ?? null : null
-
-  const selectedEssay =
-    selectedEssayFromState && visibleEssays.some((essay) => essay.id === selectedEssayFromState.id)
-      ? selectedEssayFromState
-      : fallbackEssay
+  const fallbackEssay = sortedEssays[0] ?? null
+  const selectedEssay = selectedEssayFromState ?? fallbackEssay
 
   useEffect(() => {
-    if (!visibleEssays.length) {
+    if (!sortedEssays.length) {
       setSelectedEssayId(null)
       return
     }
 
-    if (!visibleEssays.some((essay) => essay.id === selectedEssayId)) {
-      setSelectedEssayId(visibleEssays[0].id)
+    if (selectedEssayId === null || !sortedEssays.some((essay) => essay.id === selectedEssayId)) {
+      setSelectedEssayId(sortedEssays[0].id)
     }
-  }, [visibleEssays, selectedEssayId])
+  }, [sortedEssays, selectedEssayId])
 
   if (!essays.length || !selectedEssay) {
     return (
@@ -361,22 +377,26 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
           <div>
             <div className="mb-2 text-[10px] tracking-wider text-muted-foreground">NAVIGATION</div>
             <div className="mb-4 text-sm font-bold">ESSAYS</div>
-            <div className="space-y-1">
-              {visibleEssays.map((essay) => (
-                <button
-                  key={essay.id}
-                  onClick={() => setSelectedEssayId(essay.id)}
-                  className={`relative w-full overflow-hidden border py-2 px-2 text-left text-xs transition-all ${
-                    selectedEssay.id === essay.id
-                      ? 'border-black bg-black text-white'
-                      : 'border-transparent hover:border-black'
-                  }`}
-                  style={
-                    selectedEssay.id === essay.id
-                      ? {
-                          borderLeftWidth: '3px',
-                          borderLeftColor: 'oklch(0.65 0.19 45)',
-                          backgroundImage: `
+            <div className="space-y-1 overflow-y-auto pr-1" style={{ maxHeight: navListMaxHeight }}>
+              {sortedEssays.map((essay) => {
+                const isSelected = Boolean(selectedEssay && selectedEssay.id === essay.id)
+                const isPinned = essay.pinned
+
+                return (
+                  <button
+                    key={essay.id}
+                    onClick={() => setSelectedEssayId(essay.id)}
+                    className={cn(
+                      'relative w-full overflow-hidden border py-2 px-2 text-left text-xs transition-all',
+                      isSelected ? 'border-black bg-black text-white' : 'border-transparent hover:border-black',
+                      isPinned && !isSelected ? 'border-dashed border-black/50' : null,
+                    )}
+                    style={
+                      isSelected
+                        ? {
+                            borderLeftWidth: '3px',
+                            borderLeftColor: 'oklch(0.65 0.19 45)',
+                            backgroundImage: `
                             repeating-linear-gradient(
                               0deg,
                               transparent,
@@ -391,16 +411,22 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
                               rgba(255, 255, 255, 0.03) 1px,
                               rgba(255, 255, 255, 0.03) 2px
                             )
-                          `,
-                          backgroundSize: '2px 2px',
-                        }
-                      : {}
-                  }
-                >
-                  <div className="relative z-10 font-bold">{essay.title}</div>
-                  <div className="relative z-10 mt-1 text-[10px] opacity-60">{essay.date}</div>
-                </button>
-              ))}
+                            `,
+                            backgroundSize: '2px 2px',
+                          }
+                        : undefined
+                    }
+                  >
+                    <div className="relative z-10 font-bold">{essay.title}</div>
+                    <div className="relative z-10 mt-1 text-[10px] opacity-60">{essay.date}</div>
+                    {isPinned && (
+                      <span className="absolute right-2 top-2 text-[8px] font-semibold tracking-[0.2em] text-[color:var(--te-orange,#ff6600)]">
+                        PIN
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -430,7 +456,8 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
             <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">SYSTEM INFO</div>
             <div className="space-y-1 text-[10px]">
               <div>ESSAYS: {essays.length}</div>
-              <div>VISIBLE: {visibleEssays.length}</div>
+              <div>LISTED: {sortedEssays.length}</div>
+              <div>PINNED: {pinnedCount}</div>
               <div>VERSION: 1.0.0</div>
             </div>
           </div>
