@@ -8,18 +8,20 @@ export interface Essay {
   id: number
   title: string
   date: string
-  readTime: string
   mood: Mood[]
   excerpt: string
   content: string
   wordCount: number
   publishedAt: number
+  readTime: string
+  readTimeMinutes: number
 }
 
 const ESSAY_DIRECTORY = path.join(process.cwd(), 'content', 'essays')
 const VALID_MOODS: Mood[] = ['contemplative', 'analytical', 'exploratory', 'critical']
 const VALID_MOOD_SET = new Set<Mood>(VALID_MOODS)
 const FRONTMATTER_PATTERN = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/m
+const WORDS_PER_MINUTE = 220
 
 type FrontmatterValue = string | string[]
 type ParsedFrontmatter = Record<string, FrontmatterValue>
@@ -51,7 +53,6 @@ export async function getEssays(): Promise<Essay[]> {
 
       const title = ensureString(data.title, 'title', entry.name)
       const date = ensureString(data.date, 'date', entry.name)
-      const readTime = ensureString(data.readTime, 'readTime', entry.name)
       const excerpt = ensureString(data.excerpt, 'excerpt', entry.name)
 
       const moods = normalizeMoods(data.mood, entry.name)
@@ -59,17 +60,20 @@ export async function getEssays(): Promise<Essay[]> {
       const wordCount = countWords(normalizedContent)
 
       const publishedAt = parseDate(date, entry.name)
+      const readTimeMinutes = Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE))
+      const readTime = `${readTimeMinutes} min`
 
       return {
         id,
         title,
         date,
-        readTime,
         mood: moods,
         excerpt,
         content: normalizedContent,
         wordCount,
         publishedAt,
+        readTime,
+        readTimeMinutes,
       }
     }),
   )

@@ -502,7 +502,7 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
                 <div className="mb-1 text-[10px] text-muted-foreground">AVG READ TIME</div>
                 <div className="font-mono text-2xl font-bold">
                   {Math.round(
-                    essays.reduce((sum, essay) => sum + Number.parseInt(essay.readTime, 10), 0) / essays.length,
+                    essays.reduce((sum, essay) => sum + essay.readTimeMinutes, 0) / essays.length,
                   )}{' '}
                   min
                 </div>

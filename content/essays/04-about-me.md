@@ -2,7 +2,6 @@
 id: 4
 title: About Me
 date: 2025.10.17
-readTime: 5 min
 mood:
   - contemplative
   - critical

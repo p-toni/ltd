@@ -37,7 +37,6 @@ Open `http://localhost:3000` to view the Tactical Blog interface.
 id: 6
 title: Example Essay
 date: 2025.02.10
-readTime: 7 min
 mood:
   - contemplative
   - analytical
@@ -48,6 +47,8 @@ Write your essay in Markdown here. Lists, code blocks, tables, and blockquotes a
 ```
 
 The loader validates required fields, parses the date, computes `wordCount`, and exposes essays sorted newest-first. Only the five most recent pieces surface in Navigation to keep the UI focused.
+
+- Read time is calculated automatically from the prose length (baseline 220 words per minute), so you can skip adding it to frontmatter.
 
 ## Project Layout
 

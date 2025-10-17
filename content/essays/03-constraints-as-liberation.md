@@ -2,7 +2,6 @@
 id: 3
 title: Constraints as Liberation
 date: 2024.12.28
-readTime: 5 min
 mood:
   - contemplative
   - critical

@@ -2,7 +2,6 @@
 id: 1
 title: On Digital Minimalism
 date: 2025.01.15
-readTime: 8 min
 mood:
   - contemplative
   - analytical

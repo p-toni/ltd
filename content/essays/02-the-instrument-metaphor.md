@@ -2,7 +2,6 @@
 id: 2
 title: The Instrument Metaphor
 date: 2025.01.08
-readTime: 6 min
 mood:
   - exploratory
   - analytical
