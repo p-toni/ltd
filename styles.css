@@ -1,0 +1,294 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", sans-serif;
+  background: #ffffff;
+  color: #000000;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+.system-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  padding: 20px;
+  gap: 16px;
+}
+
+/* HUD Top */
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #000000;
+}
+
+.hud-section {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.hud-section.center {
+  flex: 1;
+  justify-content: center;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: 12px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Filter Bar */
+.filter-bar {
+  display: flex;
+  gap: 2px;
+  padding: 8px 0;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid #000000;
+  color: #000000;
+  padding: 8px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.filter-btn:hover {
+  background: #000000;
+  color: #ffffff;
+}
+
+.filter-btn.active {
+  background: #000000;
+  color: #ffffff;
+}
+
+/* Main Content Grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 24px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Modules */
+.module {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000000;
+  overflow: hidden;
+}
+
+.module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #000000;
+  background: #000000;
+  color: #ffffff;
+}
+
+.module-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.module-indicator {
+  font-size: 12px;
+}
+
+.module-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Field Notes */
+.note-item {
+  margin-bottom: 24px;
+  transition: opacity 0.2s ease;
+}
+
+.note-item.hidden {
+  display: none;
+}
+
+.note-index {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.note-text {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Visual Fragments */
+.visual-item {
+  margin-bottom: 24px;
+  transition: opacity 0.2s ease;
+}
+
+.visual-item.hidden {
+  display: none;
+}
+
+.visual-frame {
+  border: 1px solid #000000;
+  margin-bottom: 8px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.visual-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #000000;
+  margin: -1px;
+}
+
+.visual-placeholder.glitch {
+  background: repeating-linear-gradient(0deg, #ffffff, #ffffff 2px, #000000 2px, #000000 3px);
+}
+
+.visual-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  background: #ffffff;
+  padding: 4px 8px;
+}
+
+.visual-caption {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Essay Container */
+.essay-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000000;
+  overflow: hidden;
+}
+
+.essay-header {
+  padding: 24px 32px;
+  border-bottom: 1px solid #000000;
+}
+
+.essay-title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.essay-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.meta-item {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+
+.meta-separator {
+  font-size: 11px;
+}
+
+.essay-body {
+  padding: 32px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.essay-body p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.essay-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Status Bar */
+.status-bar {
+  display: flex;
+  gap: 32px;
+  padding: 12px 0;
+  border-top: 1px solid #000000;
+}
+
+.status-section {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.status-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.status-value {
+  font-size: 11px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-left: 1px solid #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #000000;
+}

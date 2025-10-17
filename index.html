@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Interface</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="system-container">
+    <!-- Top HUD -->
+    <header class="hud-top">
+      <div class="hud-section">
+        <span class="label">SYS</span>
+        <span class="value" id="timestamp">00:00:00</span>
+      </div>
+      <div class="hud-section center">
+        <span class="label">INTERFACE</span>
+        <span class="value">PERSONAL.LOG</span>
+      </div>
+      <div class="hud-section">
+        <span class="label">POS</span>
+        <span class="value" id="cursor-pos">0000 / 0000</span>
+      </div>
+    </header>
+
+    <!-- Filter Controls -->
+    <nav class="filter-bar">
+      <button class="filter-btn active" data-mood="all">ALL</button>
+      <button class="filter-btn" data-mood="resonant">RESONANT</button>
+      <button class="filter-btn" data-mood="angular">ANGULAR</button>
+      <button class="filter-btn" data-mood="iterative">ITERATIVE</button>
+      <button class="filter-btn" data-mood="broken">BROKEN</button>
+    </nav>
+
+    <!-- Main Content Grid -->
+    <main class="content-grid">
+      <!-- Left Module -->
+      <aside class="module left-module">
+        <div class="module-header">
+          <span class="module-title">FIELD.NOTES</span>
+          <span class="module-indicator">◆</span>
+        </div>
+        <div class="module-content">
+          <div class="note-item" data-mood="resonant">
+            <span class="note-index">001</span>
+            <p class="note-text">Constraints are not limitations. They are the frame that makes the picture visible.</p>
+          </div>
+          <div class="note-item" data-mood="angular">
+            <span class="note-index">002</span>
+            <p class="note-text">Every interface is a conversation. Most are monologues.</p>
+          </div>
+          <div class="note-item" data-mood="iterative">
+            <span class="note-index">003</span>
+            <p class="note-text">Version 12 is when you finally understand what version 1 was trying to say.</p>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Essay -->
+      <article class="essay-container">
+        <div class="essay-header">
+          <h1 class="essay-title">On Functional Minimalism</h1>
+          <div class="essay-meta">
+            <span class="meta-item">2025.01.17</span>
+            <span class="meta-separator">—</span>
+            <span class="meta-item">PROTOCOL.08</span>
+          </div>
+        </div>
+        <div class="essay-body">
+          <p>There is a difference between emptiness and clarity. Minimalism is not about removal—it's about precision. Every element that remains must earn its place through function, not decoration.</p>
+          
+          <p>When designing instruments, whether physical or digital, the question is never "what can we add?" but "what can we remove without losing meaning?" This is not aesthetic preference. It is respect for the user's attention.</p>
+          
+          <p>The best interfaces disappear. They become transparent conduits between intention and action. You don't think about the tool—you think through it.</p>
+          
+          <p>This requires discipline. It requires saying no to decoration, to trends, to the impulse to fill space. It requires trusting that clarity is more powerful than complexity.</p>
+        </div>
+      </article>
+
+      <!-- Right Module -->
+      <aside class="module right-module">
+        <div class="module-header">
+          <span class="module-title">VISUAL.FRAG</span>
+          <span class="module-indicator">◇</span>
+        </div>
+        <div class="module-content">
+          <div class="visual-item" data-mood="resonant">
+            <div class="visual-frame">
+              <div class="visual-placeholder">
+                <span class="visual-label">IMG_001</span>
+              </div>
+            </div>
+            <p class="visual-caption">Grid study, 2024</p>
+          </div>
+          <div class="visual-item" data-mood="broken">
+            <div class="visual-frame">
+              <div class="visual-placeholder glitch">
+                <span class="visual-label">IMG_ERR</span>
+              </div>
+            </div>
+            <p class="visual-caption">Corrupted render</p>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Bottom Status Bar -->
+    <footer class="status-bar">
+      <div class="status-section">
+        <span class="status-label">MODE</span>
+        <span class="status-value">READ</span>
+      </div>
+      <div class="status-section">
+        <span class="status-label">FILTER</span>
+        <span class="status-value" id="active-filter">ALL</span>
+      </div>
+      <div class="status-section">
+        <span class="status-label">VISIBLE</span>
+        <span class="status-value" id="visible-count">6</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
