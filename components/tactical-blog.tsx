@@ -3,10 +3,10 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
-import type { Essay } from '@/lib/essays'
+import type { Piece } from '@/lib/pieces'
 import { cn } from '@/lib/utils'
 
-type MoodFilter = Essay['mood'][number] | 'all'
+type MoodFilter = Piece['mood'][number] | 'all'
 
 const NAV_VISIBLE_LIMIT = 5
 const NAV_ITEM_HEIGHT = 48
@@ -89,15 +89,15 @@ function getTimestamp() {
 }
 
 interface TacticalBlogProps {
-  essays: Essay[]
+  pieces: Piece[]
 }
 
-export default function TacticalBlog({ essays }: TacticalBlogProps) {
+export default function TacticalBlog({ pieces }: TacticalBlogProps) {
   const [currentTime, setCurrentTime] = useState('')
   const [cursorPos, setCursorPos] = useState(OFFSCREEN_CURSOR)
   const [cursorVisible, setCursorVisible] = useState(false)
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
-  const [selectedEssayId, setSelectedEssayId] = useState<number | null>(() => essays[0]?.id ?? null)
+  const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => pieces[0]?.id ?? null)
   const [isFinePointer, setIsFinePointer] = useState(false)
   const [isCursorMoving, setIsCursorMoving] = useState(false)
   const [isCursorInteractive, setIsCursorInteractive] = useState(false)
@@ -290,26 +290,26 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
   }, [isFinePointer, resetCursorState])
 
   useEffect(() => {
-    if (essays.length === 0) {
-      setSelectedEssayId(null)
+    if (pieces.length === 0) {
+      setSelectedPieceId(null)
       return
     }
 
-    if (!essays.some((essay) => essay.id === selectedEssayId)) {
-      setSelectedEssayId(essays[0].id)
+    if (!pieces.some((piece) => piece.id === selectedPieceId)) {
+      setSelectedPieceId(pieces[0].id)
     }
-  }, [essays, selectedEssayId])
+  }, [pieces, selectedPieceId])
 
-  const filteredEssays = useMemo(() => {
+  const filteredPieces = useMemo(() => {
     if (selectedMood === 'all') {
-      return essays
+      return pieces
     }
 
-    return essays.filter((essay) => essay.mood.includes(selectedMood))
-  }, [essays, selectedMood])
+    return pieces.filter((piece) => piece.mood.includes(selectedMood))
+  }, [pieces, selectedMood])
 
-  const sortedEssays = useMemo(() => {
-    const list = [...filteredEssays]
+  const sortedPieces = useMemo(() => {
+    const list = [...filteredPieces]
     list.sort((a, b) => {
       if (a.pinned !== b.pinned) {
         return a.pinned ? -1 : 1
@@ -322,31 +322,31 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
       return b.id - a.id
     })
     return list
-  }, [filteredEssays])
+  }, [filteredPieces])
 
-  const pinnedCount = useMemo(() => sortedEssays.filter((essay) => essay.pinned).length, [sortedEssays])
+  const pinnedCount = useMemo(() => sortedPieces.filter((piece) => piece.pinned).length, [sortedPieces])
 
-  const selectedEssayFromState =
-    selectedEssayId !== null ? sortedEssays.find((essay) => essay.id === selectedEssayId) ?? null : null
+  const selectedPieceFromState =
+    selectedPieceId !== null ? sortedPieces.find((piece) => piece.id === selectedPieceId) ?? null : null
 
-  const fallbackEssay = sortedEssays[0] ?? null
-  const selectedEssay = selectedEssayFromState ?? fallbackEssay
+  const fallbackPiece = sortedPieces[0] ?? null
+  const selectedPiece = selectedPieceFromState ?? fallbackPiece
 
   useEffect(() => {
-    if (!sortedEssays.length) {
-      setSelectedEssayId(null)
+    if (!sortedPieces.length) {
+      setSelectedPieceId(null)
       return
     }
 
-    if (selectedEssayId === null || !sortedEssays.some((essay) => essay.id === selectedEssayId)) {
-      setSelectedEssayId(sortedEssays[0].id)
+    if (selectedPieceId === null || !sortedPieces.some((piece) => piece.id === selectedPieceId)) {
+      setSelectedPieceId(sortedPieces[0].id)
     }
-  }, [sortedEssays, selectedEssayId])
+  }, [sortedPieces, selectedPieceId])
 
-  if (!essays.length || !selectedEssay) {
+  if (!pieces.length || !selectedPiece) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-white font-mono text-black">
-        <span className="text-xs tracking-[0.4em] uppercase">No essays available</span>
+        <span className="text-xs tracking-[0.4em] uppercase">No pieces available</span>
       </div>
     )
   }
@@ -376,16 +376,16 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
         <div className="flex flex-col gap-6 overflow-y-auto border-r border-black p-6">
           <div>
             <div className="mb-2 text-[10px] tracking-wider text-muted-foreground">NAVIGATION</div>
-            <div className="mb-4 text-sm font-bold">ESSAYS</div>
+            <div className="mb-4 text-sm font-bold">PIECES</div>
             <div className="space-y-1 overflow-y-auto pr-1" style={{ maxHeight: navListMaxHeight }}>
-              {sortedEssays.map((essay) => {
-                const isSelected = Boolean(selectedEssay && selectedEssay.id === essay.id)
-                const isPinned = essay.pinned
+              {sortedPieces.map((piece) => {
+                const isSelected = Boolean(selectedPiece && selectedPiece.id === piece.id)
+                const isPinned = piece.pinned
 
                 return (
                   <button
-                    key={essay.id}
-                    onClick={() => setSelectedEssayId(essay.id)}
+                    key={piece.id}
+                    onClick={() => setSelectedPieceId(piece.id)}
                     className={cn(
                       'relative w-full overflow-hidden border py-2 px-2 text-left text-xs transition-all',
                       isSelected ? 'border-black bg-black text-white' : 'border-transparent hover:border-black',
@@ -417,8 +417,8 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
                         : undefined
                     }
                   >
-                    <div className="relative z-10 font-bold">{essay.title}</div>
-                    <div className="relative z-10 mt-1 text-[10px] opacity-60">{essay.date}</div>
+                    <div className="relative z-10 font-bold">{piece.title}</div>
+                    <div className="relative z-10 mt-1 text-[10px] opacity-60">{piece.date}</div>
                     {isPinned && (
                       <span className="absolute right-2 top-2 text-[8px] font-semibold tracking-[0.2em] text-[color:var(--te-orange,#ff6600)]">
                         PIN
@@ -435,19 +435,19 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">DATE</span>
-                <span className="font-bold">{selectedEssay.date}</span>
+                <span className="font-bold">{selectedPiece.date}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">READ TIME</span>
-                <span className="font-bold">{selectedEssay.readTime}</span>
+                <span className="font-bold">{selectedPiece.readTime}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">WORDS</span>
-                <span className="font-bold">{selectedEssay.wordCount}</span>
+                <span className="font-bold">{selectedPiece.wordCount}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">MOOD</span>
-                <span className="text-[10px] font-bold uppercase">{selectedEssay.mood[0]}</span>
+                <span className="text-[10px] font-bold uppercase">{selectedPiece.mood[0]}</span>
               </div>
             </div>
           </div>
@@ -455,26 +455,26 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
           <div className="mt-auto border-t border-black pt-6">
             <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">SYSTEM INFO</div>
             <div className="space-y-1 text-[10px]">
-              <div>ESSAYS: {essays.length}</div>
-              <div>LISTED: {sortedEssays.length}</div>
+              <div>PIECES: {pieces.length}</div>
+              <div>LISTED: {sortedPieces.length}</div>
               <div>PINNED: {pinnedCount}</div>
               <div>VERSION: 1.0.0</div>
             </div>
           </div>
         </div>
 
-        {/* Center - Main Essay */}
+        {/* Center - Main Piece */}
         <div className="overflow-y-auto p-12">
           <div className="mx-auto max-w-2xl">
             <div className="mb-4 text-[10px] tracking-wider text-muted-foreground">
-              ESSAY #{String(selectedEssay.id).padStart(3, '0')}
+              PIECE #{String(selectedPiece.id).padStart(3, '0')}
             </div>
 
-            <h1 className="mb-4 text-4xl font-bold leading-tight">{selectedEssay.title}</h1>
+            <h1 className="mb-4 text-4xl font-bold leading-tight">{selectedPiece.title}</h1>
 
-            <div className="mb-8 text-sm italic text-muted-foreground">{selectedEssay.excerpt}</div>
+            <div className="mb-8 text-sm italic text-muted-foreground">{selectedPiece.excerpt}</div>
 
-            <Markdown content={selectedEssay.content} />
+            <Markdown content={selectedPiece.content} />
 
             <div className="mt-12 border-t border-black pt-6">
               <div className="text-[10px] tracking-wider text-muted-foreground">END OF TRANSMISSION</div>
@@ -522,14 +522,14 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
               <div className="border border-black p-3">
                 <div className="mb-1 text-[10px] text-muted-foreground">TOTAL WORDS</div>
                 <div className="font-mono text-2xl font-bold">
-                  {essays.reduce((sum, essay) => sum + essay.wordCount, 0).toLocaleString()}
+                  {pieces.reduce((sum, piece) => sum + piece.wordCount, 0).toLocaleString()}
                 </div>
               </div>
               <div className="border border-black p-3">
                 <div className="mb-1 text-[10px] text-muted-foreground">AVG READ TIME</div>
                 <div className="font-mono text-2xl font-bold">
                   {Math.round(
-                    essays.reduce((sum, essay) => sum + essay.readTimeMinutes, 0) / essays.length,
+                    pieces.reduce((sum, piece) => sum + piece.readTimeMinutes, 0) / pieces.length,
                   )}{' '}
                   min
                 </div>
@@ -541,8 +541,8 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
             <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">MOOD DISTRIBUTION</div>
             <div className="space-y-2">
               {(['contemplative', 'analytical', 'exploratory', 'critical'] as const).map((mood) => {
-                const count = essays.filter((essay) => essay.mood.includes(mood)).length
-                const percentage = (count / essays.length) * 100
+                const count = pieces.filter((piece) => piece.mood.includes(mood)).length
+                const percentage = (count / pieces.length) * 100
                 return (
                   <div key={mood} className="text-xs">
                     <div className="mb-1 flex justify-between">
@@ -576,7 +576,7 @@ export default function TacticalBlog({ essays }: TacticalBlogProps) {
         </div>
         <div className="flex items-center gap-6">
           <span>
-            ESSAY: {selectedEssay.id}/{essays.length}
+            PIECE: {selectedPiece.id}/{pieces.length}
           </span>
           <span>READY</span>
         </div>

@@ -6,6 +6,7 @@ mood:
   - contemplative
   - critical
 excerpt: Toni Pereira
+pinned: true
 ---
 
 Build products from first principles: starting with why, expose the constraints, instrument the loop, and use AI to search the solution space faster. The goal it’s move faster -- better questions, tighter feedback, more reliable outcomes.

@@ -1,8 +1,8 @@
 import TacticalBlog from '@/components/tactical-blog'
-import { getEssays } from '@/lib/essays'
+import { getPieces } from '@/lib/pieces'
 
 export default async function Page() {
-  const essays = await getEssays()
+  const pieces = await getPieces()
 
-  return <TacticalBlog essays={essays} />
+  return <TacticalBlog pieces={pieces} />
 }

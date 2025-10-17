@@ -4,7 +4,7 @@ import path from 'node:path'
 
 export type Mood = 'contemplative' | 'analytical' | 'exploratory' | 'critical'
 
-export interface Essay {
+export interface Piece {
   id: number
   title: string
   date: string
@@ -15,9 +15,10 @@ export interface Essay {
   publishedAt: number
   readTime: string
   readTimeMinutes: number
+  pinned: boolean
 }
 
-const ESSAY_DIRECTORY = path.join(process.cwd(), 'content', 'essays')
+const PIECE_DIRECTORY = path.join(process.cwd(), 'content', 'pieces')
 const VALID_MOODS: Mood[] = ['contemplative', 'analytical', 'exploratory', 'critical']
 const VALID_MOOD_SET = new Set<Mood>(VALID_MOODS)
 const FRONTMATTER_PATTERN = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/m
@@ -26,11 +27,11 @@ const WORDS_PER_MINUTE = 220
 type FrontmatterValue = string | string[]
 type ParsedFrontmatter = Record<string, FrontmatterValue>
 
-export async function getEssays(): Promise<Essay[]> {
+export async function getPieces(): Promise<Piece[]> {
   let entries: Dirent[]
 
   try {
-    entries = await fs.readdir(ESSAY_DIRECTORY, { withFileTypes: true })
+    entries = await fs.readdir(PIECE_DIRECTORY, { withFileTypes: true })
   } catch (error) {
     if (isErrnoException(error) && error.code === 'ENOENT') {
       return []
@@ -40,9 +41,9 @@ export async function getEssays(): Promise<Essay[]> {
 
   const markdownFiles = entries.filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
 
-  const essays = await Promise.all(
+  const pieces = await Promise.all(
     markdownFiles.map(async (entry) => {
-      const filePath = path.join(ESSAY_DIRECTORY, entry.name)
+      const filePath = path.join(PIECE_DIRECTORY, entry.name)
       const rawFile = await fs.readFile(filePath, 'utf8')
       const { data, content } = parseMarkdownFile(rawFile, entry.name)
 
@@ -62,6 +63,7 @@ export async function getEssays(): Promise<Essay[]> {
       const publishedAt = parseDate(date, entry.name)
       const readTimeMinutes = Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE))
       const readTime = `${readTimeMinutes} min`
+      const pinned = parseBoolean(data.pinned)
 
       return {
         id,
@@ -74,11 +76,16 @@ export async function getEssays(): Promise<Essay[]> {
         publishedAt,
         readTime,
         readTimeMinutes,
+        pinned,
       }
     }),
   )
 
-  return essays.sort((a, b) => {
+  return pieces.sort((a, b) => {
+    if (a.pinned !== b.pinned) {
+      return a.pinned ? -1 : 1
+    }
+
     if (a.publishedAt !== b.publishedAt) {
       return b.publishedAt - a.publishedAt
     }
@@ -197,6 +204,17 @@ function countWords(text: string) {
   }
 
   return normalized.split(/\s+/u).length
+}
+
+function parseBoolean(value: FrontmatterValue | undefined) {
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+    if (normalized === 'true' || normalized === '1' || normalized === 'yes') {
+      return true
+    }
+  }
+
+  return false
 }
 
 function isErrnoException(error: unknown): error is NodeJS.ErrnoException {

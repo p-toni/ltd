@@ -196,20 +196,20 @@ body {
   line-height: 1.4;
 }
 
-/* Essay Container */
-.essay-container {
+/* Piece Container */
+.piece-container {
   display: flex;
   flex-direction: column;
   border: 1px solid #000000;
   overflow: hidden;
 }
 
-.essay-header {
+.piece-header {
   padding: 24px 32px;
   border-bottom: 1px solid #000000;
 }
 
-.essay-title {
+.piece-title {
   font-size: 28px;
   font-weight: 700;
   line-height: 1.2;
@@ -217,7 +217,7 @@ body {
   letter-spacing: -0.02em;
 }
 
-.essay-meta {
+.piece-meta {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -233,19 +233,19 @@ body {
   font-size: 11px;
 }
 
-.essay-body {
+.piece-body {
   padding: 32px;
   overflow-y: auto;
   flex: 1;
 }
 
-.essay-body p {
+.piece-body p {
   font-size: 16px;
   line-height: 1.6;
   margin-bottom: 20px;
 }
 
-.essay-body p:last-child {
+.piece-body p:last-child {
   margin-bottom: 0;
 }
 
