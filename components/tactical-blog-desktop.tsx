@@ -123,6 +123,9 @@ export function TacticalBlogDesktop() {
     pinnedCount,
     handleChatSubmit,
     handleCitationClick,
+    registerChatContainer,
+    registerChatInput,
+    focusChatInput,
   } = useTacticalBlogContext()
 
   const [cursorPos, setCursorPos] = useState(OFFSCREEN_CURSOR)
@@ -140,8 +143,6 @@ export function TacticalBlogDesktop() {
   const cursorVisibleRef = useRef(false)
   const navListMaxHeight =
     NAV_VISIBLE_LIMIT * NAV_ITEM_HEIGHT + (NAV_VISIBLE_LIMIT - 1) * NAV_ITEM_GAP + NAV_ITEM_GAP * 2
-  const chatInputRef = useRef<HTMLTextAreaElement | null>(null)
-  const chatContainerRef = useRef<HTMLDivElement | null>(null)
   const hotkeyTimeoutRef = useRef<number | null>(null)
 
   const resetCursorState = useCallback(() => {
@@ -171,7 +172,7 @@ export function TacticalBlogDesktop() {
     const openChat = () => {
       setIsChatOpen(true)
       setShowChatShortcutHint(false)
-      requestAnimationFrame(() => chatInputRef.current?.focus())
+      requestAnimationFrame(() => focusChatInput())
     }
 
     const closeChat = () => {
@@ -191,7 +192,7 @@ export function TacticalBlogDesktop() {
         setIsChatOpen((prev) => {
           const next = !prev
           if (next) {
-            requestAnimationFrame(() => chatInputRef.current?.focus())
+            requestAnimationFrame(() => focusChatInput())
           }
           return next
         })
@@ -231,7 +232,7 @@ export function TacticalBlogDesktop() {
         hotkeyTimeoutRef.current = null
       }
     }
-  }, [isChatDetached, isChatOpen, setIsChatDetached, setIsChatOpen, setShowChatShortcutHint])
+  }, [focusChatInput, isChatDetached, isChatOpen, setIsChatDetached, setIsChatOpen, setShowChatShortcutHint])
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
@@ -373,11 +374,6 @@ export function TacticalBlogDesktop() {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [isFinePointer, resetCursorState])
 
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-    }
-  }, [chatMessages, isChatLoading, isChatDetached, isChatOpen])
 
   const renderChatMessageContent = (message: ChatMessage) => {
     const nodes: ReactNode[] = []
@@ -752,7 +748,7 @@ export function TacticalBlogDesktop() {
           </div>
 
           <div
-            ref={chatContainerRef}
+            ref={registerChatContainer}
             className="flex-1 space-y-3 overflow-y-auto px-4 py-3 text-xs leading-relaxed"
           >
             {chatMessages.map((message) => (
@@ -785,7 +781,7 @@ export function TacticalBlogDesktop() {
           <div className="border-t border-white/10 px-4 py-3">
             <div className="rounded border border-white/20 bg-black/60 focus-within:border-white/40">
               <textarea
-                ref={chatInputRef}
+                ref={registerChatInput}
                 rows={isChatDetached ? 3 : 2}
                 className="h-full w-full resize-none bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-white/30"
                 placeholder=">_ Ask the system (Shift+Enter for newline)"

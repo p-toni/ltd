@@ -40,6 +40,9 @@ export function TacticalBlogMobile() {
     chatApiKey,
     setChatApiKey,
     handleCitationClick,
+    registerChatContainer,
+    registerChatInput,
+    focusChatInput,
   } = useTacticalBlogContext()
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
@@ -49,12 +52,18 @@ export function TacticalBlogMobile() {
   const scrollProgress = useReadingProgress(contentWrapperRef)
 
   useEffect(() => {
-    if (isChatOpen && activeTab !== 'info') {
-      setActiveTab('info')
-    } else if (!isChatOpen && activeTab === 'info') {
+    if (isChatOpen) {
+      if (activeTab !== 'info') {
+        setActiveTab('info')
+      }
+      const handle = window.requestAnimationFrame(() => focusChatInput())
+      return () => window.cancelAnimationFrame(handle)
+    }
+    if (activeTab === 'info') {
       setActiveTab('read')
     }
-  }, [activeTab, isChatOpen])
+    return undefined
+  }, [activeTab, focusChatInput, isChatOpen])
 
   const currentIndex = useMemo(() => {
     if (!selectedPieceId) {
@@ -130,6 +139,7 @@ export function TacticalBlogMobile() {
       if (tab === 'info') {
         setActiveTab('info')
         setIsChatOpen(true)
+        requestAnimationFrame(() => focusChatInput())
         medium()
         return
       }
@@ -145,7 +155,7 @@ export function TacticalBlogMobile() {
       setNavSheetOpen(false)
       medium()
     },
-    [heavy, medium, setIsChatOpen, showFlash],
+    [focusChatInput, heavy, medium, setIsChatOpen, showFlash],
   )
 
   useSwipeable(contentWrapperRef, {
@@ -288,6 +298,9 @@ export function TacticalBlogMobile() {
         apiKey={chatApiKey}
         setApiKey={setChatApiKey}
         onCitation={handleCitationClick}
+        registerContainer={registerChatContainer}
+        registerInput={registerChatInput}
+        focusInput={focusChatInput}
       />
       <FlashMessage message={flashMessage} />
     </div>

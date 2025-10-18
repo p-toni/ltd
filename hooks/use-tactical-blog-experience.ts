@@ -112,6 +112,9 @@ export interface TacticalBlogExperience {
   goToPiece: (pieceId: number, options?: { announce?: NavigationAnnouncement | string }) => boolean
   goToNextPiece: () => boolean
   goToPreviousPiece: () => boolean
+  registerChatContainer: (node: HTMLDivElement | null) => void
+  registerChatInput: (node: HTMLTextAreaElement | null) => void
+  focusChatInput: () => void
   setChatInput: (value: string) => void
   setChatProvider: (provider: 'anthropic' | 'openai') => void
   setChatApiKey: (value: string) => void
@@ -147,6 +150,30 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
   const [pendingFragmentAnchor, setPendingFragmentAnchor] = useState<string | null>(null)
   const [flashMessage, setFlashMessage] = useState<string | null>(null)
   const flashTimeoutRef = useRef<number | null>(null)
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
+  const chatInputRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const registerChatContainer = useCallback((node: HTMLDivElement | null) => {
+    chatContainerRef.current = node
+  }, [])
+
+  const registerChatInput = useCallback((node: HTMLTextAreaElement | null) => {
+    chatInputRef.current = node
+  }, [])
+
+  const focusChatInput = useCallback(() => {
+    const input = chatInputRef.current
+    if (!input) {
+      return
+    }
+    input.focus({ preventScroll: true })
+    const length = input.value.length
+    try {
+      input.setSelectionRange(length, length)
+    } catch (error) {
+      // selection not supported (e.g., on some mobile browsers)
+    }
+  }, [])
 
   useEffect(() => {
     const updateTime = () => {
@@ -241,6 +268,21 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
       }
     }
   }, [])
+
+  useEffect(() => {
+    const container = chatContainerRef.current
+    if (container) {
+      container.scrollTop = container.scrollHeight
+    }
+  }, [chatMessages, isChatLoading, isChatDetached, isChatOpen])
+
+  useEffect(() => {
+    if (!isChatOpen) {
+      return
+    }
+    const handle = window.requestAnimationFrame(() => focusChatInput())
+    return () => window.cancelAnimationFrame(handle)
+  }, [focusChatInput, isChatOpen])
 
   const goToPiece = useCallback(
     (pieceId: number, options?: { announce?: NavigationAnnouncement | string }) => {
@@ -450,8 +492,9 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
       goToPiece(pieceId)
       setPendingFragmentAnchor(anchorId)
       setIsChatOpen(true)
+      requestAnimationFrame(focusChatInput)
     },
-    [goToPiece, setIsChatOpen, setPendingFragmentAnchor],
+    [focusChatInput, goToPiece, setIsChatOpen, setPendingFragmentAnchor],
   )
 
   useEffect(() => {
@@ -532,6 +575,9 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
     goToPiece,
     goToNextPiece,
     goToPreviousPiece,
+    registerChatContainer,
+    registerChatInput,
+    focusChatInput,
     setChatInput,
     setChatProvider,
     setChatApiKey,

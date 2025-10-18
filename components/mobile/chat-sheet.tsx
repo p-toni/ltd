@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import { useEffect, useMemo, useRef, useState, type FormEvent, type JSX } from 'react'
+import { useEffect, useMemo, useState, type FormEvent, type JSX } from 'react'
 
 import { TerminalLoader } from '@/components/mobile/terminal-loader'
 import styles from '@/components/mobile/layout.module.css'
@@ -26,6 +26,9 @@ interface ChatSheetProps {
   apiKey: string
   setApiKey: (value: string) => void
   onCitation: (pieceId: number, fragmentOrder?: number) => void
+  registerContainer: (node: HTMLDivElement | null) => void
+  registerInput: (node: HTMLTextAreaElement | null) => void
+  focusInput: () => void
 }
 
 export function ChatSheet({
@@ -41,16 +44,11 @@ export function ChatSheet({
   apiKey,
   setApiKey,
   onCitation,
+  registerContainer,
+  registerInput,
+  focusInput,
 }: ChatSheetProps) {
-  const messagesRef = useRef<HTMLDivElement | null>(null)
   const [showApi, setShowApi] = useState(false)
-
-  useEffect(() => {
-    if (!messagesRef.current) {
-      return
-    }
-    messagesRef.current.scrollTop = messagesRef.current.scrollHeight
-  }, [messages, isLoading, isOpen])
 
   useEffect(() => {
     if (isOpen) {
@@ -74,9 +72,18 @@ export function ChatSheet({
     return () => window.clearTimeout(timer)
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+    const handle = window.requestAnimationFrame(() => focusInput())
+    return () => window.cancelAnimationFrame(handle)
+  }, [focusInput, isOpen])
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     await onSubmit()
+    focusInput()
   }
 
   const renderedMessages = useMemo(() => {
@@ -136,7 +143,7 @@ export function ChatSheet({
           </button>
         </header>
 
-        <div ref={messagesRef} className={styles.chatMessages}>
+        <div ref={registerContainer} className={styles.chatMessages}>
           {renderedMessages}
           {isLoading && <TerminalLoader text="STREAMING" />}
         </div>
@@ -175,6 +182,7 @@ export function ChatSheet({
               rows={3}
               placeholder=">_ Ask the system..."
               disabled={isLoading}
+              ref={registerInput}
             />
           </label>
 
