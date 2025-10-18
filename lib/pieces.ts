@@ -16,6 +16,7 @@ export interface Piece {
   readTime: string
   readTimeMinutes: number
   pinned: boolean
+  slug: string
 }
 
 const PIECE_DIRECTORY = path.join(process.cwd(), 'content', 'pieces')
@@ -23,6 +24,19 @@ const VALID_MOODS: Mood[] = ['contemplative', 'analytical', 'exploratory', 'crit
 const VALID_MOOD_SET = new Set<Mood>(VALID_MOODS)
 const FRONTMATTER_PATTERN = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/m
 const WORDS_PER_MINUTE = 220
+
+export interface PieceFragment {
+  id: string
+  pieceId: number
+  pieceTitle: string
+  pieceSlug: string
+  order: number
+  text: string
+  wordCount: number
+}
+
+const DEFAULT_FRAGMENT_MIN_LENGTH = 48
+const FRAGMENT_SPLIT_REGEX = /\n{2,}/
 
 type FrontmatterValue = string | string[]
 type ParsedFrontmatter = Record<string, FrontmatterValue>
@@ -64,6 +78,7 @@ export async function getPieces(): Promise<Piece[]> {
       const readTimeMinutes = Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE))
       const readTime = `${readTimeMinutes} min`
       const pinned = parseBoolean(data.pinned)
+      const slug = entry.name.replace(/\.md$/i, '')
 
       return {
         id,
@@ -77,6 +92,7 @@ export async function getPieces(): Promise<Piece[]> {
         readTime,
         readTimeMinutes,
         pinned,
+        slug,
       }
     }),
   )
@@ -91,6 +107,32 @@ export async function getPieces(): Promise<Piece[]> {
     }
 
     return b.id - a.id
+  })
+}
+
+export async function getPieceFragments(options?: { minLength?: number }): Promise<PieceFragment[]> {
+  const { minLength = DEFAULT_FRAGMENT_MIN_LENGTH } = options ?? {}
+  const pieces = await getPieces()
+
+  return pieces.flatMap((piece) => {
+    const baseId = `piece-${String(piece.id).padStart(3, '0')}`
+    const segments = piece.content
+      .split(FRAGMENT_SPLIT_REGEX)
+      .map((block) => block.trim())
+      .filter((block) => block.length >= minLength)
+
+    return segments.map((segment, index) => {
+      const order = index + 1
+      return {
+        id: `${baseId}-fragment-${String(order).padStart(3, '0')}`,
+        pieceId: piece.id,
+        pieceTitle: piece.title,
+        pieceSlug: piece.slug,
+        order,
+        text: segment,
+        wordCount: countWords(segment),
+      }
+    })
   })
 }
 

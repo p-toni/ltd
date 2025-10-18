@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import type { Piece } from '@/lib/pieces'
+import type { RetrievalResult } from '@/lib/retrieval'
 import { cn } from '@/lib/utils'
 
 type MoodFilter = Piece['mood'][number] | 'all'
@@ -21,6 +22,75 @@ interface CustomCursorProps {
   moving: boolean
   interactive: boolean
   speed: number
+}
+
+type ChatRole = 'system' | 'user' | 'assistant' | 'error'
+
+interface ChatMessage {
+  id: string
+  role: ChatRole
+  content: string
+  createdAt: number
+}
+
+function createMessageId(prefix: string) {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return `${prefix}-${crypto.randomUUID()}`
+  }
+  return `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+function formatRetrievalSummary(retrieval: RetrievalResult) {
+  const lines: string[] = []
+
+  if (retrieval.pieces.length === 0 && retrieval.fragments.length === 0) {
+    lines.push('No indexed context matched this query. Try broadening your prompt.')
+    return lines.join('\n')
+  }
+
+  if (retrieval.pieces.length) {
+    lines.push('Pieces:')
+    retrieval.pieces.forEach(({ piece, score }) => {
+      lines.push(
+        `- [#${String(piece.id).padStart(3, '0')}] ${piece.title} (${piece.readTime}) · score ${score.toFixed(2)}`,
+      )
+    })
+  }
+
+  if (retrieval.fragments.length) {
+    if (lines.length) {
+      lines.push('')
+    }
+    lines.push('Fragments:')
+    retrieval.fragments.forEach(({ fragment, score }) => {
+      const snippet = fragment.text.replace(/\s+/g, ' ').slice(0, 140)
+      lines.push(`- ${fragment.pieceTitle} › …${snippet}${snippet.length >= 140 ? '…' : ''} · ${score.toFixed(2)}`)
+    })
+  }
+
+  lines.push('\nCitations coming soon – these results will seed the model response.')
+  return lines.join('\n')
+}
+
+const CHAT_ROLE_LABEL: Record<ChatRole, string> = {
+  system: 'SYSTEM',
+  user: 'USER',
+  assistant: 'AI',
+  error: 'ERROR',
+}
+
+const CHAT_ROLE_CLASSNAME: Record<ChatRole, string> = {
+  system: 'text-white/60',
+  user: 'text-white',
+  assistant: 'text-white/60',
+  error: 'text-[color:var(--te-orange,#ff6600)]',
+}
+
+const CHAT_CONTENT_CLASSNAME: Record<ChatRole, string> = {
+  system: 'text-white/70',
+  user: 'text-white',
+  assistant: 'text-white/70',
+  error: 'text-[color:var(--te-orange,#ff6600)]',
 }
 
 function isInteractiveElement(target: EventTarget | null) {
@@ -99,6 +169,18 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isChatDetached, setIsChatDetached] = useState(false)
   const [showChatShortcutHint, setShowChatShortcutHint] = useState(false)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      id: 'system-welcome',
+      role: 'system',
+      content: 'Connected. Retrieval ready. Type `/help` for commands.',
+      createdAt: Date.now(),
+    },
+  ])
+  const [chatInput, setChatInput] = useState('')
+  const [isChatLoading, setIsChatLoading] = useState(false)
+  const [chatProvider, setChatProvider] = useState<'anthropic' | 'openai'>('anthropic')
+  const [chatApiKey, setChatApiKey] = useState('')
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => pieces[0]?.id ?? null)
   const [isFinePointer, setIsFinePointer] = useState(false)
@@ -374,10 +456,10 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
 
 
   useEffect(() => {
-    if (!isChatDetached && chatContainerRef.current) {
+    if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
-  }, [isChatDetached, isChatOpen])
+  }, [chatMessages, isChatLoading, isChatDetached, isChatOpen])
   const filteredPieces = useMemo(() => {
     if (selectedMood === 'all') {
       return pieces
@@ -409,6 +491,151 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
 
   const fallbackPiece = sortedPieces[0] ?? null
   const selectedPiece = selectedPieceFromState ?? fallbackPiece
+
+  const handleChatSubmit = async () => {
+    if (isChatLoading) {
+      return
+    }
+
+    const trimmed = chatInput.trim()
+    if (!trimmed) {
+      return
+    }
+
+    const apiKey = chatApiKey.trim()
+    if (!apiKey) {
+      const errorMessage: ChatMessage = {
+        id: createMessageId('error'),
+        role: 'error',
+        content: '⚠️ Provide an API key before querying the model.',
+        createdAt: Date.now(),
+      }
+      setChatMessages((previous) => [...previous, errorMessage])
+      return
+    }
+
+    const timestamp = Date.now()
+    const userMessage: ChatMessage = {
+      id: createMessageId('user'),
+      role: 'user',
+      content: trimmed,
+      createdAt: timestamp,
+    }
+    const assistantId = createMessageId('assistant')
+    const assistantMessage: ChatMessage = {
+      id: assistantId,
+      role: 'assistant',
+      content: '',
+      createdAt: Date.now(),
+    }
+
+    setChatMessages((previous) => [...previous, userMessage, assistantMessage])
+    setChatInput('')
+    setIsChatLoading(true)
+
+    let assistantAccumulator = ''
+    const appendToAssistant = (delta: string) => {
+      assistantAccumulator += delta
+      setChatMessages((previous) =>
+        previous.map((message) =>
+          message.id === assistantId ? { ...message, content: assistantAccumulator } : message,
+        ),
+      )
+    }
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: trimmed,
+          pieceId: selectedPiece?.id,
+          provider: chatProvider,
+          apiKey,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}))
+        throw new Error(errorBody.error ?? 'Unexpected response from chat API')
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) {
+        throw new Error('Streaming response not available in this environment')
+      }
+
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let finished = false
+
+      const processBuffer = (packet: string) => {
+        const lines = packet.split('\n')
+        for (const line of lines) {
+          if (!line.startsWith('data:')) {
+            continue
+          }
+
+          const data = line.slice(5).trim()
+          if (!data || data === '[DONE]') {
+            continue
+          }
+
+          let payload: { type: string; [key: string]: unknown }
+          try {
+            payload = JSON.parse(data)
+          } catch (error) {
+            console.error('Failed to parse SSE payload', error)
+            continue
+          }
+
+          if (payload.type === 'meta') {
+            const retrieval = payload.retrieval as RetrievalResult
+            appendToAssistant(`${formatRetrievalSummary(retrieval)}\n\n`)
+          } else if (payload.type === 'token') {
+            appendToAssistant(String(payload.delta ?? ''))
+          } else if (payload.type === 'error') {
+            const message = String(payload.message ?? 'Model error')
+            appendToAssistant(`\n\n⚠️ ${message}`)
+            finished = true
+          } else if (payload.type === 'done') {
+            finished = true
+          }
+        }
+      }
+
+      while (!finished) {
+        const { value, done } = await reader.read()
+        if (done) {
+          break
+        }
+
+        buffer += decoder.decode(value, { stream: true })
+
+        let boundary
+        while ((boundary = buffer.indexOf('\n\n')) !== -1) {
+          const packet = buffer.slice(0, boundary)
+          buffer = buffer.slice(boundary + 2)
+          processBuffer(packet)
+        }
+      }
+
+      if (buffer.trim().length) {
+        processBuffer(buffer)
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      const errorMessage: ChatMessage = {
+        id: createMessageId('error'),
+        role: 'error',
+        content: `⚠️ ${message}`,
+        createdAt: Date.now(),
+      }
+      setChatMessages((previous) => [...previous, errorMessage])
+    } finally {
+      setIsChatLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (!sortedPieces.length) {
@@ -672,7 +899,7 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
       {/* Chat Drawer */}
       <div
         className={cn(
-          'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[279px] lg:right-[279px]',
+          'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[280px] lg:right-[280px]',
           isChatOpen ? 'pointer-events-auto' : 'pointer-events-none',
         )}
         style={{
@@ -716,37 +943,61 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center gap-3 border-b border-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-white/60">
+            <label className="flex items-center gap-2">
+              <span>Provider</span>
+              <select
+                value={chatProvider}
+                onChange={(event) => setChatProvider(event.target.value as 'anthropic' | 'openai')}
+                className="rounded border border-white/20 bg-black px-2 py-1 text-white/80 focus:border-white/40 focus:outline-none"
+              >
+                <option value="anthropic">Anthropic</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </label>
+            <label className="flex flex-1 min-w-[220px] items-center gap-2">
+              <span>API Key</span>
+              <input
+                type="password"
+                value={chatApiKey}
+                onChange={(event) => setChatApiKey(event.target.value)}
+                placeholder="sk-..."
+                className="flex-1 rounded border border-white/20 bg-black px-2 py-1 text-white/80 focus:border-white/40 focus:outline-none"
+              />
+            </label>
+          </div>
+
           <div
             ref={chatContainerRef}
             className="flex-1 space-y-3 overflow-y-auto px-4 py-3 text-xs leading-relaxed"
           >
-            <div className="flex gap-3">
-              <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white/60">
-                SYSTEM
+            {chatMessages.map((message) => (
+              <div key={message.id} className="flex gap-3">
+                <div
+                  className={cn(
+                    'w-20 shrink-0 text-[10px] uppercase tracking-[0.2em]',
+                    CHAT_ROLE_CLASSNAME[message.role],
+                  )}
+                >
+                  {CHAT_ROLE_LABEL[message.role]}
+                </div>
+                <div
+                  className={cn('flex-1 whitespace-pre-wrap', CHAT_CONTENT_CLASSNAME[message.role])}
+                >
+                  {message.content}
+                </div>
               </div>
-              <div className="flex-1 text-white/80">
-                Connected. NV-Embed-v2 retrieval pending. Type `/help` for commands.
+            ))}
+            {isChatLoading && (
+              <div className="flex gap-3">
+                <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white/60">
+                  AI
+                </div>
+                <div className="flex-1 text-white/60">
+                  <span className="inline-block animate-pulse">█</span>
+                </div>
               </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white">
-                USER
-              </div>
-              <div className="flex-1 whitespace-pre-wrap text-white">
-                {isChatDetached
-                  ? 'Compare the About Me piece with Increasing Returns.'
-                  : 'List pinned pieces.'}
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white/60">
-                AI
-              </div>
-              <div className="flex-1 whitespace-pre-wrap text-white/70">
-                Placeholder response. Once retrieval + LLM wired, this area streams answers with
-                citations like <span className="text-white">[#004]</span>.
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="border-t border-white/10 px-4 py-3">
@@ -756,17 +1007,28 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
                 rows={isChatDetached ? 3 : 2}
                 className="h-full w-full resize-none bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-white/30"
                 placeholder=">_ Ask the system (Shift+Enter for newline)"
+                value={chatInput}
+                onChange={(event) => setChatInput(event.target.value)}
+                disabled={isChatLoading}
                 onKeyDown={(event) => {
+                  if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                    event.preventDefault()
+                    handleChatSubmit()
+                    return
+                  }
+
                   if (event.key === 'Enter' && !event.shiftKey) {
                     event.preventDefault()
-                    // TODO: wire submission handler
+                    handleChatSubmit()
                   }
                 }}
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40">
               <span>
-                {isChatDetached ? 'Esc to return drawer · Ctrl+Enter to submit' : 'Esc to close · Ctrl+Enter to submit'}
+                {isChatDetached
+                  ? 'Esc to return drawer · Enter to submit · Shift+Enter for newline'
+                  : 'Esc to close · Enter to submit · Shift+Enter for newline'}
               </span>
               <span>/help · /summarize · /connect</span>
             </div>

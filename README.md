@@ -18,6 +18,13 @@ pnpm dev
 
 Open `http://localhost:3000` to view the Tactical Blog interface.
 
+### AI Chat & Retrieval
+
+1. Export a Hugging Face token with access to `nvidia/NV-Embed-v2` (`HF_TOKEN=...`).
+2. Generate embeddings: `pnpm ts-node scripts/embed-pieces.ts` (rerun after content changes).
+3. In the chat drawer, pick a provider (Anthropic or OpenAI) and supply your API key. Keys are kept client-side.
+4. Ask questions—answers stream live with references to the indexed pieces.
+
 ### Useful Scripts
 
 | Command        | Description                                  |
