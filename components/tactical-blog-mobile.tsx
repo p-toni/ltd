@@ -1,13 +1,19 @@
 'use client'
 
+import clsx from 'clsx'
 import { useCallback, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
+import { AsciiNumber } from '@/components/mobile/ascii-number'
 import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
 import { FlashMessage } from '@/components/mobile/flash-message'
 import { NavSheet } from '@/components/mobile/nav-sheet'
+import { ProgressBar } from '@/components/mobile/progress-bar'
+import { ReadingProgress } from '@/components/mobile/reading-progress'
 import styles from '@/components/mobile/layout.module.css'
 import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
+import { useHaptic } from '@/hooks/use-haptic'
+import { useReadingProgress } from '@/hooks/use-reading-progress'
 import { useSwipeable } from '@/hooks/use-swipeable'
 
 export function TacticalBlogMobile() {
@@ -27,6 +33,8 @@ export function TacticalBlogMobile() {
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
   const [isNavSheetOpen, setNavSheetOpen] = useState(false)
+  const { light, medium, heavy } = useHaptic()
+  const scrollProgress = useReadingProgress(contentWrapperRef)
 
   const currentIndex = useMemo(() => {
     if (!selectedPieceId) {
@@ -36,10 +44,8 @@ export function TacticalBlogMobile() {
   }, [selectedPieceId, sortedPieces])
 
   const totalPieces = sortedPieces.length
-  const pieceCounter = totalPieces > 0 && currentIndex >= 0 ? `${currentIndex + 1}/${totalPieces}` : `0/${totalPieces}`
-  const progressPercent = totalPieces > 0 && currentIndex >= 0 ? Math.round(((currentIndex + 1) / totalPieces) * 100) : 0
-  const filledBlocks = Math.round((progressPercent / 100) * 20)
-  const progressBar = `[${'█'.repeat(filledBlocks)}${'░'.repeat(20 - filledBlocks)}] ${progressPercent}% (${pieceCounter})`
+  const currentPosition = currentIndex >= 0 ? currentIndex + 1 : 0
+  const pieceCounter = totalPieces > 0 && currentIndex >= 0 ? `${currentPosition}/${totalPieces}` : `0/${totalPieces}`
 
   const prevPieceId = currentIndex > 0 ? sortedPieces[currentIndex - 1]?.id ?? null : null
   const nextPieceId = currentIndex >= 0 && currentIndex < totalPieces - 1 ? sortedPieces[currentIndex + 1]?.id ?? null : null
@@ -52,32 +58,36 @@ export function TacticalBlogMobile() {
 
   const handleNext = useCallback(() => {
     if (goToNextPiece()) {
+      light()
       resetScroll()
     }
-  }, [goToNextPiece, resetScroll])
+  }, [goToNextPiece, light, resetScroll])
 
   const handlePrevious = useCallback(() => {
     if (goToPreviousPiece()) {
+      light()
       resetScroll()
     }
-  }, [goToPreviousPiece, resetScroll])
+  }, [goToPreviousPiece, light, resetScroll])
 
   const handlePieceSelect = useCallback(
     (pieceId: number) => {
       const changed = goToPiece(pieceId, { announce: 'GOTO' })
       if (changed) {
+        medium()
         resetScroll()
       }
       setNavSheetOpen(false)
       setActiveTab('read')
     },
-    [goToPiece, resetScroll],
+    [goToPiece, medium, resetScroll],
   )
 
   const handleCloseNavSheet = useCallback(() => {
     setNavSheetOpen(false)
     setActiveTab('read')
-  }, [])
+    medium()
+  }, [medium])
 
   const handleNavSelect = useCallback(
     (tab: MobileNavTab) => {
@@ -85,6 +95,7 @@ export function TacticalBlogMobile() {
         setNavSheetOpen((open) => {
           const nextOpen = !open
           setActiveTab(nextOpen ? 'list' : 'read')
+          medium()
           return nextOpen
         })
         return
@@ -93,19 +104,22 @@ export function TacticalBlogMobile() {
       if (tab === 'info') {
         setActiveTab('info')
         setIsChatOpen(true)
+        medium()
         return
       }
 
       if (tab === 'mood') {
         setActiveTab('mood')
         showFlash('> MOOD_FILTER.sh\n> TODO: Coming soon', 1800)
+        heavy()
         return
       }
 
       setActiveTab('read')
       setNavSheetOpen(false)
+      medium()
     },
-    [setIsChatOpen, showFlash],
+    [heavy, medium, setIsChatOpen, showFlash],
   )
 
   useSwipeable(contentWrapperRef, {
@@ -141,7 +155,9 @@ export function TacticalBlogMobile() {
   }
 
   const hexId = `0x${selectedPiece.id.toString(16).padStart(2, '0')}`.toUpperCase()
+  const asciiValue = selectedPiece.id % 100
   const moodLabel = selectedPiece.mood[0]?.toUpperCase() ?? 'N/A'
+  const fileInfo = `-rw-r--r-- 1 toni staff ${selectedPiece.wordCount}W ${selectedPiece.date} ${selectedPiece.slug}.md`
 
   return (
     <div className={styles.mobileRoot}>
@@ -156,58 +172,61 @@ export function TacticalBlogMobile() {
         </div>
       </div>
 
-      <div className={styles.readingProgress} style={{ width: '0%' }} aria-hidden />
+      <ReadingProgress value={scrollProgress} />
 
       <div ref={contentWrapperRef} className={styles.contentWrapper}>
         <div className={styles.content}>
-          <section className={styles.hero}>
-            <div className={styles.pieceNav}>
-              <button
-                type="button"
-                className={styles.navArrow}
-                onClick={handlePrevious}
-                disabled={!prevPieceId}
-                aria-label="Previous piece"
-              >
-                ‹
-              </button>
-              <div className={styles.pieceProgress}>
-                <div className={styles.pieceId}>
-                  PIECE #{String(selectedPiece.id).padStart(3, '0')}
-                  <span className={styles.pieceHex}>[{hexId}]</span>
+          <section className={clsx(styles.hero, styles.heroCorners, styles.heroCornersBottom)}>
+            <div className={styles.heroOverlay} aria-hidden />
+            <div className={styles.heroHeader}>
+              <AsciiNumber value={asciiValue} />
+              <div className={styles.heroMeta}>
+                <div className={styles.pieceNav}>
+                  <button
+                    type="button"
+                    className={clsx(styles.navArrow, styles.glitchable)}
+                    onClick={handlePrevious}
+                    disabled={!prevPieceId}
+                    aria-label="Previous piece"
+                  >
+                    ‹
+                  </button>
+                  <div className={styles.pieceProgress}>
+                    <div className={styles.pieceId}>
+                      PIECE #{String(selectedPiece.id).padStart(3, '0')}
+                      <span className={styles.pieceHex}>[{hexId}]</span>
+                    </div>
+                    <ProgressBar current={currentPosition} total={totalPieces} />
+                  </div>
+                  <button
+                    type="button"
+                    className={clsx(styles.navArrow, styles.glitchable)}
+                    onClick={handleNext}
+                    disabled={!nextPieceId}
+                    aria-label="Next piece"
+                  >
+                    ›
+                  </button>
                 </div>
-                <div className={styles.progressBar}>{progressBar}</div>
-              </div>
-              <button
-                type="button"
-                className={styles.navArrow}
-                onClick={handleNext}
-                disabled={!nextPieceId}
-                aria-label="Next piece"
-              >
-                ›
-              </button>
-            </div>
+                <h1 className={clsx(styles.pieceTitle, styles.glitchable)}>{selectedPiece.title}</h1>
+                <div className={styles.pieceAuthor}>{selectedPiece.date}</div>
 
-            <h1 className={styles.pieceTitle}>{selectedPiece.title}</h1>
-            <div className={styles.pieceAuthor}>{selectedPiece.date}</div>
+                <div className={styles.fileInfo}>{fileInfo}</div>
 
-            <div className={styles.fileInfo}>
-              -rw-r--r-- 1 toni staff {selectedPiece.wordCount}W {selectedPiece.date} {selectedPiece.slug}.md
-            </div>
-
-            <div className={styles.metaCards}>
-              <div className={styles.metaCard}>
-                <div className={styles.metaLabel}>READ</div>
-                <div className={styles.metaValue}>{selectedPiece.readTime}</div>
-              </div>
-              <div className={styles.metaCard}>
-                <div className={styles.metaLabel}>WORDS</div>
-                <div className={styles.metaValue}>{selectedPiece.wordCount}</div>
-              </div>
-              <div className={styles.metaCard}>
-                <div className={styles.metaLabel}>MOOD</div>
-                <div className={styles.metaMoodValue}>{moodLabel}</div>
+                <div className={styles.metaCards}>
+                  <div className={styles.metaCard}>
+                    <div className={styles.metaLabel}>READ</div>
+                    <div className={styles.metaValue}>{selectedPiece.readTime}</div>
+                  </div>
+                  <div className={styles.metaCard}>
+                    <div className={styles.metaLabel}>WORDS</div>
+                    <div className={styles.metaValue}>{selectedPiece.wordCount.toLocaleString()}</div>
+                  </div>
+                  <div className={styles.metaCard}>
+                    <div className={styles.metaLabel}>MOOD</div>
+                    <div className={styles.metaMoodValue}>{moodLabel}</div>
+                  </div>
+                </div>
               </div>
             </div>
 

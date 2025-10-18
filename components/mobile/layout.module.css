@@ -90,6 +90,22 @@
   position: relative;
   padding: 48px 24px 40px;
   border-bottom: 1px solid #222;
+  overflow: hidden;
+}
+
+.heroCorners,
+.heroCornersBottom {
+  position: relative;
+}
+
+.heroHeader {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.heroMeta {
+  flex: 1;
 }
 
 .pieceNav {
@@ -141,6 +157,13 @@
   font-size: 10px;
   color: #ff6600;
   letter-spacing: -0.05em;
+}
+
+.progressBarText {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: -0.05em;
+  color: #ff6600;
 }
 
 .pieceTitle {
@@ -197,6 +220,15 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.05em;
+}
+
+.asciiNumber {
+  font-size: 9px;
+  line-height: 1.1;
+  color: #ff6600;
+  white-space: pre;
+  letter-spacing: -0.08em;
+  text-shadow: 0 0 8px rgba(255, 102, 0, 0.25);
 }
 
 .quoteBlock {
@@ -382,4 +414,109 @@
   font-size: 9px;
   letter-spacing: 0.2em;
   color: #666;
+}
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 102, 0, 0.06) 0px, rgba(255, 102, 0, 0.06) 1px, transparent 1px, transparent 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 2px, transparent 2px, transparent 6px);
+  opacity: 0.2;
+  animation: scanline 12s linear infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.reducedMotion .heroOverlay {
+  animation: none;
+}
+
+.heroCorners::before,
+.heroCorners::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #ff6600;
+}
+
+.heroCorners::before {
+  top: 12px;
+  left: 12px;
+  border-bottom: none;
+  border-right: none;
+}
+
+.heroCorners::after {
+  top: 12px;
+  right: 12px;
+  border-bottom: none;
+  border-left: none;
+}
+
+.heroCornersBottom::before,
+.heroCornersBottom::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid #ff6600;
+}
+
+.heroCornersBottom::before {
+  bottom: 12px;
+  left: 12px;
+  border-top: none;
+  border-right: none;
+}
+
+.heroCornersBottom::after {
+  bottom: 12px;
+  right: 12px;
+  border-top: none;
+  border-left: none;
+}
+
+.glitchable:active {
+  animation: glitch 0.28s steps(2, end);
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  25% {
+    transform: translate(-2px, 2px);
+  }
+  50% {
+    transform: translate(2px, -2px);
+  }
+  75% {
+    transform: translate(-1px, -1px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroOverlay {
+    animation: none;
+  }
+
+  .glitchable:active {
+    animation: none;
+  }
+
+  .readingProgress {
+    transition: none;
+  }
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type RefObject } from 'react'
 
 interface SwipeableOptions {
   onSwipedLeft?: () => void
@@ -9,7 +9,7 @@ interface SwipeableOptions {
 }
 
 export function useSwipeable<T extends HTMLElement>(
-  targetRef: React.RefObject<T>,
+  targetRef: RefObject<T>,
   options: SwipeableOptions,
 ) {
   const { onSwipedLeft, onSwipedRight, threshold = 50, maxVerticalOffset = 30, shouldAllow } = options
