@@ -765,7 +765,7 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
       {/* Top System Bar */}
       <div className="flex h-8 items-center justify-between border-b border-black px-4 text-[10px] tracking-wider">
         <div className="flex items-center gap-6">
-          <span className="font-bold">SYSTEM</span>
+          <span className="font-bold">TONI.LIMITED</span>
           <span>STATUS: ACTIVE</span>
         </div>
         <div className="flex items-center gap-6">
