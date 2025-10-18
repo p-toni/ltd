@@ -164,7 +164,6 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}
         components={markdownComponents}
-        transformImageUri={(uri) => uri}
         components={{
           ...markdownComponents,
           p: ({ node, children, ...props }) => {

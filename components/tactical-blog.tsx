@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import type { Piece } from '@/lib/pieces'
