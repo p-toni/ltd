@@ -1,11 +1,12 @@
 'use client'
 
 import clsx from 'clsx'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import { AsciiNumber } from '@/components/mobile/ascii-number'
 import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
+import { ChatSheet } from '@/components/mobile/chat-sheet'
 import { FlashMessage } from '@/components/mobile/flash-message'
 import { NavSheet } from '@/components/mobile/nav-sheet'
 import { ProgressBar } from '@/components/mobile/progress-bar'
@@ -28,6 +29,17 @@ export function TacticalBlogMobile() {
     flashMessage,
     showFlash,
     setIsChatOpen,
+    isChatOpen,
+    chatMessages,
+    chatInput,
+    setChatInput,
+    isChatLoading,
+    handleChatSubmit,
+    chatProvider,
+    setChatProvider,
+    chatApiKey,
+    setChatApiKey,
+    handleCitationClick,
   } = useTacticalBlogContext()
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
@@ -35,6 +47,14 @@ export function TacticalBlogMobile() {
   const [isNavSheetOpen, setNavSheetOpen] = useState(false)
   const { light, medium, heavy } = useHaptic()
   const scrollProgress = useReadingProgress(contentWrapperRef)
+
+  useEffect(() => {
+    if (isChatOpen && activeTab !== 'info') {
+      setActiveTab('info')
+    } else if (!isChatOpen && activeTab === 'info') {
+      setActiveTab('read')
+    }
+  }, [activeTab, isChatOpen])
 
   const currentIndex = useMemo(() => {
     if (!selectedPieceId) {
@@ -88,6 +108,12 @@ export function TacticalBlogMobile() {
     setActiveTab('read')
     medium()
   }, [medium])
+
+  const handleCloseChat = useCallback(() => {
+    setIsChatOpen(false)
+    setActiveTab('read')
+    medium()
+  }, [medium, setIsChatOpen])
 
   const handleNavSelect = useCallback(
     (tab: MobileNavTab) => {
@@ -248,6 +274,20 @@ export function TacticalBlogMobile() {
         isOpen={isNavSheetOpen}
         onClose={handleCloseNavSheet}
         onSelect={handlePieceSelect}
+      />
+      <ChatSheet
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        messages={chatMessages}
+        chatInput={chatInput}
+        setChatInput={setChatInput}
+        onSubmit={handleChatSubmit}
+        isLoading={isChatLoading}
+        provider={chatProvider}
+        setProvider={setChatProvider}
+        apiKey={chatApiKey}
+        setApiKey={setChatApiKey}
+        onCitation={handleCitationClick}
       />
       <FlashMessage message={flashMessage} />
     </div>

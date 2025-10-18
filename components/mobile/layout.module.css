@@ -415,6 +415,231 @@
   letter-spacing: 0.2em;
   color: #666;
 }
+
+.chatOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 35;
+}
+
+.chatOverlayVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.chatSheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 60vh;
+  max-height: 680px;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+  border-top: 1px solid #222;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 40;
+}
+
+.chatSheetOpen {
+  transform: translateY(0);
+}
+
+.chatHandle {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #222;
+}
+
+.chatHandleBar {
+  width: 48px;
+  height: 4px;
+  border-radius: 2px;
+  background: #333;
+}
+
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 48px;
+  border-bottom: 1px solid #222;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+}
+
+.chatClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #333;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+}
+
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.chatMessage {
+  display: flex;
+  gap: 16px;
+}
+
+.chatRole {
+  width: 60px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.chatContent {
+  flex: 1;
+  line-height: 1.6;
+}
+
+.chatCitation {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 102, 0, 0.4);
+  background: rgba(255, 102, 0, 0.12);
+  color: #ff6600;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  padding: 0 6px;
+  margin: 0 4px;
+  text-transform: uppercase;
+}
+
+.chatInputSection {
+  border-top: 1px solid #222;
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chatLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #777;
+  text-transform: uppercase;
+}
+
+.chatApiRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.chatApiRowVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chatProviderSelect,
+.chatApiInput {
+  width: 100%;
+  padding: 10px 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+}
+
+.chatTextareaLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #777;
+  text-transform: uppercase;
+}
+
+.chatTextarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.chatSubmitRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chatSubmitButton {
+  padding: 10px 18px;
+  border: 1px solid #ff6600;
+  background: transparent;
+  color: #ff6600;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.chatSubmitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.terminalLoader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ff6600;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+.terminalCursor {
+  animation: blink 1s steps(2, end) infinite;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
 .heroOverlay {
   position: absolute;
   inset: 0;
