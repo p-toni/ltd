@@ -7,10 +7,13 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import 'dotenv/config'
+import { config as loadEnv } from 'dotenv'
 import { HfInference } from '@huggingface/inference'
 
 import { getPieceFragments, getPieces } from '../lib/pieces'
+
+loadEnv({ path: path.resolve(process.cwd(), '.env.local'), override: false })
+loadEnv({ path: path.resolve(process.cwd(), '.env'), override: false })
 
 interface EmbeddingRecord {
   id: string
@@ -30,7 +33,7 @@ interface EmbeddingPayload {
   pieceEmbeddings: EmbeddingRecord[]
 }
 
-const MODEL_ID = 'nvidia/NV-Embed-v2'
+const MODEL_ID = 'sentence-transformers/all-MiniLM-L6-v2'
 const OUTPUT_PATH = path.join(process.cwd(), 'public', 'embeddings', 'pieces-v1.json')
 const BATCH_SIZE = 16
 

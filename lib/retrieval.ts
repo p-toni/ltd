@@ -60,7 +60,7 @@ interface QueryEmbedding {
   norm: number
 }
 
-const MODEL_ID = 'nvidia/NV-Embed-v2'
+const MODEL_ID = 'sentence-transformers/all-MiniLM-L6-v2'
 const EMBEDDING_PATH = path.join(process.cwd(), 'public', 'embeddings', 'pieces-v1.json')
 
 let embeddingStorePromise: Promise<LoadedEmbeddingStore> | null = null
