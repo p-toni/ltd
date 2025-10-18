@@ -979,6 +979,14 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
         <div className="flex items-center gap-6">
           <span>MODE: READ</span>
           <span>FILTER: {selectedMood.toUpperCase()}</span>
+          {!isChatOpen && (
+            <button
+              onClick={() => setIsChatOpen(true)}
+              className="text-[color:var(--te-orange,#ff6600)] transition-colors hover:underline"
+            >
+              CHAT: READY [/]
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-6">
           <span>
@@ -1004,7 +1012,7 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
           isChatOpen ? 'pointer-events-auto' : 'pointer-events-none',
         )}
         style={{
-          transform: isChatOpen ? 'translateY(0%)' : `translateY(calc(100% - ${STATUS_BAR_HEIGHT}px))`,
+          transform: isChatOpen ? 'translateY(0%)' : 'translateY(100%)',
         }}
       >
         <div
@@ -1013,13 +1021,9 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
             isChatDetached ? 'h-[60vh]' : 'h-[260px]',
           )}
         >
-          <div 
-            className={cn(
-              'flex items-center justify-between border-b border-white/10 px-4 text-[10px] tracking-[0.3em]',
-              !isChatOpen && 'cursor-pointer hover:bg-white/5 transition-colors',
-            )}
+          <div
+            className="flex items-center justify-between border-b border-white/10 px-4 text-[10px] tracking-[0.3em]"
             style={{ height: `${STATUS_BAR_HEIGHT}px` }}
-            onClick={() => !isChatOpen && setIsChatOpen(true)}
           >
             <div className="flex items-center gap-3">
               <span className="font-semibold">CHAT</span>
