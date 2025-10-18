@@ -96,6 +96,9 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
   const [currentTime, setCurrentTime] = useState('')
   const [cursorPos, setCursorPos] = useState(OFFSCREEN_CURSOR)
   const [cursorVisible, setCursorVisible] = useState(false)
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [isChatDetached, setIsChatDetached] = useState(false)
+  const [showChatShortcutHint, setShowChatShortcutHint] = useState(false)
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => pieces[0]?.id ?? null)
   const [isFinePointer, setIsFinePointer] = useState(false)
@@ -111,6 +114,9 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
   const cursorVisibleRef = useRef(false)
   const navListMaxHeight =
     NAV_VISIBLE_LIMIT * NAV_ITEM_HEIGHT + (NAV_VISIBLE_LIMIT - 1) * NAV_ITEM_GAP + NAV_ITEM_GAP * 2
+  const chatInputRef = useRef<HTMLTextAreaElement | null>(null)
+  const chatContainerRef = useRef<HTMLDivElement | null>(null)
+  const hotkeyTimeoutRef = useRef<number | null>(null)
 
   const resetCursorState = useCallback(() => {
     cursorVisibleRef.current = false
@@ -148,6 +154,72 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
     const interval = window.setInterval(updateTime, 1000)
     return () => window.clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const openChat = () => {
+      setIsChatOpen(true)
+      setShowChatShortcutHint(false)
+      requestAnimationFrame(() => chatInputRef.current?.focus())
+    }
+
+    const closeChat = () => {
+      setIsChatOpen(false)
+      setIsChatDetached(false)
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === '/' && !event.metaKey && !event.ctrlKey) {
+        event.preventDefault()
+        openChat()
+        return
+      }
+
+      if ((event.key === '`' || event.key === '~') && !event.metaKey && !event.ctrlKey) {
+        event.preventDefault()
+        setIsChatOpen((prev) => {
+          const next = !prev
+          if (next) {
+            requestAnimationFrame(() => chatInputRef.current?.focus())
+          }
+          return next
+        })
+        setShowChatShortcutHint(false)
+        return
+      }
+
+      if (event.key === 'Escape') {
+        if (isChatOpen) {
+          event.preventDefault()
+          if (isChatDetached) {
+            setIsChatDetached(false)
+          } else {
+            closeChat()
+          }
+        }
+        return
+      }
+
+      if (event.key === '?' && event.shiftKey) {
+        if (hotkeyTimeoutRef.current) {
+          window.clearTimeout(hotkeyTimeoutRef.current)
+        }
+        setShowChatShortcutHint(true)
+        hotkeyTimeoutRef.current = window.setTimeout(() => {
+          setShowChatShortcutHint(false)
+          hotkeyTimeoutRef.current = null
+        }, 3000)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      if (hotkeyTimeoutRef.current) {
+        window.clearTimeout(hotkeyTimeoutRef.current)
+        hotkeyTimeoutRef.current = null
+      }
+    }
+  }, [isChatDetached, isChatOpen])
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
@@ -300,6 +372,12 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
     }
   }, [pieces, selectedPieceId])
 
+
+  useEffect(() => {
+    if (!isChatDetached && chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+    }
+  }, [isChatDetached, isChatOpen])
   const filteredPieces = useMemo(() => {
     if (selectedMood === 'all') {
       return pieces
@@ -590,6 +668,111 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
           speed={cursorSpeed}
         />
       )}
+
+      {/* Chat Drawer */}
+      <div
+        className={cn(
+          'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[279px] lg:right-[279px]',
+          isChatOpen ? 'pointer-events-auto' : 'pointer-events-none',
+        )}
+        style={{
+          transform: isChatOpen ? 'translateY(0%)' : 'translateY(calc(100% - 48px))',
+        }}
+      >
+        <div
+          className={cn(
+            'mx-auto flex w-full flex-col border-t border-black bg-black text-white shadow-[0_-8px_40px_rgba(0,0,0,0.25)] transition-all duration-300',
+            isChatDetached ? 'h-[60vh]' : 'h-[260px]',
+          )}
+        >
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-[10px] tracking-[0.3em]">
+            <div className="flex items-center gap-3">
+              <span className="font-semibold">CHAT</span>
+              <span className="text-white/60">{isChatDetached ? 'SPLIT' : 'DRAWER'}</span>
+              {showChatShortcutHint && (
+                <span className="rounded border border-white/20 px-1 py-[1px] text-[8px] uppercase text-white/60">
+                  `/` to open · `Esc` to close
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsChatDetached((prev) => !prev)}
+                className="rounded border border-white/20 px-2 py-[2px] text-[10px] uppercase tracking-[0.2em] text-white/70 transition hover:border-white/40 hover:text-white"
+              >
+                {isChatDetached ? 'ATTACH' : 'DETACH'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsChatOpen(false)
+                  setIsChatDetached(false)
+                }}
+                className="rounded border border-white/20 px-2 py-[2px] text-[10px] uppercase tracking-[0.2em] text-white/70 transition hover:border-white/40 hover:text-white"
+              >
+                CLOSE
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={chatContainerRef}
+            className="flex-1 space-y-3 overflow-y-auto px-4 py-3 text-xs leading-relaxed"
+          >
+            <div className="flex gap-3">
+              <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white/60">
+                SYSTEM
+              </div>
+              <div className="flex-1 text-white/80">
+                Connected. NV-Embed-v2 retrieval pending. Type `/help` for commands.
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white">
+                USER
+              </div>
+              <div className="flex-1 whitespace-pre-wrap text-white">
+                {isChatDetached
+                  ? 'Compare the About Me piece with Increasing Returns.'
+                  : 'List pinned pieces.'}
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="w-20 shrink-0 text-[10px] uppercase tracking-[0.2em] text-white/60">
+                AI
+              </div>
+              <div className="flex-1 whitespace-pre-wrap text-white/70">
+                Placeholder response. Once retrieval + LLM wired, this area streams answers with
+                citations like <span className="text-white">[#004]</span>.
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 px-4 py-3">
+            <div className="rounded border border-white/20 bg-black/60 focus-within:border-white/40">
+              <textarea
+                ref={chatInputRef}
+                rows={isChatDetached ? 3 : 2}
+                className="h-full w-full resize-none bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-white/30"
+                placeholder=">_ Ask the system (Shift+Enter for newline)"
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault()
+                    // TODO: wire submission handler
+                  }
+                }}
+              />
+            </div>
+            <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40">
+              <span>
+                {isChatDetached ? 'Esc to return drawer · Ctrl+Enter to submit' : 'Esc to close · Ctrl+Enter to submit'}
+              </span>
+              <span>/help · /summarize · /connect</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
