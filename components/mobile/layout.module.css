@@ -445,6 +445,7 @@
   transform: translateY(100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 40;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .chatSheetOpen {
@@ -533,7 +534,7 @@
 
 .chatInputSection {
   border-top: 1px solid #222;
-  padding: 16px 20px 20px;
+  padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 16px;

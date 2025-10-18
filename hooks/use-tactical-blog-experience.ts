@@ -171,7 +171,7 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
     try {
       input.setSelectionRange(length, length)
     } catch (error) {
-      // selection not supported (e.g., on some mobile browsers)
+      // Selection range not supported in some environments (e.g., older mobile browsers).
     }
   }, [])
 

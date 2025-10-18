@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
-import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useTacticalBlogExperience } from '../use-tactical-blog-experience'
 import type { Piece } from '../../lib/pieces'
@@ -49,6 +49,20 @@ const SAMPLE_PIECES: Piece[] = [
   },
 ]
 
+const originalFetch = global.fetch
+const encoder = new TextEncoder()
+
+function createSseStream(payloads: Array<Record<string, unknown>>) {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      for (const payload of payloads) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`))
+      }
+      controller.close()
+    },
+  })
+}
+
 beforeEach(() => {
   vi.useFakeTimers()
 })
@@ -57,6 +71,7 @@ afterEach(() => {
   vi.runOnlyPendingTimers()
   vi.clearAllTimers()
   vi.useRealTimers()
+  global.fetch = originalFetch
 })
 
 describe('useTacticalBlogExperience navigation', () => {
@@ -130,5 +145,63 @@ describe('useTacticalBlogExperience chat workflow', () => {
     const lastMessage = result.current.chatMessages.at(-1)
     expect(lastMessage?.role).toBe('error')
     expect(lastMessage?.content).toContain('Provide an API key')
+  })
+
+  it('streams assistant responses over SSE', async () => {
+    const stream = createSseStream([
+      { type: 'meta', retrieval: { fragments: [], pieces: [] } },
+      { type: 'token', delta: 'Hello' },
+      { type: 'token', delta: ' world' },
+      { type: 'done' },
+    ])
+
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, body: stream })
+    // @ts-expect-error allow override for test
+    global.fetch = fetchMock
+
+    const { result } = renderHook(() => useTacticalBlogExperience(SAMPLE_PIECES))
+
+    act(() => {
+      result.current.setChatApiKey('test-key')
+      result.current.setChatInput('Summarize the piece')
+    })
+
+    await act(async () => {
+      await result.current.handleChatSubmit()
+    })
+
+    const assistantMessage = result.current.chatMessages.at(-1)
+    expect(assistantMessage?.role).toBe('assistant')
+    expect(assistantMessage?.content).toContain('Hello')
+    expect(assistantMessage?.content).toContain('world')
+    expect(result.current.isChatLoading).toBe(false)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('handles SSE error events gracefully', async () => {
+    const stream = createSseStream([
+      { type: 'meta', retrieval: { fragments: [], pieces: [] } },
+      { type: 'error', message: 'Model error' },
+    ])
+
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, body: stream })
+    // @ts-expect-error allow override for test
+    global.fetch = fetchMock
+
+    const { result } = renderHook(() => useTacticalBlogExperience(SAMPLE_PIECES))
+
+    act(() => {
+      result.current.setChatApiKey('test-key')
+      result.current.setChatInput('Problem query')
+    })
+
+    await act(async () => {
+      await result.current.handleChatSubmit()
+    })
+
+    const assistantMessage = result.current.chatMessages.at(-1)
+    expect(assistantMessage?.content).toContain('⚠️')
+    expect(result.current.isChatLoading).toBe(false)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
