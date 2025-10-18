@@ -659,7 +659,6 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
     const text = message.content
     let lastIndex = 0
     const regex = new RegExp(CITATION_REGEX.source, 'g')
-    regex.lastIndex = 0
     let match: RegExpExecArray | null
 
     while ((match = regex.exec(text)) !== null) {
