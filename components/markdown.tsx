@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable react/jsx-no-duplicate-props */
+
 import type { Components } from 'react-markdown'
 import ReactMarkdown from 'react-markdown'
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
@@ -148,18 +150,62 @@ const markdownComponents: Components = {
 interface MarkdownProps {
   content: string
   className?: string
+  pieceId?: number
 }
 
-export function Markdown({ content, className }: MarkdownProps) {
+export function Markdown({ content, className, pieceId }: MarkdownProps) {
+  const fragmentIdPrefix =
+    typeof pieceId === 'number' ? `piece-${String(pieceId).padStart(3, '0')}` : undefined
+  let fragmentIndex = 0
+
   return (
     <div className={cn('prose prose-sm max-w-none', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}
         components={markdownComponents}
+        transformImageUri={(uri) => uri}
+        components={{
+          ...markdownComponents,
+          p: ({ node, children, ...props }) => {
+            fragmentIndex += 1
+            const id =
+              fragmentIdPrefix !== undefined
+                ? `${fragmentIdPrefix}-fragment-${String(fragmentIndex).padStart(3, '0')}`
+                : undefined
+            const { id: existingId, ['data-fragment-order']: _ignored, ...rest } = props as Record<string, unknown>
+            return (
+              <p
+                {...rest}
+                id={id ?? (typeof existingId === 'string' ? existingId : undefined)}
+                data-fragment-order={fragmentIndex}
+              >
+                {children}
+              </p>
+            )
+          },
+          li: ({ node, children, ...props }) => {
+            fragmentIndex += 1
+            const id =
+              fragmentIdPrefix !== undefined
+                ? `${fragmentIdPrefix}-fragment-${String(fragmentIndex).padStart(3, '0')}`
+                : undefined
+            const { id: existingId, ['data-fragment-order']: _ignored, ...rest } = props as Record<string, unknown>
+            return (
+              <li
+                {...rest}
+                id={id ?? (typeof existingId === 'string' ? existingId : undefined)}
+                data-fragment-order={fragmentIndex}
+              >
+                {children}
+              </li>
+            )
+          },
+        }}
       >
         {content}
       </ReactMarkdown>
     </div>
   )
 }
+/* eslint-disable react/jsx-no-duplicate-props */

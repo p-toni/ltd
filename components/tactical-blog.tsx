@@ -1,6 +1,7 @@
 'use client'
 
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import type { Piece } from '@/lib/pieces'
@@ -12,10 +13,12 @@ type MoodFilter = Piece['mood'][number] | 'all'
 const NAV_VISIBLE_LIMIT = 5
 const NAV_ITEM_HEIGHT = 48
 const NAV_ITEM_GAP = 4
+const STATUS_BAR_HEIGHT = 32
 const MOOD_FILTERS: MoodFilter[] = ['all', 'contemplative', 'analytical', 'exploratory', 'critical']
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], [data-cursor-interactive], input, textarea, select, summary, label'
 const OFFSCREEN_CURSOR = { x: -100, y: -100 }
+const CITATION_REGEX = /\[#(\d{3})(?:-F(\d{3}))?]/g
 
 interface CustomCursorProps {
   position: { x: number; y: number }
@@ -183,6 +186,7 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
   const [chatApiKey, setChatApiKey] = useState('')
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => pieces[0]?.id ?? null)
+  const [pendingFragmentAnchor, setPendingFragmentAnchor] = useState<string | null>(null)
   const [isFinePointer, setIsFinePointer] = useState(false)
   const [isCursorMoving, setIsCursorMoving] = useState(false)
   const [isCursorInteractive, setIsCursorInteractive] = useState(false)
@@ -491,6 +495,7 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
 
   const fallbackPiece = sortedPieces[0] ?? null
   const selectedPiece = selectedPieceFromState ?? fallbackPiece
+  const currentPieceId = selectedPiece?.id ?? null
 
   const handleChatSubmit = async () => {
     if (isChatLoading) {
@@ -637,6 +642,61 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
     }
   }
 
+  const handleCitationClick = (pieceNumber: number, fragmentOrder?: number) => {
+    const pieceId = Number(pieceNumber)
+    const fragmentId = fragmentOrder
+      ? String(fragmentOrder).padStart(3, '0')
+      : '001'
+    const anchorId = `piece-${String(pieceId).padStart(3, '0')}-fragment-${fragmentId}`
+
+    setSelectedPieceId(pieceId)
+    setPendingFragmentAnchor(anchorId)
+    setIsChatOpen(true)
+  }
+
+  const renderChatMessageContent = (message: ChatMessage) => {
+    const nodes: ReactNode[] = []
+    const text = message.content
+    let lastIndex = 0
+    const regex = new RegExp(CITATION_REGEX.source, 'g')
+    regex.lastIndex = 0
+    let match: RegExpExecArray | null
+
+    while ((match = regex.exec(text)) !== null) {
+      const [full, pieceStr, fragmentStr] = match
+      if (match.index > lastIndex) {
+        nodes.push(text.slice(lastIndex, match.index))
+      }
+
+      const pieceId = Number(pieceStr)
+      const fragmentOrder = fragmentStr ? Number(fragmentStr) : undefined
+      const key = `${message.id}-${match.index}`
+
+      nodes.push(
+        <button
+          key={key}
+          type="button"
+          onClick={() => handleCitationClick(pieceId, fragmentOrder)}
+          className="inline-flex items-center rounded border border-white/20 bg-black/40 px-1 text-[10px] uppercase tracking-[0.2em] text-[color:var(--te-orange,#ff6600)] transition hover:border-[color:var(--te-orange,#ff6600)]"
+        >
+          {full}
+        </button>,
+      )
+
+      lastIndex = match.index + full.length
+    }
+
+    if (lastIndex < text.length) {
+      nodes.push(text.slice(lastIndex))
+    }
+
+    if (nodes.length === 0) {
+      return text
+    }
+
+    return nodes
+  }
+
   useEffect(() => {
     if (!sortedPieces.length) {
       setSelectedPieceId(null)
@@ -647,6 +707,48 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
       setSelectedPieceId(sortedPieces[0].id)
     }
   }, [sortedPieces, selectedPieceId])
+
+  useEffect(() => {
+    if (!pendingFragmentAnchor) {
+      return
+    }
+
+    const match = pendingFragmentAnchor.match(/^piece-(\d{3})/)
+    const expectedPieceId = match ? Number(match[1]) : null
+
+    if (expectedPieceId !== null && currentPieceId !== expectedPieceId) {
+      return
+    }
+
+    let attempts = 0
+    let rafHandle: number | null = null
+
+    const tryScroll = () => {
+      const target = document.getElementById(pendingFragmentAnchor)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        target.classList.add('fragment-highlight')
+        window.setTimeout(() => target.classList.remove('fragment-highlight'), 1200)
+        setPendingFragmentAnchor(null)
+        return
+      }
+
+      attempts += 1
+      if (attempts < 12) {
+        rafHandle = window.requestAnimationFrame(tryScroll)
+      } else {
+        setPendingFragmentAnchor(null)
+      }
+    }
+
+    rafHandle = window.requestAnimationFrame(tryScroll)
+
+    return () => {
+      if (rafHandle !== null) {
+        window.cancelAnimationFrame(rafHandle)
+      }
+    }
+  }, [pendingFragmentAnchor, currentPieceId])
 
   if (!pieces.length || !selectedPiece) {
     return (
@@ -779,7 +881,7 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
 
             <div className="mb-8 text-sm italic text-muted-foreground">{selectedPiece.excerpt}</div>
 
-            <Markdown content={selectedPiece.content} />
+            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} />
 
             <div className="mt-12 border-t border-black pt-6">
               <div className="text-[10px] tracking-wider text-muted-foreground">END OF TRANSMISSION</div>
@@ -899,11 +1001,11 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
       {/* Chat Drawer */}
       <div
         className={cn(
-          'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[280px] lg:right-[280px]',
+          'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[279px] lg:right-[279px]',
           isChatOpen ? 'pointer-events-auto' : 'pointer-events-none',
         )}
         style={{
-          transform: isChatOpen ? 'translateY(0%)' : 'translateY(calc(100% - 48px))',
+          transform: isChatOpen ? 'translateY(0%)' : `translateY(calc(100% - ${STATUS_BAR_HEIGHT}px))`,
         }}
       >
         <div
@@ -912,7 +1014,14 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
             isChatDetached ? 'h-[60vh]' : 'h-[260px]',
           )}
         >
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-[10px] tracking-[0.3em]">
+          <div 
+            className={cn(
+              'flex items-center justify-between border-b border-white/10 px-4 text-[10px] tracking-[0.3em]',
+              !isChatOpen && 'cursor-pointer hover:bg-white/5 transition-colors',
+            )}
+            style={{ height: `${STATUS_BAR_HEIGHT}px` }}
+            onClick={() => !isChatOpen && setIsChatOpen(true)}
+          >
             <div className="flex items-center gap-3">
               <span className="font-semibold">CHAT</span>
               <span className="text-white/60">{isChatDetached ? 'SPLIT' : 'DRAWER'}</span>
@@ -981,10 +1090,8 @@ export default function TacticalBlog({ pieces }: TacticalBlogProps) {
                 >
                   {CHAT_ROLE_LABEL[message.role]}
                 </div>
-                <div
-                  className={cn('flex-1 whitespace-pre-wrap', CHAT_CONTENT_CLASSNAME[message.role])}
-                >
-                  {message.content}
+                <div className={cn('flex-1 whitespace-pre-wrap', CHAT_CONTENT_CLASSNAME[message.role])}>
+                  {renderChatMessageContent(message)}
                 </div>
               </div>
             ))}

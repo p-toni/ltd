@@ -15,6 +15,19 @@
   --te-orange: oklch(0.65 0.19 45); /* Vibrant orange for selected/active states */
 }
 
+.fragment-highlight {
+  animation: fragmentHighlight 1.2s ease-out;
+}
+
+@keyframes fragmentHighlight {
+  0% {
+    background-color: rgba(255, 102, 0, 0.18);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
