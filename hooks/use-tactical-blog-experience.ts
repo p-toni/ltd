@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Piece } from '@/lib/pieces'
 import type { RetrievalResult } from '@/lib/retrieval'
@@ -38,6 +38,8 @@ export const CHAT_CONTENT_CLASSNAME: Record<ChatRole, string> = {
 }
 
 export const CITATION_REGEX = /\[#(\d{3})(?:-F(\d{3}))?]/g
+
+type NavigationAnnouncement = 'NEXT' | 'PREV' | 'GOTO'
 
 function createMessageId(prefix: string) {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
@@ -78,6 +80,13 @@ function formatRetrievalSummary(retrieval: RetrievalResult) {
   return lines.join('\n')
 }
 
+function formatNavigationFlash(piece: Piece, mode: NavigationAnnouncement) {
+  const pieceLabel = String(piece.id).padStart(3, '0')
+  const hexLabel = piece.id.toString(16).padStart(2, '0').toUpperCase()
+  const command = mode === 'GOTO' ? 'OPEN' : mode
+  return `> ${command}_PIECE.exe\n> SUCCESS: Loaded piece #${pieceLabel} [0x${hexLabel}]`
+}
+
 export interface TacticalBlogExperience {
   pieces: Piece[]
   currentTime: string
@@ -97,6 +106,12 @@ export interface TacticalBlogExperience {
   pinnedCount: number
   selectedPiece: Piece | null
   currentPieceId: number | null
+  flashMessage: string | null
+  showFlash: (message: string, duration?: number) => void
+  clearFlash: () => void
+  goToPiece: (pieceId: number, options?: { announce?: NavigationAnnouncement | string }) => boolean
+  goToNextPiece: () => boolean
+  goToPreviousPiece: () => boolean
   setChatInput: (value: string) => void
   setChatProvider: (provider: 'anthropic' | 'openai') => void
   setChatApiKey: (value: string) => void
@@ -130,6 +145,8 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
   const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => pieces[0]?.id ?? null)
   const [pendingFragmentAnchor, setPendingFragmentAnchor] = useState<string | null>(null)
+  const [flashMessage, setFlashMessage] = useState<string | null>(null)
+  const flashTimeoutRef = useRef<number | null>(null)
 
   useEffect(() => {
     const updateTime = () => {
@@ -188,6 +205,98 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
   const fallbackPiece = sortedPieces[0] ?? null
   const selectedPiece = selectedPieceFromState ?? fallbackPiece
   const currentPieceId = selectedPiece?.id ?? null
+
+  const clearFlash = useCallback(() => {
+    if (flashTimeoutRef.current !== null) {
+      window.clearTimeout(flashTimeoutRef.current)
+      flashTimeoutRef.current = null
+    }
+    setFlashMessage(null)
+  }, [setFlashMessage])
+
+  const showFlash = useCallback(
+    (message: string, duration = 1500) => {
+      if (!message) {
+        return
+      }
+
+      clearFlash()
+      setFlashMessage(message)
+
+      if (duration > 0) {
+        flashTimeoutRef.current = window.setTimeout(() => {
+          setFlashMessage(null)
+          flashTimeoutRef.current = null
+        }, duration)
+      }
+    },
+    [clearFlash, setFlashMessage],
+  )
+
+  useEffect(() => {
+    return () => {
+      if (flashTimeoutRef.current !== null) {
+        window.clearTimeout(flashTimeoutRef.current)
+        flashTimeoutRef.current = null
+      }
+    }
+  }, [])
+
+  const goToPiece = useCallback(
+    (pieceId: number, options?: { announce?: NavigationAnnouncement | string }) => {
+      const target = sortedPieces.find((piece) => piece.id === pieceId)
+      if (!target) {
+        return false
+      }
+
+      const changed = selectedPieceId !== target.id
+      if (changed) {
+        setSelectedPieceId(target.id)
+      }
+
+      if (options?.announce && target) {
+        const { announce } = options
+        if (announce === 'NEXT' || announce === 'PREV' || announce === 'GOTO') {
+          showFlash(formatNavigationFlash(target, announce))
+        } else {
+          showFlash(announce)
+        }
+      }
+
+      return changed
+    },
+    [selectedPieceId, setSelectedPieceId, showFlash, sortedPieces],
+  )
+
+  const goToNextPiece = useCallback(() => {
+    if (selectedPieceId === null) {
+      return false
+    }
+
+    const index = sortedPieces.findIndex((piece) => piece.id === selectedPieceId)
+    if (index === -1 || index >= sortedPieces.length - 1) {
+      return false
+    }
+
+    const target = sortedPieces[index + 1]
+    goToPiece(target.id, { announce: 'NEXT' })
+    return true
+  }, [goToPiece, selectedPieceId, sortedPieces])
+
+  const goToPreviousPiece = useCallback(() => {
+    if (selectedPieceId === null) {
+      return false
+    }
+
+    const index = sortedPieces.findIndex((piece) => piece.id === selectedPieceId)
+    if (index <= 0) {
+      return false
+    }
+
+    const target = sortedPieces[index - 1]
+    goToPiece(target.id, { announce: 'PREV' })
+    return true
+  }, [goToPiece, selectedPieceId, sortedPieces])
 
   const handleChatSubmit = useCallback(async () => {
     if (isChatLoading) {
@@ -338,11 +447,11 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
       const fragmentId = fragmentOrder ? String(fragmentOrder).padStart(3, '0') : '001'
       const anchorId = `piece-${String(pieceId).padStart(3, '0')}-fragment-${fragmentId}`
 
-      setSelectedPieceId(pieceId)
+      goToPiece(pieceId)
       setPendingFragmentAnchor(anchorId)
       setIsChatOpen(true)
     },
-    [],
+    [goToPiece, setIsChatOpen, setPendingFragmentAnchor],
   )
 
   useEffect(() => {
@@ -417,6 +526,12 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
     pinnedCount,
     selectedPiece,
     currentPieceId,
+    flashMessage,
+    showFlash,
+    clearFlash,
+    goToPiece,
+    goToNextPiece,
+    goToPreviousPiece,
     setChatInput,
     setChatProvider,
     setChatApiKey,

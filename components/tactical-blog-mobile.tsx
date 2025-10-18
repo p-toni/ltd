@@ -1,11 +1,14 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
-import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
-
+import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
+import { FlashMessage } from '@/components/mobile/flash-message'
+import { NavSheet } from '@/components/mobile/nav-sheet'
 import styles from '@/components/mobile/layout.module.css'
+import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
+import { useSwipeable } from '@/hooks/use-swipeable'
 
 export function TacticalBlogMobile() {
   const {
@@ -13,11 +16,17 @@ export function TacticalBlogMobile() {
     sortedPieces,
     selectedPiece,
     selectedPieceId,
-    setSelectedPieceId,
+    goToPiece,
+    goToNextPiece,
+    goToPreviousPiece,
+    flashMessage,
+    showFlash,
     setIsChatOpen,
   } = useTacticalBlogContext()
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
+  const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
+  const [isNavSheetOpen, setNavSheetOpen] = useState(false)
 
   const currentIndex = useMemo(() => {
     if (!selectedPieceId) {
@@ -35,15 +44,78 @@ export function TacticalBlogMobile() {
   const prevPieceId = currentIndex > 0 ? sortedPieces[currentIndex - 1]?.id ?? null : null
   const nextPieceId = currentIndex >= 0 && currentIndex < totalPieces - 1 ? sortedPieces[currentIndex + 1]?.id ?? null : null
 
-  const handleNavigate = (pieceId: number | null) => {
-    if (!pieceId) {
-      return
-    }
-    setSelectedPieceId(pieceId)
+  const resetScroll = useCallback(() => {
     if (contentWrapperRef.current) {
       contentWrapperRef.current.scrollTop = 0
     }
-  }
+  }, [])
+
+  const handleNext = useCallback(() => {
+    if (goToNextPiece()) {
+      resetScroll()
+    }
+  }, [goToNextPiece, resetScroll])
+
+  const handlePrevious = useCallback(() => {
+    if (goToPreviousPiece()) {
+      resetScroll()
+    }
+  }, [goToPreviousPiece, resetScroll])
+
+  const handlePieceSelect = useCallback(
+    (pieceId: number) => {
+      const changed = goToPiece(pieceId, { announce: 'GOTO' })
+      if (changed) {
+        resetScroll()
+      }
+      setNavSheetOpen(false)
+      setActiveTab('read')
+    },
+    [goToPiece, resetScroll],
+  )
+
+  const handleCloseNavSheet = useCallback(() => {
+    setNavSheetOpen(false)
+    setActiveTab('read')
+  }, [])
+
+  const handleNavSelect = useCallback(
+    (tab: MobileNavTab) => {
+      if (tab === 'list') {
+        setNavSheetOpen((open) => {
+          const nextOpen = !open
+          setActiveTab(nextOpen ? 'list' : 'read')
+          return nextOpen
+        })
+        return
+      }
+
+      if (tab === 'info') {
+        setActiveTab('info')
+        setIsChatOpen(true)
+        return
+      }
+
+      if (tab === 'mood') {
+        setActiveTab('mood')
+        showFlash('> MOOD_FILTER.sh\n> TODO: Coming soon', 1800)
+        return
+      }
+
+      setActiveTab('read')
+      setNavSheetOpen(false)
+    },
+    [setIsChatOpen, showFlash],
+  )
+
+  useSwipeable(contentWrapperRef, {
+    onSwipedLeft: handleNext,
+    onSwipedRight: handlePrevious,
+    shouldAllow: () => {
+      const node = contentWrapperRef.current
+      return !node || node.scrollTop <= 8
+    },
+  })
 
   if (!selectedPiece) {
     return (
@@ -63,6 +135,7 @@ export function TacticalBlogMobile() {
             </p>
           </div>
         </div>
+        <FlashMessage message={flashMessage} />
       </div>
     )
   }
@@ -92,7 +165,7 @@ export function TacticalBlogMobile() {
               <button
                 type="button"
                 className={styles.navArrow}
-                onClick={() => handleNavigate(prevPieceId)}
+                onClick={handlePrevious}
                 disabled={!prevPieceId}
                 aria-label="Previous piece"
               >
@@ -108,7 +181,7 @@ export function TacticalBlogMobile() {
               <button
                 type="button"
                 className={styles.navArrow}
-                onClick={() => handleNavigate(nextPieceId)}
+                onClick={handleNext}
                 disabled={!nextPieceId}
                 aria-label="Next piece"
               >
@@ -149,32 +222,15 @@ export function TacticalBlogMobile() {
         </div>
       </div>
 
-      <div className={styles.bottomNav}>
-        <button type="button" className={`${styles.navItem}`}> 
-          <span className={styles.navCmd}>$ ls -la</span>
-          <span className={styles.navIcon}>[≡]</span>
-          <span>LIST</span>
-        </button>
-        <button type="button" className={`${styles.navItem} ${styles.navItemActive}`}>
-          <span className={styles.navCmd}>$ cat</span>
-          <span className={styles.navIcon}>[▷]</span>
-          <span>READ</span>
-        </button>
-        <button type="button" className={styles.navItem}>
-          <span className={styles.navCmd}>$ grep</span>
-          <span className={styles.navIcon}>[#]</span>
-          <span>MOOD</span>
-        </button>
-        <button
-          type="button"
-          className={styles.navItem}
-          onClick={() => setIsChatOpen(true)}
-        >
-          <span className={styles.navCmd}>$ man</span>
-          <span className={styles.navIcon}>[i]</span>
-          <span>INFO</span>
-        </button>
-      </div>
+      <BottomNav active={activeTab} onSelect={handleNavSelect} />
+      <NavSheet
+        pieces={sortedPieces}
+        selectedPieceId={selectedPieceId}
+        isOpen={isNavSheetOpen}
+        onClose={handleCloseNavSheet}
+        onSelect={handlePieceSelect}
+      />
+      <FlashMessage message={flashMessage} />
     </div>
   )
 }
