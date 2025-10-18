@@ -157,13 +157,13 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
   const fragmentIdPrefix =
     typeof pieceId === 'number' ? `piece-${String(pieceId).padStart(3, '0')}` : undefined
   let fragmentIndex = 0
+  const fragmentIds: string[] = []
 
   return (
     <div className={cn('prose prose-sm max-w-none', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}
-        components={markdownComponents}
         components={{
           ...markdownComponents,
           p: ({ node, children, ...props }) => {
@@ -172,6 +172,9 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
               fragmentIdPrefix !== undefined
                 ? `${fragmentIdPrefix}-fragment-${String(fragmentIndex).padStart(3, '0')}`
                 : undefined
+            if (id) {
+              fragmentIds.push(id)
+            }
             const { id: existingId, ['data-fragment-order']: _ignored, ...rest } = props as Record<string, unknown>
             return (
               <p
@@ -189,6 +192,9 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
               fragmentIdPrefix !== undefined
                 ? `${fragmentIdPrefix}-fragment-${String(fragmentIndex).padStart(3, '0')}`
                 : undefined
+            if (id) {
+              fragmentIds.push(id)
+            }
             const { id: existingId, ['data-fragment-order']: _ignored, ...rest } = props as Record<string, unknown>
             return (
               <li
@@ -204,6 +210,9 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
       >
         {content}
       </ReactMarkdown>
+      {fragmentIdPrefix && fragmentIds.length > 0 ? (
+        <small className="hidden" data-fragments={fragmentIds.join(',')} />
+      ) : null}
     </div>
   )
 }
