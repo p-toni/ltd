@@ -91,8 +91,8 @@ function buildAsciiSectionHeader(raw: string): string | null {
     return null
   }
 
-  const label = `>> ${normalized}.md`
-  const minWidth = 28
+  const label = `>> ${normalized}`
+  const minWidth = 24
   const baseLength = label.length + 2
   const innerWidth = Math.max(baseLength, minWidth)
   const padding = innerWidth - baseLength
