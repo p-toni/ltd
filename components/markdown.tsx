@@ -110,7 +110,7 @@ function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
   Tag: Tag,
   options: { containerClassName: string; headingClassName: string },
 ) {
-  return ({
+  const Renderer = ({
     node: _node,
     children,
     className,
@@ -140,6 +140,10 @@ function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
       </div>
     )
   }
+
+  Renderer.displayName = `Markdown${String(Tag).toUpperCase()}AsciiHeading`
+
+  return Renderer
 }
 
 function createMarkdownComponents(variant: HeadingVariant): Components {
