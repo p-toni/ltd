@@ -193,7 +193,26 @@ export function TacticalBlogMobile() {
   const hexId = `0x${selectedPiece.id.toString(16).padStart(2, '0')}`.toUpperCase()
   const asciiValue = selectedPiece.id % 100
   const moodLabel = selectedPiece.mood[0]?.toUpperCase() ?? 'N/A'
-  const fileInfo = `-rw-r--r-- 1 toni staff ${selectedPiece.wordCount}W ${selectedPiece.date} ${selectedPiece.slug}.md`
+  const publishedDate = new Date(selectedPiece.publishedAt)
+  const hasValidPublishedDate = Number.isFinite(publishedDate.getTime())
+  const lsDate = hasValidPublishedDate
+    ? [
+        publishedDate.toLocaleString('en-US', { month: 'short' }),
+        publishedDate.toLocaleString('en-US', { day: '2-digit' }),
+        publishedDate.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+      ].join(' ')
+    : selectedPiece.date
+  const lsRows: Array<[string, string, string, string, string, string, string]> = [
+    [
+      '-rw-r--r--',
+      '1',
+      'toni',
+      'staff',
+      `${selectedPiece.wordCount}B`,
+      lsDate,
+      `${selectedPiece.slug}.md`,
+    ],
+  ]
 
   return (
     <div className={styles.mobileRoot}>
@@ -215,7 +234,6 @@ export function TacticalBlogMobile() {
           <section className={clsx(styles.hero, styles.heroCorners, styles.heroCornersBottom)}>
             <div className={styles.heroOverlay} aria-hidden />
             <div className={styles.heroHeader}>
-              <AsciiNumber value={asciiValue} />
               <div className={styles.heroMeta}>
                 <div className={styles.pieceNav}>
                   <button
@@ -244,21 +262,72 @@ export function TacticalBlogMobile() {
                     ›
                   </button>
                 </div>
-                <h1 className={clsx(styles.pieceTitle, styles.glitchable)}>{selectedPiece.title}</h1>
-                <div className={styles.pieceAuthor}>{selectedPiece.date}</div>
+                <div className={styles.heroTitleRow}>
+                  <h1 className={clsx(styles.pieceTitle, styles.glitchable)}>{selectedPiece.title}</h1>
+                  <AsciiNumber value={asciiValue} className={styles.heroTitleAscii} />
+                </div>
+                <p className={styles.heroExcerpt}>{selectedPiece.excerpt}</p>
 
-                <div className={styles.fileInfo}>{fileInfo}</div>
+                <div className={clsx(styles.fileInfo, styles.lsTable)}>
+                  {lsRows.map(([perms, links, owner, group, size, dateValue, name], index) => (
+                    <div key={`${name}-${index}`} className={styles.lsRow}>
+                      <span className={styles.lsPerms}>{perms}</span>
+                      <span className={styles.lsLinks}>{links}</span>
+                      <span className={styles.lsOwner}>{owner}</span>
+                      <span className={styles.lsGroup}>{group}</span>
+                      <span className={styles.lsSize}>{size}</span>
+                      <span className={styles.lsDate}>{dateValue}</span>
+                      <span className={styles.lsName}>{name}</span>
+                    </div>
+                  ))}
+                </div>
 
                 <div className={styles.metaCards}>
                   <div className={styles.metaCard}>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerTopLeft)} aria-hidden>
+                      ┌
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerTopRight)} aria-hidden>
+                      ┐
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomLeft)} aria-hidden>
+                      └
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomRight)} aria-hidden>
+                      ┘
+                    </span>
                     <div className={styles.metaLabel}>READ</div>
                     <div className={styles.metaValue}>{selectedPiece.readTime}</div>
                   </div>
                   <div className={styles.metaCard}>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerTopLeft)} aria-hidden>
+                      ┌
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerTopRight)} aria-hidden>
+                      ┐
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomLeft)} aria-hidden>
+                      └
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomRight)} aria-hidden>
+                      ┘
+                    </span>
                     <div className={styles.metaLabel}>WORDS</div>
                     <div className={styles.metaValue}>{selectedPiece.wordCount.toLocaleString()}</div>
                   </div>
                   <div className={styles.metaCard}>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerTopLeft)} aria-hidden>
+                      ┌
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerTopRight)} aria-hidden>
+                      ┐
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomLeft)} aria-hidden>
+                      └
+                    </span>
+                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomRight)} aria-hidden>
+                      ┘
+                    </span>
                     <div className={styles.metaLabel}>MOOD</div>
                     <div className={styles.metaMoodValue}>{moodLabel}</div>
                   </div>
@@ -266,9 +335,6 @@ export function TacticalBlogMobile() {
               </div>
             </div>
 
-            <div className={styles.quoteBlock}>
-              <p className={styles.quoteText}>{selectedPiece.excerpt}</p>
-            </div>
           </section>
 
           <section className={styles.contentSection}>

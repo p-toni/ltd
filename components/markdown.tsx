@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-no-duplicate-props */
 
-import { useMemo, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { isValidElement, useMemo, type ComponentPropsWithoutRef, type ReactNode } from 'react'
 import type { Image as ImageNode, ListItem, Paragraph, Root } from 'mdast'
 import type { Components } from 'react-markdown'
 import ReactMarkdown from 'react-markdown'
@@ -62,22 +62,98 @@ const markdownSchema = {
   },
 } as const
 
+function extractTextContent(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') {
+    return String(node)
+  }
+
+  if (Array.isArray(node)) {
+    return node.map((child) => extractTextContent(child)).join('')
+  }
+
+  if (isValidElement(node)) {
+    return extractTextContent(node.props?.children)
+  }
+
+  return ''
+}
+
+function buildAsciiSectionHeader(raw: string): string | null {
+  const normalized = raw
+    .trim()
+    .replace(/\s+/g, '_')
+    .replace(/[^A-Za-z0-9_-]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .toUpperCase()
+
+  if (!normalized) {
+    return null
+  }
+
+  const label = `>> ${normalized}`
+  const minWidth = 25
+  const baseLength = label.length + 2
+  const innerWidth = Math.max(baseLength, minWidth)
+  const padding = innerWidth - baseLength
+  const lineContent = ` ${label}${' '.repeat(padding + 1)}`
+  const top = `┌${'─'.repeat(innerWidth)}┐`
+  const middle = `│${lineContent}│`
+  const bottom = `└${'─'.repeat(innerWidth)}┘`
+
+  return `${top}\n${middle}\n${bottom}`
+}
+
+function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
+  Tag: Tag,
+  options: { containerClassName: string; headingClassName: string },
+) {
+  return ({
+    node: _node,
+    children,
+    className,
+    ...props
+  }: ComponentPropsWithoutRef<Tag>) => {
+    const ascii = buildAsciiSectionHeader(extractTextContent(children))
+    const { containerClassName, headingClassName } = options
+    const headingClasses = cn('markdown-heading', headingClassName, className)
+
+    return (
+      <div className={cn(containerClassName)}>
+        {ascii ? (
+          <pre
+            aria-hidden="true"
+            role="presentation"
+            className={cn(
+              'markdown-ascii-heading',
+              'mb-3 whitespace-pre text-[10px] font-mono uppercase tracking-[0.35em] text-[#ff6600]',
+            )}
+          >
+            {ascii}
+          </pre>
+        ) : null}
+        <Tag {...(props as ComponentPropsWithoutRef<Tag>)} className={headingClasses}>
+          {children}
+        </Tag>
+      </div>
+    )
+  }
+}
+
 const markdownComponents: Components = {
   h1: ({ node: _node, children, ...props }) => (
     <h1 {...props} className={cn('mb-6 text-3xl font-bold tracking-tight', props.className)}>
       {children}
     </h1>
   ),
-  h2: ({ node: _node, children, ...props }) => (
-    <h2 {...props} className={cn('mb-5 mt-8 text-2xl font-semibold tracking-tight', props.className)}>
-      {children}
-    </h2>
-  ),
-  h3: ({ node: _node, children, ...props }) => (
-    <h3 {...props} className={cn('mb-4 mt-6 text-xl font-semibold tracking-tight', props.className)}>
-      {children}
-    </h3>
-  ),
+  h2: createSectionHeadingRenderer('h2', {
+    containerClassName: 'mt-8',
+    headingClassName: 'mb-5 text-2xl font-semibold tracking-tight',
+  }),
+  h3: createSectionHeadingRenderer('h3', {
+    containerClassName: 'mt-6',
+    headingClassName: 'mb-4 text-xl font-semibold tracking-tight',
+  }),
   p: ({ node, children, className, ...rest }) =>
     renderParagraph({
       node: node as unknown as Paragraph,
@@ -113,13 +189,7 @@ const markdownComponents: Components = {
     </li>
   ),
   blockquote: ({ node: _node, children, ...props }) => (
-    <blockquote
-      {...props}
-      className={cn(
-        'my-4 border-l-2 border-black/50 pl-4 text-sm italic leading-relaxed text-muted-foreground',
-        props.className,
-      )}
-    >
+    <blockquote {...props} className={cn('markdown-blockquote my-6 text-sm leading-relaxed', props.className)}>
       {children}
     </blockquote>
   ),
