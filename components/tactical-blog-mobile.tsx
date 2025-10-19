@@ -338,7 +338,7 @@ export function TacticalBlogMobile() {
           </section>
 
           <section className={styles.contentSection}>
-            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} />
+            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} headingVariant="ascii" />
           </section>
         </div>
       </div>

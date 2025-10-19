@@ -104,6 +104,8 @@ function buildAsciiSectionHeader(raw: string): string | null {
   return `${top}\n${middle}\n${bottom}`
 }
 
+type HeadingVariant = 'default' | 'ascii'
+
 function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
   Tag: Tag,
   options: { containerClassName: string; headingClassName: string },
@@ -140,132 +142,160 @@ function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
   }
 }
 
-const markdownComponents: Components = {
-  h1: ({ node: _node, children, ...props }) => (
+function createMarkdownComponents(variant: HeadingVariant): Components {
+  const h1 = ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
     <h1 {...props} className={cn('mb-6 text-3xl font-bold tracking-tight', props.className)}>
       {children}
     </h1>
-  ),
-  h2: createSectionHeadingRenderer('h2', {
-    containerClassName: 'mt-8',
-    headingClassName: 'mb-5 text-2xl font-semibold tracking-tight',
-  }),
-  h3: createSectionHeadingRenderer('h3', {
-    containerClassName: 'mt-6',
-    headingClassName: 'mb-4 text-xl font-semibold tracking-tight',
-  }),
-  p: ({ node, children, className, ...rest }) =>
-    renderParagraph({
-      node: node as unknown as Paragraph,
-      children,
-      className: typeof className === 'string' ? className : undefined,
-      fragment: undefined,
-      extraProps: rest as Record<string, unknown>,
-    }),
-  a: ({ node: _node, children, ...props }) => (
-    <a
-      {...props}
-      className={cn(
-        'text-xs font-semibold uppercase tracking-wide text-black underline underline-offset-4',
-        props.className,
-      )}
-    >
-      {children}
-    </a>
-  ),
-  ul: ({ node: _node, children, ...props }) => (
-    <ul {...props} className={cn('mb-4 list-disc pl-5 text-sm leading-relaxed', props.className)}>
-      {children}
-    </ul>
-  ),
-  ol: ({ node: _node, children, ...props }) => (
-    <ol {...props} className={cn('mb-4 list-decimal pl-5 text-sm leading-relaxed', props.className)}>
-      {children}
-    </ol>
-  ),
-  li: ({ node: _node, children, ...props }) => (
-    <li {...props} className={cn('mb-2 text-sm leading-relaxed', props.className)}>
-      {children}
-    </li>
-  ),
-  blockquote: ({ node: _node, children, ...props }) => (
-    <blockquote {...props} className={cn('markdown-blockquote my-6 text-sm leading-relaxed', props.className)}>
-      {children}
-    </blockquote>
-  ),
-  code: ({
-    node: _node,
-    inline,
-    className,
-    children,
-    ...props
-  }: {
-    node?: unknown
-    inline?: boolean
-    className?: string
-    children?: ReactNode
-  } & ComponentPropsWithoutRef<'code'>) => {
-    if (inline) {
-      return (
-        <code {...props} className={cn('rounded bg-black/5 px-1 py-[2px] text-xs font-mono', className)}>
-          {children}
-        </code>
-      )
-    }
+  )
 
-    return (
-      <pre className="mb-4 overflow-x-auto rounded border border-black/10 bg-black text-white">
-        <code {...props} className={cn('block whitespace-pre px-4 py-3 text-xs font-mono', className)}>
-          {children}
-        </code>
-      </pre>
-    )
-  },
-  hr: ({ node: _node, ...props }) => <hr {...props} className={cn('my-8 border-black/20', props.className)} />,
-  strong: ({ node: _node, children, ...props }) => (
-    <strong {...props} className={cn('font-semibold', props.className)}>
-      {children}
-    </strong>
-  ),
-  em: ({ node: _node, children, ...props }) => (
-    <em {...props} className={cn('italic', props.className)}>
-      {children}
-    </em>
-  ),
-  table: ({ node: _node, children, ...props }) => (
-    <div className="my-6 overflow-x-auto">
-      <table {...props} className={cn('w-full text-left text-sm', props.className)}>
+  const h2 =
+    variant === 'ascii'
+      ? createSectionHeadingRenderer('h2', {
+          containerClassName: 'mt-8',
+          headingClassName: 'mb-5 text-2xl font-semibold tracking-tight',
+        })
+      : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h2'>) => (
+          <h2
+            {...props}
+            className={cn('mb-5 mt-8 text-2xl font-semibold tracking-tight', props.className)}
+          >
+            {children}
+          </h2>
+        )
+
+  const h3 =
+    variant === 'ascii'
+      ? createSectionHeadingRenderer('h3', {
+          containerClassName: 'mt-6',
+          headingClassName: 'mb-4 text-xl font-semibold tracking-tight',
+        })
+      : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h3'>) => (
+          <h3
+            {...props}
+            className={cn('mb-4 mt-6 text-xl font-semibold tracking-tight', props.className)}
+          >
+            {children}
+          </h3>
+        )
+
+  return {
+    h1,
+    h2,
+    h3,
+    p: ({ node, children, className, ...rest }) =>
+      renderParagraph({
+        node: node as unknown as Paragraph,
+        children,
+        className: typeof className === 'string' ? className : undefined,
+        fragment: undefined,
+        extraProps: rest as Record<string, unknown>,
+      }),
+    a: ({ node: _node, children, ...props }) => (
+      <a
+        {...props}
+        className={cn(
+          'text-xs font-semibold uppercase tracking-wide text-black underline underline-offset-4',
+          props.className,
+        )}
+      >
         {children}
-      </table>
-    </div>
-  ),
-  thead: ({ node: _node, children, ...props }) => (
-    <thead
-      {...props}
-      className={cn('border-b border-black/20 bg-black/5 text-[10px] uppercase tracking-wide', props.className)}
-    >
-      {children}
-    </thead>
-  ),
-  th: ({ node: _node, children, ...props }) => (
-    <th {...props} className={cn('px-3 py-2 text-left font-semibold', props.className)}>
-      {children}
-    </th>
-  ),
-  td: ({ node: _node, children, ...props }) => (
-    <td {...props} className={cn('px-3 py-2 align-top text-sm', props.className)}>
-      {children}
-    </td>
-  ),
-  img: ({ node: _node, className, loading, alt, ...props }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      {...props}
-      alt={alt ?? ''}
-      loading={loading ?? 'lazy'}
-      className={cn('max-w-full rounded border border-black/10 bg-black/5', className)}
-    />
-  ),
+      </a>
+    ),
+    ul: ({ node: _node, children, ...props }) => (
+      <ul {...props} className={cn('mb-4 list-disc pl-5 text-sm leading-relaxed', props.className)}>
+        {children}
+      </ul>
+    ),
+    ol: ({ node: _node, children, ...props }) => (
+      <ol {...props} className={cn('mb-4 list-decimal pl-5 text-sm leading-relaxed', props.className)}>
+        {children}
+      </ol>
+    ),
+    li: ({ node: _node, children, ...props }) => (
+      <li {...props} className={cn('mb-2 text-sm leading-relaxed', props.className)}>
+        {children}
+      </li>
+    ),
+    blockquote: ({ node: _node, children, ...props }) => (
+      <blockquote {...props} className={cn('markdown-blockquote my-6 text-sm leading-relaxed', props.className)}>
+        {children}
+      </blockquote>
+    ),
+    code: ({
+      node: _node,
+      inline,
+      className,
+      children,
+      ...props
+    }: {
+      node?: unknown
+      inline?: boolean
+      className?: string
+      children?: ReactNode
+    } & ComponentPropsWithoutRef<'code'>) => {
+      if (inline) {
+        return (
+          <code {...props} className={cn('rounded bg-black/5 px-1 py-[2px] text-xs font-mono', className)}>
+            {children}
+          </code>
+        )
+      }
+
+      return (
+        <pre className="mb-4 overflow-x-auto rounded border border-black/10 bg-black text-white">
+          <code {...props} className={cn('block whitespace-pre px-4 py-3 text-xs font-mono', className)}>
+            {children}
+          </code>
+        </pre>
+      )
+    },
+    hr: ({ node: _node, ...props }) => <hr {...props} className={cn('my-8 border-black/20', props.className)} />,
+    strong: ({ node: _node, children, ...props }) => (
+      <strong {...props} className={cn('font-semibold', props.className)}>
+        {children}
+      </strong>
+    ),
+    em: ({ node: _node, children, ...props }) => (
+      <em {...props} className={cn('italic', props.className)}>
+        {children}
+      </em>
+    ),
+    table: ({ node: _node, children, ...props }) => (
+      <div className="my-6 overflow-x-auto">
+        <table {...props} className={cn('w-full text-left text-sm', props.className)}>
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ node: _node, children, ...props }) => (
+      <thead
+        {...props}
+        className={cn('border-b border-black/20 bg-black/5 text-[10px] uppercase tracking-wide', props.className)}
+      >
+        {children}
+      </thead>
+    ),
+    th: ({ node: _node, children, ...props }) => (
+      <th {...props} className={cn('px-3 py-2 text-left font-semibold', props.className)}>
+        {children}
+      </th>
+    ),
+    td: ({ node: _node, children, ...props }) => (
+      <td {...props} className={cn('px-3 py-2 align-top text-sm', props.className)}>
+        {children}
+      </td>
+    ),
+    img: ({ node: _node, className, loading, alt, ...props }) => (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        {...props}
+        alt={alt ?? ''}
+        loading={loading ?? 'lazy'}
+        className={cn('max-w-full rounded border border-black/10 bg-black/5', className)}
+      />
+    ),
+  }
 }
 
 interface ParagraphRenderOptions {
@@ -325,11 +355,14 @@ interface MarkdownProps {
   content: string
   className?: string
   pieceId?: number
+  headingVariant?: HeadingVariant
 }
 
-export function Markdown({ content, className, pieceId }: MarkdownProps) {
+export function Markdown({ content, className, pieceId, headingVariant = 'default' }: MarkdownProps) {
   const fragmentIdPrefix =
     typeof pieceId === 'number' ? `piece-${String(pieceId).padStart(3, '0')}` : undefined
+
+  const baseComponents = useMemo<Components>(() => createMarkdownComponents(headingVariant), [headingVariant])
 
   const fragmentMetadata = useMemo<FragmentMetadataResult>(
     () => createFragmentMetadata(content, fragmentIdPrefix),
@@ -340,7 +373,7 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
     const map = fragmentMetadata.map
 
     return {
-      ...markdownComponents,
+      ...baseComponents,
       p: ({ node, children, className, ...props }) => {
         const key = createFragmentKey(node as unknown as Paragraph)
         const fragment = key ? map.get(key) : undefined
@@ -374,7 +407,7 @@ export function Markdown({ content, className, pieceId }: MarkdownProps) {
         )
       },
     }
-  }, [fragmentMetadata])
+  }, [baseComponents, fragmentMetadata])
 
   return (
     <div className={cn('prose prose-sm max-w-none', className)}>
