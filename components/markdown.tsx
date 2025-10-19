@@ -91,8 +91,8 @@ function buildAsciiSectionHeader(raw: string): string | null {
     return null
   }
 
-  const label = `>> ${normalized}`
-  const minWidth = 25
+  const label = `>> ${normalized}.md`
+  const minWidth = 28
   const baseLength = label.length + 2
   const innerWidth = Math.max(baseLength, minWidth)
   const padding = innerWidth - baseLength
@@ -128,7 +128,7 @@ function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
             role="presentation"
             className={cn(
               'markdown-ascii-heading',
-              'mb-3 whitespace-pre text-[10px] font-mono uppercase tracking-[0.35em] text-[#ff6600]',
+              'mb-3 whitespace-pre text-[11px] font-mono uppercase text-[#ff6600]',
             )}
           >
             {ascii}
