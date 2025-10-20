@@ -48,8 +48,10 @@ export function TacticalBlogMobile() {
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
   const [isNavSheetOpen, setNavSheetOpen] = useState(false)
+  const [isNavigating, setNavigating] = useState(false)
   const { light, medium, heavy } = useHaptic()
   const scrollProgress = useReadingProgress(contentWrapperRef)
+  const navigationPulseRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (isChatOpen) {
@@ -85,19 +87,31 @@ export function TacticalBlogMobile() {
     }
   }, [])
 
+  const triggerNavigationPulse = useCallback(() => {
+    setNavigating(true)
+    if (navigationPulseRef.current) {
+      window.clearTimeout(navigationPulseRef.current)
+    }
+    navigationPulseRef.current = window.setTimeout(() => {
+      setNavigating(false)
+    }, 420)
+  }, [])
+
   const handleNext = useCallback(() => {
     if (goToNextPiece()) {
       light()
       resetScroll()
+      triggerNavigationPulse()
     }
-  }, [goToNextPiece, light, resetScroll])
+  }, [goToNextPiece, light, resetScroll, triggerNavigationPulse])
 
   const handlePrevious = useCallback(() => {
     if (goToPreviousPiece()) {
       light()
       resetScroll()
+      triggerNavigationPulse()
     }
-  }, [goToPreviousPiece, light, resetScroll])
+  }, [goToPreviousPiece, light, resetScroll, triggerNavigationPulse])
 
   const handlePieceSelect = useCallback(
     (pieceId: number) => {
@@ -105,11 +119,12 @@ export function TacticalBlogMobile() {
       if (changed) {
         medium()
         resetScroll()
+        triggerNavigationPulse()
       }
       setNavSheetOpen(false)
       setActiveTab('read')
     },
-    [goToPiece, medium, resetScroll],
+    [goToPiece, medium, resetScroll, triggerNavigationPulse],
   )
 
   const handleCloseNavSheet = useCallback(() => {
@@ -167,6 +182,14 @@ export function TacticalBlogMobile() {
     },
   })
 
+  useEffect(() => {
+    return () => {
+      if (navigationPulseRef.current) {
+        window.clearTimeout(navigationPulseRef.current)
+      }
+    }
+  }, [])
+
   if (!selectedPiece) {
     return (
       <div className={styles.mobileRoot}>
@@ -213,6 +236,8 @@ export function TacticalBlogMobile() {
       `${selectedPiece.slug}.md`,
     ],
   ]
+
+  const isListLoading = sortedPieces.length === 0 || !selectedPiece
 
   return (
     <div className={styles.mobileRoot}>
@@ -343,7 +368,13 @@ export function TacticalBlogMobile() {
         </div>
       </div>
 
-      <BottomNav active={activeTab} onSelect={handleNavSelect} />
+      <BottomNav
+        active={activeTab}
+        onSelect={handleNavSelect}
+        listState={isListLoading ? 'active' : 'idle'}
+        readState={isNavigating ? 'active' : 'idle'}
+        infoState={isChatLoading ? 'active' : 'idle'}
+      />
       <NavSheet
         pieces={sortedPieces}
         selectedPieceId={selectedPieceId}
