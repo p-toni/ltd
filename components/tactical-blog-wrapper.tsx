@@ -8,13 +8,14 @@ import type { Piece } from '@/lib/pieces'
 
 interface TacticalBlogWrapperProps {
   pieces: Piece[]
+  initialPieceId?: number | null
 }
 
-export function TacticalBlogWrapper({ pieces }: TacticalBlogWrapperProps) {
+export function TacticalBlogWrapper({ pieces, initialPieceId }: TacticalBlogWrapperProps) {
   const isMobile = useBreakpoint('(max-width: 767px)')
 
   return (
-    <TacticalBlogProvider pieces={pieces}>
+    <TacticalBlogProvider pieces={pieces} initialPieceId={initialPieceId}>
       {isMobile ? <TacticalBlogMobile /> : <TacticalBlogDesktop />}
     </TacticalBlogProvider>
   )

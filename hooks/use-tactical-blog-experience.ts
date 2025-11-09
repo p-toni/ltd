@@ -128,7 +128,11 @@ export interface TacticalBlogExperience {
   setPendingFragmentAnchor: (value: string | null) => void
 }
 
-export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperience {
+export function useTacticalBlogExperience(
+  pieces: Piece[],
+  options?: { initialPieceId?: number },
+): TacticalBlogExperience {
+  const { initialPieceId } = options ?? {}
   const [currentTime, setCurrentTime] = useState('')
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [isChatDetached, setIsChatDetached] = useState(false)
@@ -146,7 +150,12 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
   const [chatProvider, setChatProvider] = useState<'anthropic' | 'openai'>('anthropic')
   const [chatApiKey, setChatApiKey] = useState('')
   const [selectedMood, setSelectedMood] = useState<MoodFilter>('all')
-  const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => pieces[0]?.id ?? null)
+  const [selectedPieceId, setSelectedPieceId] = useState<number | null>(() => {
+    if (typeof initialPieceId === 'number' && pieces.some((piece) => piece.id === initialPieceId)) {
+      return initialPieceId
+    }
+    return pieces[0]?.id ?? null
+  })
   const [pendingFragmentAnchor, setPendingFragmentAnchor] = useState<string | null>(null)
   const [flashMessage, setFlashMessage] = useState<string | null>(null)
   const flashTimeoutRef = useRef<number | null>(null)
@@ -196,9 +205,12 @@ export function useTacticalBlogExperience(pieces: Piece[]): TacticalBlogExperien
     }
 
     if (!pieces.some((piece) => piece.id === selectedPieceId)) {
-      setSelectedPieceId(pieces[0].id)
+      const fallback = typeof initialPieceId === 'number' && pieces.some((piece) => piece.id === initialPieceId)
+        ? initialPieceId
+        : pieces[0]?.id ?? null
+      setSelectedPieceId(fallback)
     }
-  }, [pieces, selectedPieceId])
+  }, [initialPieceId, pieces, selectedPieceId])
 
   const filteredPieces = useMemo(() => {
     if (selectedMood === 'all') {

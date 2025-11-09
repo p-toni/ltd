@@ -13,11 +13,12 @@ const TacticalBlogContext = createContext<TacticalBlogExperience | null>(null)
 
 interface TacticalBlogProviderProps {
   pieces: Piece[]
+  initialPieceId?: number | null
   children: ReactNode
 }
 
-export function TacticalBlogProvider({ pieces, children }: TacticalBlogProviderProps) {
-  const value = useTacticalBlogExperience(pieces)
+export function TacticalBlogProvider({ pieces, children, initialPieceId }: TacticalBlogProviderProps) {
+  const value = useTacticalBlogExperience(pieces, { initialPieceId: initialPieceId ?? undefined })
   return <TacticalBlogContext.Provider value={value}>{children}</TacticalBlogContext.Provider>
 }
 

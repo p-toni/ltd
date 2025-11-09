@@ -6,16 +6,17 @@ import { TacticalBlogWrapper } from '@/components/tactical-blog-wrapper'
 
 interface TacticalBlogProps {
   pieces: Piece[]
+  initialPieceId?: number | null
 }
 
-export default function TacticalBlog({ pieces }: TacticalBlogProps) {
+export default function TacticalBlog({ pieces, initialPieceId }: TacticalBlogProps) {
   if (!ENABLE_MOBILE_LAYOUT) {
     return (
-      <TacticalBlogProvider pieces={pieces}>
+      <TacticalBlogProvider pieces={pieces} initialPieceId={initialPieceId}>
         <TacticalBlogDesktop />
       </TacticalBlogProvider>
     )
   }
 
-  return <TacticalBlogWrapper pieces={pieces} />
+  return <TacticalBlogWrapper pieces={pieces} initialPieceId={initialPieceId} />
 }
