@@ -30,3 +30,5 @@ next-env.d.ts
 .codex/
 # Embedding outputs (regenerate via script)
 public/embeddings/
+# Claude hook cache
+.claude/tsc-cache/

@@ -1,0 +1,98 @@
+{
+  "version": "1.0",
+  "description": "Skill activation triggers for te-blog. Keeps Claude Code aware of when to load meta-development and deployment guidance.",
+  "skills": {
+    "skill-developer": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Meta-skill for creating and managing Claude Code skills",
+      "promptTriggers": {
+        "keywords": [
+          "skill system",
+          "create skill",
+          "add skill",
+          "skill triggers",
+          "skill rules",
+          "hook system",
+          "skill development",
+          "skill-rules.json",
+          "claude skill"
+        ],
+        "intentPatterns": [
+          "(how do|how does|explain).*?skill",
+          "(create|add|modify|build).*?skill",
+          "skill.*?(work|trigger|activate|system)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          ".claude/**/*.md",
+          ".claude/**/*.json",
+          ".claude/hooks/**/*",
+          ".claude/skills/**/*"
+        ],
+        "contentPatterns": [
+          "skill-rules",
+          "UserPromptSubmit",
+          "PreToolUse",
+          "progressive disclosure"
+        ]
+      }
+    },
+    "deployment-build": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Guides lint/test/build/deploy flows for te-blog's Next.js stack",
+      "promptTriggers": {
+        "keywords": [
+          "deploy",
+          "deployment",
+          "build pipeline",
+          "next build",
+          "vercel",
+          "ci/cd",
+          "release plan",
+          "lint errors",
+          "vitest",
+          "pnpm install",
+          "artifact"
+        ],
+        "intentPatterns": [
+          "(deploy|ship|release).*",
+          "(fix|debug).*?(build|deploy)",
+          "(prepare|plan).*?(release|deployment)",
+          "(set up|configure).*?(CI|pipeline|vercel)",
+          "(run|rerun).*?(lint|test|build)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "next.config.mjs",
+          "package.json",
+          "pnpm-lock.yaml",
+          "scripts/**/*",
+          "scripts/**/build*.ts",
+          "scripts/**/deploy*.ts",
+          "vitest.config.ts",
+          "postcss.config.mjs",
+          ".github/workflows/**/*",
+          "Dockerfile",
+          "docs/deployment*.md"
+        ],
+        "contentPatterns": [
+          "pnpm build",
+          "pnpm lint",
+          "vitest",
+          "VERCEL",
+          "NEXT_PUBLIC_",
+          "next start",
+          "artifact",
+          "CI=",
+          "node-version"
+        ]
+      }
+    }
+  }
+}
