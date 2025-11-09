@@ -44,6 +44,7 @@ Hooks from the Claude Code Infrastructure Showcase are registered in `.claude/se
 | `.claude/hooks/skill-activation-prompt.sh` | `UserPromptSubmit` | Runs before each prompt and suggests relevant skills using `skill-rules.json`. |
 | `.claude/hooks/skill-verification-guard.sh` | `PreToolUse` (Edit/MultiEdit/Write) | Blocks risky edits when guardrail skills (like `deployment-build`) match file triggers. |
 | `.claude/hooks/post-tool-use-tracker.sh` | `PostToolUse` (Edit/MultiEdit/Write) | Tracks edited files so build/tsc commands can be suggested in future Stop hooks. |
+| `.claude/hooks/stop-tsc-check.sh` | `Stop` | Runs the recorded `pnpm exec tsc --noEmit` commands and surfaces errors back to Claude. |
 
 All hooks run with plain Node.js and `jq`, so no extra package install is required beyond the main project setup. Set `SKIP_SKILL_GUARDRAILS=true` temporarily if you need to bypass the PreToolUse guard while debugging.
 
@@ -61,6 +62,11 @@ EOF
 # File guard (deployment-build patterns)
 cat <<'EOF' | CLAUDE_PROJECT_DIR=$PWD .claude/hooks/skill-verification-guard.sh
 {"tool_name":"Edit","tool_input":{"file_path":"/Users/me/te-blog/package.json"},"session_id":"local-test"}
+EOF
+
+# Stop hook (reads tracker cache & runs tsc)
+cat <<'EOF' | CLAUDE_PROJECT_DIR=$PWD .claude/hooks/stop-tsc-check.sh
+{"session_id":"local-test"}
 EOF
 ```
 

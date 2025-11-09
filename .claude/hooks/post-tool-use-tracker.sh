@@ -150,11 +150,20 @@ get_tsc_command() {
 
     # Check if tsconfig.json exists
     if [[ -f "$repo_path/tsconfig.json" ]]; then
+        local runner="npx"
+        if [[ -f "$repo_path/pnpm-lock.yaml" ]]; then
+            runner="pnpm exec"
+        elif [[ -f "$repo_path/package-lock.json" ]]; then
+            runner="npx"
+        elif [[ -f "$repo_path/yarn.lock" ]]; then
+            runner="yarn exec"
+        fi
+
         # Check for Vite/React-specific tsconfig
         if [[ -f "$repo_path/tsconfig.app.json" ]]; then
-            echo "cd $repo_path && npx tsc --project tsconfig.app.json --noEmit"
+            echo "cd $repo_path && $runner tsc --project tsconfig.app.json --noEmit"
         else
-            echo "cd $repo_path && npx tsc --noEmit"
+            echo "cd $repo_path && $runner tsc --noEmit"
         fi
         return
     fi
