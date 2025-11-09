@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-no-duplicate-props */
 
-import { isValidElement, useMemo, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { isValidElement, useMemo, type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react'
 import type { Image as ImageNode, ListItem, Paragraph, Root } from 'mdast'
 import type { Components } from 'react-markdown'
 import ReactMarkdown from 'react-markdown'
@@ -72,7 +72,8 @@ function extractTextContent(node: ReactNode): string {
   }
 
   if (isValidElement(node)) {
-    return extractTextContent(node.props?.children)
+    const element = node as ReactElement<{ children?: ReactNode }>
+    return extractTextContent(element.props.children ?? null)
   }
 
   return ''
@@ -106,19 +107,22 @@ function buildAsciiSectionHeader(raw: string): string | null {
 
 type HeadingVariant = 'default' | 'ascii'
 
-function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
-  Tag: Tag,
+function createSectionHeadingRenderer(
+  Tag: 'h2' | 'h3',
   options: { containerClassName: string; headingClassName: string },
 ) {
+  type HeadingProps = ComponentPropsWithoutRef<typeof Tag> & { node?: unknown }
+
   const Renderer = ({
     node: _node,
     children,
     className,
     ...props
-  }: ComponentPropsWithoutRef<Tag>) => {
+  }: HeadingProps) => {
     const ascii = buildAsciiSectionHeader(extractTextContent(children))
     const { containerClassName, headingClassName } = options
     const headingClasses = cn('markdown-heading', headingClassName, className)
+    const HeadingTag = Tag
 
     return (
       <div className={cn(containerClassName)}>
@@ -134,9 +138,9 @@ function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
             {ascii}
           </pre>
         ) : null}
-        <Tag {...(props as ComponentPropsWithoutRef<Tag>)} className={headingClasses}>
+        <HeadingTag {...(props as ComponentPropsWithoutRef<typeof Tag>)} className={headingClasses}>
           {children}
-        </Tag>
+        </HeadingTag>
       </div>
     )
   }
@@ -147,7 +151,7 @@ function createSectionHeadingRenderer<Tag extends 'h2' | 'h3'>(
 }
 
 function createMarkdownComponents(variant: HeadingVariant): Components {
-  const h1 = ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h1'>) => (
+  const h1 = ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h1'> & { node?: unknown }) => (
     <h1 {...props} className={cn('mb-6 text-3xl font-bold tracking-tight', props.className)}>
       {children}
     </h1>
@@ -159,7 +163,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
           containerClassName: 'mt-8',
           headingClassName: 'mb-5 text-2xl font-semibold tracking-tight',
         })
-      : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h2'>) => (
+      : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h2'> & { node?: unknown }) => (
           <h2
             {...props}
             className={cn('mb-5 mt-8 text-2xl font-semibold tracking-tight', props.className)}
@@ -174,7 +178,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
           containerClassName: 'mt-6',
           headingClassName: 'mb-4 text-xl font-semibold tracking-tight',
         })
-      : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h3'>) => (
+      : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h3'> & { node?: unknown }) => (
           <h3
             {...props}
             className={cn('mb-4 mt-6 text-xl font-semibold tracking-tight', props.className)}

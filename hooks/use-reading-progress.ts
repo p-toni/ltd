@@ -1,6 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react'
 
-export function useReadingProgress(containerRef: RefObject<HTMLElement>) {
+export function useReadingProgress(containerRef: RefObject<HTMLElement | null>) {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {

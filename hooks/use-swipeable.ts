@@ -8,8 +8,8 @@ interface SwipeableOptions {
   shouldAllow?: () => boolean
 }
 
-export function useSwipeable<T extends HTMLElement>(
-  targetRef: RefObject<T>,
+export function useSwipeable(
+  targetRef: RefObject<HTMLElement | null>,
   options: SwipeableOptions,
 ) {
   const { onSwipedLeft, onSwipedRight, threshold = 50, maxVerticalOffset = 30, shouldAllow } = options

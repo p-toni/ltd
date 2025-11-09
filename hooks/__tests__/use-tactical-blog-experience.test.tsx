@@ -71,6 +71,7 @@ afterEach(() => {
   vi.runOnlyPendingTimers()
   vi.clearAllTimers()
   vi.useRealTimers()
+  vi.restoreAllMocks()
   global.fetch = originalFetch
 })
 
@@ -155,9 +156,9 @@ describe('useTacticalBlogExperience chat workflow', () => {
       { type: 'done' },
     ])
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, body: stream })
-    // @ts-expect-error allow override for test
-    global.fetch = fetchMock
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue({ ok: true, body: stream } as unknown as Response)
 
     const { result } = renderHook(() => useTacticalBlogExperience(SAMPLE_PIECES))
 
@@ -184,9 +185,9 @@ describe('useTacticalBlogExperience chat workflow', () => {
       { type: 'error', message: 'Model error' },
     ])
 
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, body: stream })
-    // @ts-expect-error allow override for test
-    global.fetch = fetchMock
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue({ ok: true, body: stream } as unknown as Response)
 
     const { result } = renderHook(() => useTacticalBlogExperience(SAMPLE_PIECES))
 
