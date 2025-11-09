@@ -32,3 +32,5 @@ next-env.d.ts
 public/embeddings/
 # Claude hook cache
 .claude/tsc-cache/
+# Claude hook state files
+.claude/hooks/state/

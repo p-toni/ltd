@@ -42,9 +42,10 @@ Hooks from the Claude Code Infrastructure Showcase are registered in `.claude/se
 | Hook | Type | Purpose |
 |------|------|---------|
 | `.claude/hooks/skill-activation-prompt.sh` | `UserPromptSubmit` | Runs before each prompt and suggests relevant skills using `skill-rules.json`. |
+| `.claude/hooks/skill-verification-guard.sh` | `PreToolUse` (Edit/MultiEdit/Write) | Blocks risky edits when guardrail skills (like `deployment-build`) match file triggers. |
 | `.claude/hooks/post-tool-use-tracker.sh` | `PostToolUse` (Edit/MultiEdit/Write) | Tracks edited files so build/tsc commands can be suggested in future Stop hooks. |
 
-Both hooks run with plain Node.js and `jq`, so no extra package install is required beyond the main project setup.
+All hooks run with plain Node.js and `jq`, so no extra package install is required beyond the main project setup. Set `SKIP_SKILL_GUARDRAILS=true` temporarily if you need to bypass the PreToolUse guard while debugging.
 
 ### Manual Testing
 
@@ -56,6 +57,11 @@ echo '{"prompt":"deploy the latest changes"}' | CLAUDE_PROJECT_DIR=$PWD .claude/
 cat <<'EOF' | CLAUDE_PROJECT_DIR=$PWD .claude/hooks/post-tool-use-tracker.sh
 {"tool_name":"Edit","tool_input":{"file_path":"app/page.tsx"},"session_id":"local-test"}
 EOF
+
+# File guard (deployment-build patterns)
+cat <<'EOF' | CLAUDE_PROJECT_DIR=$PWD .claude/hooks/skill-verification-guard.sh
+{"tool_name":"Edit","tool_input":{"file_path":"/Users/me/te-blog/package.json"},"session_id":"local-test"}
+EOF
 ```
 
-If the tracker complains about `jq`, install it via `brew install jq` (macOS) or your distro package manager.
+If any hook complains about `jq`, install it via `brew install jq` (macOS) or your distro package manager.

@@ -41,10 +41,11 @@
       }
     },
     "deployment-build": {
-      "type": "domain",
-      "enforcement": "suggest",
+      "type": "guardrail",
+      "enforcement": "block",
       "priority": "high",
       "description": "Guides lint/test/build/deploy flows for te-blog's Next.js stack",
+      "blockMessage": "⚠️ Deployment-critical change detected in {file_path}\\n\\nUse Skill tool: `deployment-build` before editing build/deploy files. Load the skill, review the checklist, and then retry this edit.",
       "promptTriggers": {
         "keywords": [
           "deploy",
