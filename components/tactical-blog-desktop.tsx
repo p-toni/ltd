@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 
 import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
+import { ActivityTicker } from '@/components/activity-ticker'
 import { Markdown } from '@/components/markdown'
 import {
   CHAT_CONTENT_CLASSNAME,
@@ -436,6 +437,11 @@ export function TacticalBlogDesktop() {
           <span className="font-bold">TONI.LIMITED</span>
           <span>STATUS: ACTIVE</span>
         </div>
+
+        {/* Center Activity Ticker */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <ActivityTicker />
+        </div>
         <div className="flex items-center gap-6">
           <span>TIME: {currentTime}</span>
           <span>
@@ -534,6 +540,7 @@ export function TacticalBlogDesktop() {
               <div>PINNED: {pinnedCount}</div>
               <div>VERSION: 1.0.0</div>
             </div>
+
           </div>
         </div>
 

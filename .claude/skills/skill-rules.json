@@ -1,7 +1,67 @@
 {
   "version": "1.0",
-  "description": "Skill activation triggers for te-blog. Keeps Claude Code aware of when to load meta-development and deployment guidance.",
+  "description": "Skill activation triggers for te-blog. Keeps Claude Code aware of when to load meta-development, deployment, and content management guidance.",
   "skills": {
+    "tactical-blog-content": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "medium",
+      "description": "Comprehensive guidance for managing content, components, AI integration, and design in the Tactical Blog",
+      "promptTriggers": {
+        "keywords": [
+          "blog post",
+          "blog piece",
+          "markdown",
+          "frontmatter",
+          "content management",
+          "teenage.engineering",
+          "tactical blog",
+          "ai chat",
+          "embeddings",
+          "fragment",
+          "mood",
+          "piece",
+          "radix ui",
+          "component design",
+          "blog component",
+          "theme",
+          "responsive design",
+          "tailwind"
+        ],
+        "intentPatterns": [
+          "(create|add|write).*?(blog|post|piece)",
+          "(design|style).*?(component|blog|ui)",
+          "(how to|how do).*?(blog|content|markdown)",
+          "(fix|debug).*?(content|frontmatter|blog)",
+          "(ai|chat|embedding).*?(integration|setup|problem)",
+          "teenage.engineering.*?(design|aesthetic|style)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "content/pieces/*.md",
+          "lib/pieces.ts",
+          "components/tactical-blog*.tsx",
+          "components/theme-provider.tsx",
+          "app/pieces/**/*",
+          "scripts/embed-pieces.ts",
+          "app/api/chat/**/*"
+        ],
+        "contentPatterns": [
+          "frontmatter",
+          "export interface Piece",
+          "export interface PieceFragment",
+          "teenage.engineering",
+          "TacticalBlog",
+          "getPieces",
+          "mood:",
+          "excerpt:",
+          "react-markdown",
+          "embeddings",
+          "fragments"
+        ]
+      }
+    },
     "skill-developer": {
       "type": "domain",
       "enforcement": "suggest",

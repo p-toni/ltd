@@ -9,7 +9,7 @@ interface PiecePageParams {
 }
 
 interface PiecePageProps {
-  params: PiecePageParams
+  params: Promise<PiecePageParams>
 }
 
 export async function generateStaticParams() {
@@ -18,8 +18,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PiecePageProps): Promise<Metadata> {
+  const { slug } = await params
   const pieces = await getPieces()
-  const piece = pieces.find((entry) => entry.slug === params.slug)
+  const piece = pieces.find((entry) => entry.slug === slug)
   if (!piece) {
     return {}
   }
@@ -31,8 +32,9 @@ export async function generateMetadata({ params }: PiecePageProps): Promise<Meta
 }
 
 export default async function PiecePage({ params }: PiecePageProps) {
+  const { slug } = await params
   const pieces = await getPieces()
-  const piece = pieces.find((entry) => entry.slug === params.slug)
+  const piece = pieces.find((entry) => entry.slug === slug)
 
   if (!piece) {
     notFound()
