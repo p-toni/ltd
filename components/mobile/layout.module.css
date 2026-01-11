@@ -334,7 +334,9 @@
 .mobileRoot :global(.markdown-blockquote) {
   position: relative;
   margin: 32px 0;
-  padding: 0 0 0 24px;
+  padding: 16px 16px 16px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(90deg, rgba(255, 102, 0, 0.12), rgba(255, 102, 0, 0) 60%);
   color: #ddd;
   font-size: 13px;
   line-height: 1.7;

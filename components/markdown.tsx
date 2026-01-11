@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-no-duplicate-props */
 
-import { isValidElement, useMemo, type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react'
+import { isValidElement, useEffect, useMemo, useState, type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react'
 import type { Image as ImageNode, ListItem, Paragraph, Root } from 'mdast'
 import type { Components } from 'react-markdown'
 import ReactMarkdown from 'react-markdown'
@@ -12,6 +12,10 @@ import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import type { PaperSource, TooltipDefinition } from '@/lib/tooltips'
+import { PAPER_SOURCES, TOOLTIP_DEFINITIONS } from '@/lib/tooltips'
 import { cn } from '@/lib/utils'
 
 interface FragmentMeta {
@@ -26,6 +30,10 @@ interface FragmentMetadataResult {
 
 const markdownSchema = {
   ...defaultSchema,
+  protocols: {
+    ...(defaultSchema.protocols ?? {}),
+    href: [...(defaultSchema.protocols?.href ?? []), 'tooltip'],
+  },
   tagNames: [
     ...(defaultSchema.tagNames ?? []),
     'table',
@@ -61,6 +69,115 @@ const markdownSchema = {
     ],
   },
 } as const
+
+const SAFE_LINK_PROTOCOLS = /^(https?:|mailto:|tel:)/i
+
+function urlTransform(href?: string) {
+  if (!href) {
+    return ''
+  }
+
+  if (href.startsWith('tooltip:')) {
+    return href
+  }
+
+  if (
+    href.startsWith('#') ||
+    href.startsWith('/') ||
+    href.startsWith('./') ||
+    href.startsWith('../') ||
+    SAFE_LINK_PROTOCOLS.test(href)
+  ) {
+    return href
+  }
+
+  return ''
+}
+
+function useIsCoarsePointer() {
+  const [isCoarse, setIsCoarse] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return
+    }
+
+    const query = window.matchMedia('(hover: none), (pointer: coarse)')
+    const update = () => setIsCoarse(query.matches)
+    update()
+
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', update)
+      return () => query.removeEventListener('change', update)
+    }
+
+    query.addListener(update)
+    return () => query.removeListener(update)
+  }, [])
+
+  return isCoarse
+}
+
+function TooltipBody({ tooltip, source }: { tooltip: TooltipDefinition; source?: PaperSource }) {
+  return (
+    <div className="space-y-2">
+      {source ? (
+        <a
+          href={source.url}
+          target="_blank"
+          rel="noreferrer"
+          className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/70 underline decoration-dotted underline-offset-2"
+        >
+          Source {tooltip.paper}
+        </a>
+      ) : (
+        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
+          Source {tooltip.paper}
+        </div>
+      )}
+      <div className="text-xs font-semibold">{tooltip.title}</div>
+      <div className="text-xs leading-relaxed text-black/80">{tooltip.body}</div>
+    </div>
+  )
+}
+
+function TooltipShell({
+  tooltip,
+  source,
+  children,
+}: {
+  tooltip: TooltipDefinition
+  source?: PaperSource
+  children: ReactNode
+}) {
+  const isCoarse = useIsCoarsePointer()
+
+  if (isCoarse) {
+    return (
+      <Popover>
+        <PopoverTrigger asChild>{children}</PopoverTrigger>
+        <PopoverContent
+          sideOffset={8}
+          className="max-w-[280px] border border-black/20 bg-white p-3 text-black shadow-lg"
+        >
+          <TooltipBody tooltip={tooltip} source={source} />
+        </PopoverContent>
+      </Popover>
+    )
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipContent
+        sideOffset={8}
+        className="max-w-[280px] border border-black/20 bg-white text-black shadow-lg"
+      >
+        <TooltipBody tooltip={tooltip} source={source} />
+      </TooltipContent>
+    </Tooltip>
+  )
+}
 
 function extractTextContent(node: ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') {
@@ -199,17 +316,49 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
         fragment: undefined,
         extraProps: rest as Record<string, unknown>,
       }),
-    a: ({ node: _node, children, ...props }) => (
-      <a
-        {...props}
-        className={cn(
-          'text-xs font-semibold uppercase tracking-wide text-black underline underline-offset-4',
-          props.className,
-        )}
-      >
-        {children}
-      </a>
-    ),
+    a: ({ node: _node, children, className, href, ...props }) => {
+      if (typeof href === 'string' && href.startsWith('tooltip:')) {
+        const rawId = href.slice('tooltip:'.length).trim()
+        const normalizedId = rawId.toUpperCase()
+        const tooltip = TOOLTIP_DEFINITIONS[rawId] ?? TOOLTIP_DEFINITIONS[normalizedId]
+        const source = tooltip ? PAPER_SOURCES[tooltip.paper] : undefined
+
+        if (!tooltip) {
+          return (
+            <span className={cn('underline decoration-dotted underline-offset-2', className)}>
+              {children}
+            </span>
+          )
+        }
+
+        return (
+          <TooltipShell tooltip={tooltip} source={source}>
+            <span
+              tabIndex={0}
+              className={cn(
+                'cursor-help underline decoration-dotted underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40',
+                className,
+              )}
+            >
+              {children}
+            </span>
+          </TooltipShell>
+        )
+      }
+
+      return (
+        <a
+          {...props}
+          href={href}
+          className={cn(
+            'text-xs font-semibold uppercase tracking-wide text-black underline underline-offset-4',
+            className,
+          )}
+        >
+          {children}
+        </a>
+      )
+    },
     ul: ({ node: _node, children, ...props }) => (
       <ul {...props} className={cn('mb-4 list-disc pl-5 text-sm leading-relaxed', props.className)}>
         {children}
@@ -422,6 +571,7 @@ export function Markdown({ content, className, pieceId, headingVariant = 'defaul
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}
+        urlTransform={urlTransform}
         components={fragmentAwareComponents}
       >
         {content}

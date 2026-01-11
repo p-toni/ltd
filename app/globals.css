@@ -19,6 +19,35 @@
   animation: fragmentHighlight 1.2s ease-out;
 }
 
+.markdown-blockquote {
+  position: relative;
+  margin: 32px 0;
+  padding: 16px 20px 16px 24px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-left: 4px solid var(--te-orange);
+  background: linear-gradient(90deg, rgba(255, 102, 0, 0.08), rgba(255, 102, 0, 0) 60%);
+  font-style: normal;
+}
+
+.markdown-blockquote::before {
+  content: 'QUOTE';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.markdown-blockquote > :first-child {
+  margin-top: 0;
+}
+
+.markdown-blockquote > :last-child {
+  margin-bottom: 0;
+}
+
 @keyframes fragmentHighlight {
   0% {
     background-color: rgba(255, 102, 0, 0.18);
