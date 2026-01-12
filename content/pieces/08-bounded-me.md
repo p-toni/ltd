@@ -1,6 +1,6 @@
 ---
 id: 8
-title: Notes to self: information is what my loop can extract
+title: Bounded Me
 date: 2026.01.11
 mood:
   - contemplative
