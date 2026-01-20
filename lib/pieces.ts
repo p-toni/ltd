@@ -17,6 +17,7 @@ export interface Piece {
   readTimeMinutes: number
   pinned: boolean
   slug: string
+  citations?: number[] // IDs of pieces this piece references
 }
 
 const PIECE_DIRECTORY = path.join(process.cwd(), 'content', 'pieces')

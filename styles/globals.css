@@ -37,6 +37,32 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Bounded Learning System - New Design Tokens */
+  --te-orange: oklch(0.65 0.19 45);
+  --te-orange-glow: oklch(0.65 0.19 45 / 0.35);
+
+  /* Loop State Colors */
+  --convergent: oklch(0.7 0.15 120);
+  --convergent-glow: oklch(0.7 0.15 120 / 0.25);
+  --divergent: oklch(0.6 0.2 30);
+  --neutral-loop: oklch(0.5 0.05 45);
+
+  /* Geometric Connections */
+  --connection-strong: oklch(0.65 0.19 45);
+  --connection-primary: oklch(0.62 0.12 50);
+  --connection-secondary: oklch(0.55 0.08 45);
+  --connection-weak: oklch(0.45 0.02 0);
+
+  /* Mood Cluster Backgrounds */
+  --cluster-contemplative: oklch(0.97 0.005 260);
+  --cluster-analytical: oklch(0.97 0.005 45);
+  --cluster-exploratory: oklch(0.97 0.005 140);
+  --cluster-critical: oklch(0.97 0.005 0);
+
+  /* Epiplexity Indicators */
+  --high-density: oklch(0.3 0.1 0);
+  --low-density: oklch(0.8 0.02 0);
 }
 
 .dark {
@@ -72,6 +98,28 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* Bounded Learning System - Dark Mode */
+  --te-orange: oklch(0.65 0.19 45);
+  --te-orange-glow: oklch(0.65 0.19 45 / 0.35);
+
+  --convergent: oklch(0.65 0.15 140);
+  --convergent-glow: oklch(0.65 0.15 140 / 0.25);
+  --divergent: oklch(0.6 0.2 30);
+  --neutral-loop: oklch(0.5 0.05 45);
+
+  --connection-strong: oklch(0.65 0.19 45);
+  --connection-primary: oklch(0.55 0.12 50);
+  --connection-secondary: oklch(0.45 0.08 45);
+  --connection-weak: oklch(0.35 0.02 0);
+
+  --cluster-contemplative: oklch(0.2 0.01 260);
+  --cluster-analytical: oklch(0.2 0.01 45);
+  --cluster-exploratory: oklch(0.2 0.01 140);
+  --cluster-critical: oklch(0.2 0.01 0);
+
+  --high-density: oklch(0.8 0.1 0);
+  --low-density: oklch(0.3 0.02 0);
 }
 
 @theme inline {

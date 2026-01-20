@@ -1,11 +1,27 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState, lazy, Suspense } from 'react'
 
 import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
 import { ActivityTicker } from '@/components/activity-ticker'
 import { Markdown } from '@/components/markdown'
+import { LoopStatusBar } from '@/components/loop-indicators/LoopStatusBar'
+import { ConceptGraph } from '@/components/concept-graph/ConceptGraph'
+
+// Lazy load heavy components
+const LoopDiagnostics = lazy(() => import('@/components/loop-indicators/LoopDiagnostics').then(m => ({ default: m.LoopDiagnostics })))
+const FlowVisualization = lazy(() => import('@/components/loop-indicators/FlowVisualization').then(m => ({ default: m.FlowVisualization })))
+const CitationNetworkGraph = lazy(() => import('@/components/concept-graph/CitationNetworkGraph').then(m => ({ default: m.CitationNetworkGraph })))
+const MoodEnergyMatrix = lazy(() => import('@/components/hyperparams/MoodEnergyMatrix').then(m => ({ default: m.MoodEnergyMatrix })))
+const ContextSwitchMonitor = lazy(() => import('@/components/hyperparams/ContextSwitchMonitor').then(m => ({ default: m.ContextSwitchMonitor })))
+const TrainabilityWarning = lazy(() => import('@/components/hyperparams/TrainabilityWarning').then(m => ({ default: m.TrainabilityWarning })))
+const CompoundingIndicators = lazy(() => import('@/components/hyperparams/CompoundingIndicators').then(m => ({ default: m.CompoundingIndicators })))
+const ReentryFrequency = lazy(() => import('@/components/hyperparams/ReentryFrequency').then(m => ({ default: m.ReentryFrequency })))
+const ExtractionMetrics = lazy(() => import('@/components/extraction/ExtractionMetrics').then(m => ({ default: m.ExtractionMetrics })))
+const ExtractionSessionTimer = lazy(() => import('@/components/extraction/ExtractionSessionTimer').then(m => ({ default: m.ExtractionSessionTimer })))
+const BoundedReader = lazy(() => import('@/components/extraction/BoundedReader').then(m => ({ default: m.BoundedReader })))
+const PieceMap = lazy(() => import('@/components/pieces/PieceMap').then(m => ({ default: m.PieceMap })))
 import {
   CHAT_CONTENT_CLASSNAME,
   CHAT_ROLE_CLASSNAME,
@@ -15,6 +31,7 @@ import {
   type MoodFilter,
 } from '@/hooks/use-tactical-blog-experience'
 import { cn } from '@/lib/utils'
+import { FEATURE_FLAGS } from '@/lib/feature-flags'
 
 const NAV_VISIBLE_LIMIT = 5
 const NAV_ITEM_HEIGHT = 48
@@ -135,6 +152,12 @@ export function TacticalBlogDesktop() {
   const [isCursorMoving, setIsCursorMoving] = useState(false)
   const [isCursorInteractive, setIsCursorInteractive] = useState(false)
   const [cursorSpeed, setCursorSpeed] = useState(0)
+  const [viewMode, setViewMode] = useState<'graph' | 'list'>('list')
+  const [contentViewMode, setContentViewMode] = useState<'reading' | 'flow' | 'map' | 'citations'>('reading')
+  const [readerMode, setReaderMode] = useState<'continuous' | 'fragment'>('continuous')
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [checkpointsPassed, setCheckpointsPassed] = useState(0)
+  const [totalCheckpoints, setTotalCheckpoints] = useState(0)
 
   const movementTimeoutRef = useRef<number | null>(null)
   const animationFrameRef = useRef<number | null>(null)
@@ -432,242 +455,257 @@ export function TacticalBlogDesktop() {
       style={isFinePointer ? { cursor: 'none' } : undefined}
     >
       {/* Top System Bar */}
-      <div className="flex h-8 items-center justify-between border-b border-black px-4 text-[10px] tracking-wider">
+      <div className="flex h-7 items-center justify-between border-b border-black px-4 font-mono text-[9px] tracking-[0.1em]">
         <div className="flex items-center gap-6">
-          <span className="font-bold">TONI.LIMITED</span>
-          <span>STATUS: ACTIVE</span>
+          <span className="font-semibold tracking-[0.2em]">TONI.LIMITED</span>
+          <span className="text-muted-foreground">STATUS: ACTIVE</span>
         </div>
 
-        {/* Center Activity Ticker */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <ActivityTicker />
-        </div>
-        <div className="flex items-center gap-6">
-          <span>TIME: {currentTime}</span>
-          <span>
-            CURSOR: [{String(cursorPos.x).padStart(4, '0')}, {String(cursorPos.y).padStart(4, '0')}]
-          </span>
-        </div>
-      </div>
-
-      {/* Main Grid */}
-      <div className="grid h-[calc(100vh-4rem)] grid-cols-[280px_1fr_280px] gap-0">
-        {/* Left Sidebar - Metadata & Navigation */}
-        <div className="flex flex-col gap-6 overflow-y-auto border-r border-black p-6">
-          <div>
-            <div className="mb-2 text-[10px] tracking-wider text-muted-foreground">NAVIGATION</div>
-            <div className="mb-4 text-sm font-bold">PIECES</div>
-            <div className="space-y-1 overflow-y-auto pr-1" style={{ maxHeight: navListMaxHeight }}>
-              {sortedPieces.map((piece) => {
-                const isSelected = Boolean(selectedPiece && selectedPiece.id === piece.id)
-                const isPinned = piece.pinned
-
-                return (
-                  <button
-                    key={piece.id}
-                    onClick={() => setSelectedPieceId(piece.id)}
-                    className={cn(
-                      'relative w-full overflow-hidden border py-2 px-2 text-left text-xs transition-all',
-                      isSelected ? 'border-black bg-black text-white' : 'border-transparent hover:border-black',
-                      isPinned && !isSelected ? 'border-dashed border-black/50' : null,
-                    )}
-                    style={
-                      isSelected
-                        ? {
-                            borderLeftWidth: '3px',
-                            borderLeftColor: 'oklch(0.65 0.19 45)',
-                            backgroundImage: `
-                            repeating-linear-gradient(
-                              0deg,
-                              transparent,
-                              transparent 1px,
-                              rgba(255, 255, 255, 0.03) 1px,
-                              rgba(255, 255, 255, 0.03) 2px
-                            ),
-                            repeating-linear-gradient(
-                              90deg,
-                              transparent,
-                              transparent 1px,
-                              rgba(255, 255, 255, 0.03) 1px,
-                              rgba(255, 255, 255, 0.03) 2px
-                            )
-                            `,
-                            backgroundSize: '2px 2px',
-                          }
-                        : undefined
-                    }
-                  >
-                    <div className="relative z-10 font-bold">{piece.title}</div>
-                    <div className="relative z-10 mt-1 text-[10px] opacity-60">{piece.date}</div>
-                    {isPinned && (
-                      <span className="absolute right-2 top-2 text-[8px] font-semibold tracking-[0.2em] text-[color:var(--te-orange,#ff6600)]">
-                        PIN
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="border-t border-black pt-6">
-            <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">METADATA</div>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">DATE</span>
-                <span className="font-bold">{selectedPiece.date}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">READ TIME</span>
-                <span className="font-bold">{selectedPiece.readTime}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">WORDS</span>
-                <span className="font-bold">{selectedPiece.wordCount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">MOOD</span>
-                <span className="text-[10px] font-bold uppercase">{selectedPiece.mood[0]}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-auto border-t border-black pt-6">
-            <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">SYSTEM INFO</div>
-            <div className="space-y-1 text-[10px]">
-              <div>PIECES: {pieces.length}</div>
-              <div>LISTED: {sortedPieces.length}</div>
-              <div>PINNED: {pinnedCount}</div>
-              <div>VERSION: 1.0.0</div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Center - Main Piece */}
-        <div className="overflow-y-auto p-12">
-          <div className="mx-auto max-w-2xl">
-            <div className="mb-4 text-[10px] tracking-wider text-muted-foreground">
-              PIECE #{String(selectedPiece.id).padStart(3, '0')}
-            </div>
-
-            <h1 className="mb-4 text-4xl font-bold leading-tight">{selectedPiece.title}</h1>
-
-            <div className="mb-8 text-sm italic text-muted-foreground">{selectedPiece.excerpt}</div>
-
-            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} />
-
-            <div className="mt-12 border-t border-black pt-6">
-              <div className="text-[10px] tracking-wider text-muted-foreground">END OF TRANSMISSION</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Sidebar - Mood Filter & Supporting Modules */}
-        <div className="flex flex-col gap-6 overflow-y-auto border-l border-black p-6">
-          <div>
-            <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">MOOD FILTER</div>
-            <div className="space-y-1">
-              {MOOD_FILTERS.map((mood) => (
-                <button
-                  key={mood}
-                  onClick={() => setSelectedMood(mood)}
-                  className={`relative w-full overflow-hidden border py-2 px-2 text-left text-xs uppercase tracking-wide transition-all ${
-                    selectedMood === mood ? 'border-black bg-black text-white' : 'border-transparent hover:border-black'
-                  }`}
-                  style={
-                    selectedMood === mood
-                      ? {
-                          backgroundImage: `
-                            repeating-linear-gradient(
-                              45deg,
-                              transparent,
-                              transparent 2px,
-                              rgba(255, 255, 255, 0.02) 2px,
-                              rgba(255, 255, 255, 0.02) 4px
-                            )
-                          `,
-                        }
-                      : {}
-                  }
-                >
-                  <span className="relative z-10">{mood}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="border-t border-black pt-6">
-            <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">READING STATS</div>
-            <div className="space-y-3">
-              <div className="border border-black p-3">
-                <div className="mb-1 text-[10px] text-muted-foreground">TOTAL WORDS</div>
-                <div className="font-mono text-2xl font-bold">
-                  {pieces.reduce((sum, piece) => sum + piece.wordCount, 0).toLocaleString()}
-                </div>
-              </div>
-              <div className="border border-black p-3">
-                <div className="mb-1 text-[10px] text-muted-foreground">AVG READ TIME</div>
-                <div className="font-mono text-2xl font-bold">
-                  {Math.round(
-                    pieces.reduce((sum, piece) => sum + piece.readTimeMinutes, 0) / pieces.length,
-                  )}{' '}
-                  min
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-black pt-6">
-            <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">MOOD DISTRIBUTION</div>
-            <div className="space-y-2">
-              {(['contemplative', 'analytical', 'exploratory', 'critical'] as const).map((mood) => {
-                const count = pieces.filter((piece) => piece.mood.includes(mood)).length
-                const percentage = (count / pieces.length) * 100
-                return (
-                  <div key={mood} className="text-xs">
-                    <div className="mb-1 flex justify-between">
-                      <span className="uppercase">{mood}</span>
-                      <span className="font-mono">{count}</span>
-                    </div>
-                    <div className="h-1 bg-black/10">
-                      <div className="h-full bg-black transition-all" style={{ width: `${percentage}%` }} />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          <div className="mt-auto border-t border-black pt-6">
-            <div className="mb-3 text-[10px] tracking-wider text-muted-foreground">ABOUT</div>
-            <p className="text-xs leading-relaxed">
-              A personal blog interface inspired by teenage.engineering&apos;s design philosophy: maximum function, minimum
-              form. Every element serves a purpose.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Status Bar */}
-      <div className="flex h-8 items-center justify-between border-t border-black px-4 text-[10px] tracking-wider">
-        <div className="flex items-center gap-6">
-          <span>MODE: READ</span>
-          <span>FILTER: {selectedMood.toUpperCase()}</span>
-          {!isChatOpen && (
-            <button
-              onClick={() => setIsChatOpen(true)}
-              className="text-[color:var(--te-orange,#ff6600)] transition-colors hover:underline"
-            >
-              CHAT: READY [/]
-            </button>
+        {/* Center: Loop Status */}
+        <div className="absolute left-1/2 -translate-x-1/2">
+          {FEATURE_FLAGS.ENABLE_LOOP_TRACKING ? (
+            <LoopStatusBar totalPieces={pieces.length} />
+          ) : (
+            <ActivityTicker />
           )}
         </div>
+
         <div className="flex items-center gap-6">
-          <span>
-            PIECE: {selectedPiece.id}/{pieces.length}
+          <span className="text-muted-foreground">TIME: {currentTime}</span>
+          <span className="tabular-nums text-muted-foreground">
+            MODE: {contentViewMode === 'reading' ? readerMode.toUpperCase() : contentViewMode.toUpperCase()}
           </span>
-          <span>READY</span>
+        </div>
+      </div>
+
+      {/* Main Grid - 3 Column Layout: Graph | Content | Dashboard */}
+      <div className="relative grid h-[calc(100vh-1.75rem)] grid-cols-[400px_1fr_320px] gap-0">
+        {/* Left Sidebar - Concept Graph (Hero Element) */}
+        <div className="relative flex flex-col overflow-hidden border-r border-black bg-black">
+          {FEATURE_FLAGS.ENABLE_CONCEPT_GRAPH && (
+            <>
+              {/* Full-height graph */}
+              <div className="flex-1 overflow-hidden">
+                <ConceptGraph
+                  pieces={pieces}
+                  activePieceId={selectedPieceId ?? undefined}
+                  onPieceClick={setSelectedPieceId}
+                  className="h-full w-full"
+                />
+              </div>
+
+              {/* Bottom overlay with gradient fade - MapToPoster style */}
+              <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+                {/* Gradient fade */}
+                <div
+                  className="h-32 w-full"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.8) 40%, transparent 100%)'
+                  }}
+                />
+
+                {/* Piece navigation overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-auto">
+                  {/* Compact horizontal piece selector */}
+                  <div className="flex items-center gap-2 overflow-x-auto pb-2">
+                    {pieces.map((piece) => {
+                      const isSelected = piece.id === selectedPieceId
+                      const isPinned = piece.pinned
+
+                      return (
+                        <button
+                          key={piece.id}
+                          onClick={() => setSelectedPieceId(piece.id)}
+                          className={cn(
+                            'flex-shrink-0 rounded border px-2 py-1 transition-all duration-200',
+                            isSelected
+                              ? 'border-[var(--te-orange)] bg-[var(--te-orange)] text-black'
+                              : 'border-white/30 bg-black/60 text-white hover:border-white hover:bg-black',
+                          )}
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[8px] font-semibold tabular-nums">
+                              #{piece.id.toString().padStart(3, '0')}
+                            </span>
+                            {isPinned && (
+                              <span className="font-mono text-[7px]">★</span>
+                            )}
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* Selected piece title */}
+                  {selectedPiece && (
+                    <div className="mt-2 text-center">
+                      <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
+                        {selectedPiece.title}
+                      </div>
+                      <div className="mt-0.5 font-mono text-[8px] text-white/60">
+                        {selectedPiece.date} · {selectedPiece.readTime}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Center - Main Content */}
+        <div className="flex flex-col overflow-hidden">
+          {/* View Mode Toggle */}
+          <div className="flex gap-2 border-b border-black px-4 py-2">
+            {/* Reader Mode Toggle (reading view only) */}
+            {contentViewMode === 'reading' && FEATURE_FLAGS.ENABLE_BOUNDED_READER && (
+              <div className="flex gap-2 border-r border-black pr-3">
+                {(['continuous', 'fragment'] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setReaderMode(mode)}
+                    className={cn(
+                      'rounded border px-3 py-1 font-mono text-[9px] uppercase tracking-wider transition-colors',
+                      readerMode === mode
+                        ? 'border-black bg-black text-white'
+                        : 'border-transparent hover:border-black',
+                    )}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Content View Modes */}
+            {(['reading', 'flow', 'map', 'citations'] as const).map((mode) => {
+              // Hide modes based on feature flags
+              if (mode === 'flow' && !FEATURE_FLAGS.ENABLE_FLOW_VISUALIZATION) return null
+              if (mode === 'map' && !FEATURE_FLAGS.ENABLE_PIECE_MAP) return null
+              if (mode === 'citations' && !FEATURE_FLAGS.ENABLE_CITATION_NETWORK) return null
+
+              return (
+                <button
+                  key={mode}
+                  onClick={() => setContentViewMode(mode)}
+                  className={cn(
+                    'rounded border px-4 py-1 font-mono text-[10px] uppercase tracking-wider transition-colors',
+                    contentViewMode === mode
+                      ? 'border-black bg-black text-white'
+                      : 'border-transparent hover:border-black',
+                  )}
+                >
+                  {mode}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Content Area with smooth transitions */}
+          <div className="relative flex-1 overflow-y-auto">
+            {/* Flow Visualization */}
+            {contentViewMode === 'flow' ? (
+              <div className="animate-in fade-in duration-300">
+                <Suspense fallback={<div className="flex h-full items-center justify-center font-mono text-[9px] text-muted-foreground">Loading...</div>}>
+                  <FlowVisualization pieceId={selectedPiece.id} />
+                </Suspense>
+              </div>
+            ) : /* Piece Map */
+            contentViewMode === 'map' ? (
+              <div className="animate-in fade-in duration-300">
+                <Suspense fallback={<div className="flex h-full items-center justify-center font-mono text-[9px] text-muted-foreground">Loading...</div>}>
+                  <PieceMap pieces={pieces} activePieceId={selectedPiece.id} onPieceClick={setSelectedPieceId} />
+                </Suspense>
+              </div>
+            ) : /* Citation Network */
+            contentViewMode === 'citations' ? (
+              <div className="h-full p-8 animate-in fade-in duration-300">
+                <Suspense fallback={<div className="flex h-full items-center justify-center font-mono text-[9px] text-muted-foreground">Loading...</div>}>
+                  <CitationNetworkGraph pieces={pieces} activePieceId={selectedPiece.id} onPieceClick={setSelectedPieceId} className="h-full" />
+                </Suspense>
+              </div>
+            ) : /* Reading Mode */
+            (
+              <div className="animate-in fade-in duration-300">
+                {/* Fragment Reader or Continuous Reader */}
+                {FEATURE_FLAGS.ENABLE_BOUNDED_READER && readerMode === 'fragment' ? (
+                  <Suspense fallback={<div className="p-6"><div className="font-mono text-[9px] text-muted-foreground">Loading...</div></div>}>
+                    <BoundedReader
+                      content={selectedPiece.content}
+                      pieceId={selectedPiece.id}
+                      onFragmentChange={(current, total) => {
+                        setCheckpointsPassed(current + 1)
+                        setTotalCheckpoints(total)
+                      }}
+                    />
+                  </Suspense>
+                ) : (
+                  <div className="p-6">
+                    <div className="mx-auto max-w-2xl">
+                      <div className="mb-2 font-mono text-[9px] tracking-wider text-muted-foreground">
+                        PIECE #{String(selectedPiece.id).padStart(3, '0')}
+                      </div>
+
+                      <h1 className="mb-3 text-3xl font-bold leading-tight">{selectedPiece.title}</h1>
+
+                      <div className="mb-6 text-sm italic text-muted-foreground">{selectedPiece.excerpt}</div>
+
+                      <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} />
+
+                      <div className="mt-8 border-t border-black pt-4">
+                        <div className="font-mono text-[9px] tracking-wider text-muted-foreground">END OF TRANSMISSION</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Sidebar - Hyperparameter Dashboard */}
+        <div className="flex flex-col gap-3 overflow-y-auto border-l border-black p-3">
+          <Suspense fallback={<div className="font-mono text-[9px] text-muted-foreground">Loading metrics...</div>}>
+            {/* Extraction Metrics (Phase 2) - Current piece focus */}
+            {FEATURE_FLAGS.ENABLE_EXTRACTION_METRICS && FEATURE_FLAGS.ENABLE_EPIPLEXITY_ESTIMATION && (
+              <ExtractionMetrics
+                piece={selectedPiece}
+                scrollProgress={scrollProgress}
+                checkpointsPassed={checkpointsPassed}
+                totalCheckpoints={totalCheckpoints}
+              />
+            )}
+
+            {/* Loop Diagnostics - System health */}
+            {FEATURE_FLAGS.ENABLE_HYPERPARAM_DASHBOARD && FEATURE_FLAGS.ENABLE_LOOP_TRACKING && (
+              <LoopDiagnostics totalPieces={pieces.length} />
+            )}
+
+            {/* Trainability Warning (Phase 2) - Critical alerts */}
+            {FEATURE_FLAGS.ENABLE_TRAINABILITY_WARNING && (
+              <TrainabilityWarning pieces={pieces} currentPieceId={selectedPiece?.id} />
+            )}
+
+            {/* Context Switch Monitor - Session tracking */}
+            {FEATURE_FLAGS.ENABLE_HYPERPARAM_DASHBOARD && (
+              <ContextSwitchMonitor currentPieceId={selectedPiece?.id} />
+            )}
+
+            {/* Mood-Energy Matrix - Navigation aid */}
+            {FEATURE_FLAGS.ENABLE_HYPERPARAM_DASHBOARD && (
+              <MoodEnergyMatrix pieces={pieces} onPieceClick={setSelectedPieceId} />
+            )}
+
+            {/* Re-entry Frequency (Phase 3) - Usage patterns */}
+            {FEATURE_FLAGS.ENABLE_REENTRY_FREQUENCY && (
+              <ReentryFrequency pieces={pieces} onPieceClick={setSelectedPieceId} />
+            )}
+
+            {/* Compounding Indicators (Phase 3) - Knowledge velocity */}
+            {FEATURE_FLAGS.ENABLE_COMPOUNDING_INDICATORS && (
+              <CompoundingIndicators pieces={pieces} onPieceClick={setSelectedPieceId} />
+            )}
+          </Suspense>
         </div>
       </div>
 
