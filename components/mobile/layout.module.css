@@ -2,9 +2,9 @@
   position: relative;
   display: flex;
   min-height: 100vh;
-  background: #000;
+  background: #0a0a0a;
   color: #fff;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-mono), 'Courier New', Courier, monospace;
 }
 
 .statusBar {
@@ -19,7 +19,7 @@
   font-size: 11px;
   letter-spacing: 0.05em;
   z-index: 20;
-  background: #000;
+  background: #0a0a0a;
 }
 
 .statusLeft {
@@ -77,7 +77,7 @@
   bottom: 64px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  background: #000;
+  background: #0a0a0a;
 }
 
 .content {
@@ -88,7 +88,7 @@
 
 .hero {
   position: relative;
-  padding: 48px 24px 40px;
+  padding: 32px 20px 28px;
   border-bottom: 1px solid #222;
   overflow: hidden;
 }
@@ -101,12 +101,93 @@
 .heroHeader {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   align-items: stretch;
 }
 
 .heroMeta {
   flex: 1;
+}
+
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heroIdBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heroIdLabel {
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.heroIdValue {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.heroHex {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #555;
+}
+
+.heroAscii {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.heroNavRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #333;
+  background: #0f0f0f;
+  color: #bbb;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 8px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.navButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.navButton:not(:disabled):active {
+  color: #ff6600;
+  border-color: #ff6600;
+}
+
+.navButtonArrow {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.navButtonLabel {
+  display: inline-block;
+}
+
+.heroProgress {
+  flex: 1;
+  text-align: center;
 }
 
 .heroTitleRow {
@@ -180,19 +261,57 @@
 }
 
 .pieceTitle {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 12px;
+  line-height: 1.3;
+  margin: 16px 0 12px;
   letter-spacing: -0.02em;
 }
 
 .heroExcerpt {
-  margin-bottom: 28px;
+  margin-bottom: 16px;
   color: #ddd;
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.8;
   letter-spacing: 0.02em;
+}
+
+.metaRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.metaChip {
+  background: #0f0f0f;
+  border: 1px solid #222;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.metaChipLabel {
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.metaChipValue {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.heroFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #777;
+  text-transform: uppercase;
 }
 
 .fileInfo {
@@ -309,7 +428,7 @@
 }
 
 .contentSection {
-  padding: 40px 24px;
+  padding: 32px 20px 40px;
   border-bottom: 1px solid #222;
 }
 .mobileRoot :global(.markdown-ascii-heading) {
@@ -351,7 +470,7 @@
   left: 0;
   width: 4px;
   background: #ff6600;
-  box-shadow: 0 0 12px rgba(255, 102, 0, 0.35);
+  box-shadow: 0 0 12px rgba(220, 38, 38, 0.35);
 }
 
 .mobileRoot :global(.markdown-blockquote > :first-child) {
@@ -369,7 +488,7 @@
   right: 0;
   height: 64px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   border-top: 1px solid #333;
   background: #000;
   z-index: 20;
@@ -506,8 +625,8 @@
 .navListItemActive {
   border-color: #333;
   border-left-width: 3px;
-  border-left-color: #ff6600;
-  background: rgba(255, 102, 0, 0.06);
+  border-left-color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
 }
 
 .navListTitle {
@@ -636,8 +755,8 @@
 .chatCitation {
   display: inline-flex;
   align-items: center;
-  border: 1px solid rgba(255, 102, 0, 0.4);
-  background: rgba(255, 102, 0, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  background: rgba(220, 38, 38, 0.12);
   color: #ff6600;
   font-size: 10px;
   letter-spacing: 0.18em;

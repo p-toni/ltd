@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { formatTickerMessage, getRecentActivity, type TickerMessage } from '@/lib/activity-ticker'
 
 interface ActivityTickerProps {
@@ -44,7 +44,7 @@ export function ActivityTicker({ refreshInterval = 30000, className = '' }: Acti
   }, [messages, displayText])
 
   // Whole-message flip animation
-  const startMessageTransition = (newMessage: string, callback: () => void) => {
+  const startMessageTransition = useCallback((newMessage: string, callback: () => void) => {
     // Start exit animation for entire message
     setAnimationState('exiting')
 
@@ -59,7 +59,7 @@ export function ActivityTicker({ refreshInterval = 30000, className = '' }: Acti
         callback()
       }, 400) // Entry animation duration
     }, 300) // Exit animation duration
-  }
+  }, [])
 
   // Rotate through messages
   useEffect(() => {
@@ -79,7 +79,7 @@ export function ActivityTicker({ refreshInterval = 30000, className = '' }: Acti
     }, 5000) // Show each message for 5 seconds
 
     return () => clearInterval(rotationInterval)
-  }, [messages.length, currentIndex, displayText])
+  }, [messages, currentIndex, startMessageTransition])
 
   if (messages.length === 0) {
     return (

@@ -174,6 +174,10 @@ function cosineSimilarity(query: QueryEmbedding, target: LoadedVector) {
   return dot / denominator
 }
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
+
 export interface RetrievalResult {
   fragments: RetrievedFragment[]
   pieces: RetrievedPiece[]
@@ -242,4 +246,29 @@ export async function retrieveContext(query: string, options: RetrievalOptions =
     fragments,
     pieces,
   }
+}
+
+export async function getPieceEmbeddingContext(options: { neighbors?: number } = {}) {
+  const store = await loadEmbeddingStore()
+  const embeddings = store.pieceEmbeddings
+
+  if (!embeddings.length) {
+    return {} as Record<number, number>
+  }
+
+  const neighbors = Math.max(1, options.neighbors ?? 3)
+  const scoresByPiece: Record<number, number> = {}
+
+  embeddings.forEach((target) => {
+    const similarities = embeddings
+      .filter((candidate) => candidate.pieceId !== target.pieceId)
+      .map((candidate) => cosineSimilarity({ vector: target.embedding, norm: target.norm }, candidate))
+      .sort((a, b) => b - a)
+
+    const top = similarities.slice(0, neighbors)
+    const avg = top.length ? top.reduce((sum, value) => sum + value, 0) / top.length : 0
+    scoresByPiece[target.pieceId] = clamp(1 - avg, 0, 1)
+  })
+
+  return scoresByPiece
 }

@@ -4,9 +4,7 @@ import clsx from 'clsx'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
-import { AsciiNumber } from '@/components/mobile/ascii-number'
 import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
-import { ChatSheet } from '@/components/mobile/chat-sheet'
 import { FlashMessage } from '@/components/mobile/flash-message'
 import { NavSheet } from '@/components/mobile/nav-sheet'
 import { ProgressBar } from '@/components/mobile/progress-bar'
@@ -27,45 +25,15 @@ export function TacticalBlogMobile() {
     goToNextPiece,
     goToPreviousPiece,
     flashMessage,
-    showFlash,
-    setIsChatOpen,
-    isChatOpen,
-    chatMessages,
-    chatInput,
-    setChatInput,
-    isChatLoading,
-    handleChatSubmit,
-    chatProvider,
-    setChatProvider,
-    chatApiKey,
-    setChatApiKey,
-    handleCitationClick,
-    registerChatContainer,
-    registerChatInput,
-    focusChatInput,
   } = useTacticalBlogContext()
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
   const [isNavSheetOpen, setNavSheetOpen] = useState(false)
   const [isNavigating, setNavigating] = useState(false)
-  const { light, medium, heavy } = useHaptic()
+  const { light, medium } = useHaptic()
   const scrollProgress = useReadingProgress(contentWrapperRef)
   const navigationPulseRef = useRef<number | null>(null)
-
-  useEffect(() => {
-    if (isChatOpen) {
-      if (activeTab !== 'info') {
-        setActiveTab('info')
-      }
-      const handle = window.requestAnimationFrame(() => focusChatInput())
-      return () => window.cancelAnimationFrame(handle)
-    }
-    if (activeTab === 'info') {
-      setActiveTab('read')
-    }
-    return undefined
-  }, [activeTab, focusChatInput, isChatOpen])
 
   const currentIndex = useMemo(() => {
     if (!selectedPieceId) {
@@ -133,12 +101,6 @@ export function TacticalBlogMobile() {
     medium()
   }, [medium])
 
-  const handleCloseChat = useCallback(() => {
-    setIsChatOpen(false)
-    setActiveTab('read')
-    medium()
-  }, [medium, setIsChatOpen])
-
   const handleNavSelect = useCallback(
     (tab: MobileNavTab) => {
       if (tab === 'list') {
@@ -151,26 +113,11 @@ export function TacticalBlogMobile() {
         return
       }
 
-      if (tab === 'info') {
-        setActiveTab('info')
-        setIsChatOpen(true)
-        requestAnimationFrame(() => focusChatInput())
-        medium()
-        return
-      }
-
-      if (tab === 'mood') {
-        setActiveTab('mood')
-        showFlash('> MOOD_FILTER.sh\n> TODO: Coming soon', 1800)
-        heavy()
-        return
-      }
-
       setActiveTab('read')
       setNavSheetOpen(false)
       medium()
     },
-    [focusChatInput, heavy, medium, setIsChatOpen, showFlash],
+    [medium],
   )
 
   useSwipeable(contentWrapperRef, {
@@ -214,7 +161,6 @@ export function TacticalBlogMobile() {
   }
 
   const hexId = `0x${selectedPiece.id.toString(16).padStart(2, '0')}`.toUpperCase()
-  const asciiValue = selectedPiece.id % 100
   const moodLabel = selectedPiece.mood[0]?.toUpperCase() ?? 'N/A'
   const publishedDate = new Date(selectedPiece.publishedAt)
   const hasValidPublishedDate = Number.isFinite(publishedDate.getTime())
@@ -225,18 +171,6 @@ export function TacticalBlogMobile() {
         publishedDate.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
       ].join(' ')
     : selectedPiece.date
-  const lsRows: Array<[string, string, string, string, string, string, string]> = [
-    [
-      '-rw-r--r--',
-      '1',
-      'toni',
-      'staff',
-      `${selectedPiece.wordCount}B`,
-      lsDate,
-      `${selectedPiece.slug}.md`,
-    ],
-  ]
-
   const isListLoading = sortedPieces.length === 0 || !selectedPiece
 
   return (
@@ -260,102 +194,55 @@ export function TacticalBlogMobile() {
             <div className={styles.heroOverlay} aria-hidden />
             <div className={styles.heroHeader}>
               <div className={styles.heroMeta}>
-                <div className={styles.pieceNav}>
+                <div className={styles.heroTop}>
+                  <div className={styles.heroIdBlock}>
+                    <span className={styles.heroIdLabel}>PIECE</span>
+                    <span className={styles.heroIdValue}>#{String(selectedPiece.id).padStart(3, '0')}</span>
+                    <span className={styles.heroHex}>[{hexId}]</span>
+                  </div>
+                </div>
+                <div className={styles.heroNavRow}>
                   <button
                     type="button"
-                    className={clsx(styles.navArrow, styles.glitchable)}
+                    className={clsx(styles.navButton, styles.glitchable)}
                     onClick={handlePrevious}
                     disabled={!prevPieceId}
                     aria-label="Previous piece"
                   >
-                    ‹
+                    <span className={styles.navButtonLabel}>PREV</span>
+                    <span className={styles.navButtonArrow}>‹</span>
                   </button>
-                  <div className={styles.pieceProgress}>
-                    <div className={styles.pieceId}>
-                      PIECE #{String(selectedPiece.id).padStart(3, '0')}
-                      <span className={styles.pieceHex}>[{hexId}]</span>
-                    </div>
-                    <ProgressBar current={currentPosition} total={totalPieces} />
-                  </div>
+                  <ProgressBar current={currentPosition} total={totalPieces} className={styles.heroProgress} />
                   <button
                     type="button"
-                    className={clsx(styles.navArrow, styles.glitchable)}
+                    className={clsx(styles.navButton, styles.glitchable)}
                     onClick={handleNext}
                     disabled={!nextPieceId}
                     aria-label="Next piece"
                   >
-                    ›
+                    <span className={styles.navButtonArrow}>›</span>
+                    <span className={styles.navButtonLabel}>NEXT</span>
                   </button>
                 </div>
-                <div className={styles.heroTitleRow}>
-                  <h1 className={clsx(styles.pieceTitle, styles.glitchable)}>{selectedPiece.title}</h1>
-                  <AsciiNumber value={asciiValue} className={styles.heroTitleAscii} />
-                </div>
+                <h1 className={clsx(styles.pieceTitle, styles.glitchable)}>{selectedPiece.title}</h1>
                 <p className={styles.heroExcerpt}>{selectedPiece.excerpt}</p>
-
-                <div className={clsx(styles.fileInfo, styles.lsTable)}>
-                  {lsRows.map(([perms, links, owner, group, size, dateValue, name], index) => (
-                    <div key={`${name}-${index}`} className={styles.lsRow}>
-                      <span className={styles.lsPerms}>{perms}</span>
-                      <span className={styles.lsLinks}>{links}</span>
-                      <span className={styles.lsOwner}>{owner}</span>
-                      <span className={styles.lsGroup}>{group}</span>
-                      <span className={styles.lsSize}>{size}</span>
-                      <span className={styles.lsDate}>{dateValue}</span>
-                      <span className={styles.lsName}>{name}</span>
-                    </div>
-                  ))}
+                <div className={styles.metaRow}>
+                  <div className={styles.metaChip}>
+                    <span className={styles.metaChipLabel}>READ</span>
+                    <span className={styles.metaChipValue}>{selectedPiece.readTime}</span>
+                  </div>
+                  <div className={styles.metaChip}>
+                    <span className={styles.metaChipLabel}>WORDS</span>
+                    <span className={styles.metaChipValue}>{selectedPiece.wordCount.toLocaleString()}</span>
+                  </div>
+                  <div className={styles.metaChip}>
+                    <span className={styles.metaChipLabel}>MOOD</span>
+                    <span className={styles.metaChipValue}>{moodLabel}</span>
+                  </div>
                 </div>
-
-                <div className={styles.metaCards}>
-                  <div className={styles.metaCard}>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerTopLeft)} aria-hidden>
-                      ┌
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerTopRight)} aria-hidden>
-                      ┐
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomLeft)} aria-hidden>
-                      └
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomRight)} aria-hidden>
-                      ┘
-                    </span>
-                    <div className={styles.metaLabel}>READ</div>
-                    <div className={styles.metaValue}>{selectedPiece.readTime}</div>
-                  </div>
-                  <div className={styles.metaCard}>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerTopLeft)} aria-hidden>
-                      ┌
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerTopRight)} aria-hidden>
-                      ┐
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomLeft)} aria-hidden>
-                      └
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomRight)} aria-hidden>
-                      ┘
-                    </span>
-                    <div className={styles.metaLabel}>WORDS</div>
-                    <div className={styles.metaValue}>{selectedPiece.wordCount.toLocaleString()}</div>
-                  </div>
-                  <div className={styles.metaCard}>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerTopLeft)} aria-hidden>
-                      ┌
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerTopRight)} aria-hidden>
-                      ┐
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomLeft)} aria-hidden>
-                      └
-                    </span>
-                    <span className={clsx(styles.metaCorner, styles.metaCornerBottomRight)} aria-hidden>
-                      ┘
-                    </span>
-                    <div className={styles.metaLabel}>MOOD</div>
-                    <div className={styles.metaMoodValue}>{moodLabel}</div>
-                  </div>
+                <div className={styles.heroFooter}>
+                  <span>{lsDate}</span>
+                  <span>{selectedPiece.slug}.md</span>
                 </div>
               </div>
             </div>
@@ -373,7 +260,6 @@ export function TacticalBlogMobile() {
         onSelect={handleNavSelect}
         listState={isListLoading ? 'active' : 'idle'}
         readState={isNavigating ? 'active' : 'idle'}
-        infoState={isChatLoading ? 'active' : 'idle'}
       />
       <NavSheet
         pieces={sortedPieces}
@@ -381,23 +267,6 @@ export function TacticalBlogMobile() {
         isOpen={isNavSheetOpen}
         onClose={handleCloseNavSheet}
         onSelect={handlePieceSelect}
-      />
-      <ChatSheet
-        isOpen={isChatOpen}
-        onClose={handleCloseChat}
-        messages={chatMessages}
-        chatInput={chatInput}
-        setChatInput={setChatInput}
-        onSubmit={handleChatSubmit}
-        isLoading={isChatLoading}
-        provider={chatProvider}
-        setProvider={setChatProvider}
-        apiKey={chatApiKey}
-        setApiKey={setChatApiKey}
-        onCitation={handleCitationClick}
-        registerContainer={registerChatContainer}
-        registerInput={registerChatInput}
-        focusInput={focusChatInput}
       />
       <FlashMessage message={flashMessage} />
     </div>

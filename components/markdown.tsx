@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-no-duplicate-props */
 
-import { isValidElement, useEffect, useMemo, useState, type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react'
+import { isValidElement, useMemo, type ComponentPropsWithoutRef, type ReactElement, type ReactNode } from 'react'
 import type { Image as ImageNode, ListItem, Paragraph, Root } from 'mdast'
 import type { Components } from 'react-markdown'
 import ReactMarkdown from 'react-markdown'
@@ -12,7 +12,6 @@ import remarkParse from 'remark-parse'
 import { unified } from 'unified'
 import { visit } from 'unist-util-visit'
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { PaperSource, TooltipDefinition } from '@/lib/tooltips'
 import { PAPER_SOURCES, TOOLTIP_DEFINITIONS } from '@/lib/tooltips'
@@ -94,30 +93,6 @@ function urlTransform(href?: string) {
   return ''
 }
 
-function useIsCoarsePointer() {
-  const [isCoarse, setIsCoarse] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) {
-      return
-    }
-
-    const query = window.matchMedia('(hover: none), (pointer: coarse)')
-    const update = () => setIsCoarse(query.matches)
-    update()
-
-    if (typeof query.addEventListener === 'function') {
-      query.addEventListener('change', update)
-      return () => query.removeEventListener('change', update)
-    }
-
-    query.addListener(update)
-    return () => query.removeListener(update)
-  }, [])
-
-  return isCoarse
-}
-
 function TooltipBody({ tooltip, source }: { tooltip: TooltipDefinition; source?: PaperSource }) {
   return (
     <div className="space-y-2">
@@ -150,22 +125,6 @@ function TooltipShell({
   source?: PaperSource
   children: ReactNode
 }) {
-  const isCoarse = useIsCoarsePointer()
-
-  if (isCoarse) {
-    return (
-      <Popover>
-        <PopoverTrigger asChild>{children}</PopoverTrigger>
-        <PopoverContent
-          sideOffset={8}
-          className="max-w-[280px] border border-black/20 bg-white p-3 text-black shadow-lg"
-        >
-          <TooltipBody tooltip={tooltip} source={source} />
-        </PopoverContent>
-      </Popover>
-    )
-  }
-
   return (
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
