@@ -27,6 +27,10 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
   const [showExcerpts, setShowExcerpts] = useState(true)
   const [compactView, setCompactView] = useState(false)
   const [currentTime, setCurrentTime] = useState('')
+  const [isLightMode, setIsLightMode] = useState(true)
+  const panelBorder = isLightMode ? 'rgba(28, 19, 13, 0.12)' : 'rgba(255, 255, 255, 0.1)'
+  const panelOutline = isLightMode ? 'rgba(28, 19, 13, 0.08)' : 'rgba(255, 255, 255, 0.08)'
+  const panelDot = isLightMode ? 'rgba(28, 19, 13, 0.08)' : '#1a1a1a'
 
   useEffect(() => {
     const updateTime = () => {
@@ -38,6 +42,16 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
     
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.toggle('dark', !isLightMode)
+    root.style.colorScheme = isLightMode ? 'light' : 'dark'
+    return () => {
+      root.classList.add('dark')
+      root.style.colorScheme = 'dark'
+    }
+  }, [isLightMode])
 
   const filteredPieces = useMemo(() => (
     moodFilter === 'all'
@@ -160,18 +174,23 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
   }, [selectedPiece, boundedMetrics.recencyScore])
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark text-[#1c130d] dark:text-white selection:bg-primary selection:text-white relative overflow-x-hidden custom-scrollbar">
+    <div
+      className={cn(
+        'min-h-screen bg-background-light dark:bg-background-dark text-[#1c130d] dark:text-white selection:bg-primary selection:text-white relative overflow-x-hidden custom-scrollbar',
+        isLightMode ? 'dashboard-light' : 'dark',
+      )}
+    >
       {/* Scanline Overlay */}
       <div className="scanline-overlay" />
       
       <div className="flex h-screen max-h-screen flex-col relative z-10">
         {/* Top Navigation Bar */}
-        <header className="flex flex-wrap sm:flex-nowrap items-center justify-between px-5 py-3 bg-background-dark shadow-lg" style={{ outline: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <header className="flex flex-wrap sm:flex-nowrap items-center justify-between px-5 py-3 bg-background-dark shadow-lg" style={{ outline: `1px solid ${panelBorder}` }}>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <div className="size-6">
                 <Image
-                  src="/images/toni-ltd-logo.svg"
+                  src={isLightMode ? '/images/toni-ltd-logo-light.svg' : '/images/toni-ltd-logo.svg'}
                   alt="Toni Ltd logo"
                   width={24}
                   height={24}
@@ -187,7 +206,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
             <div className="h-8 w-[1px] bg-border-dark"></div>
           </div>
             <div className="flex items-center gap-4">
-            <div className="flex flex-col items-end px-3 border-r" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+            <div className="flex flex-col items-end px-3 border-r" style={{ borderColor: panelBorder }}>
               <span className="text-[9px] text-[#666]">BLOG_LOAD</span>
               <span className="text-[11px] font-bold text-primary">{pieces.length} PIECES</span>
             </div>
@@ -196,6 +215,16 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
               <div className="flex h-10 items-center justify-center px-4" role="timer" aria-live="polite" aria-label="Current time">
                 <span className="text-white text-[11px] font-mono tabular-nums">{currentTime}</span>
               </div>
+              <button
+                type="button"
+                onClick={() => setIsLightMode((prev) => !prev)}
+                className="flex h-10 items-center gap-2 px-3 bg-panel-dark border border-border-dark text-[9px] font-bold tracking-[0.2em] transition-colors"
+                aria-label={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
+                aria-pressed={isLightMode}
+              >
+                <span className="text-[#666]">MODE</span>
+                <span className="text-white">{isLightMode ? 'LIGHT' : 'DARK'}</span>
+              </button>
             </div>
           </div>
         </header>
@@ -207,7 +236,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
             "col-span-12 lg:col-span-3 bg-background-dark p-4 flex flex-col gap-4 overflow-hidden transition-all duration-500 cursor-pointer relative shadow-lg",
             selectedEngine === 'focus' && "opacity-40",
           )} style={{
-            backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)', 
+            backgroundImage: `radial-gradient(circle, ${panelDot} 1px, transparent 1px)`,
             backgroundSize: '24px 24px',
             ...(selectedEngine === 'focus' && {
               backdropFilter: 'blur(12px) saturate(0.8)',
@@ -223,11 +252,11 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
               </h3>
               <div className="flex items-center gap-2">
                 <span className="text-[9px] text-[#666]">LTD</span>
-                <div className="size-2 rounded-full bg-primary shadow-[0_0_8px_#f96706] animate-pulse"></div>
+                <div className="size-2 rounded-full bg-primary shadow-[0_0_8px_var(--color-primary)] animate-pulse"></div>
               </div>
             </div>
             {/* Engine Toggle */}
-            <div className="p-1 bg-panel-dark rounded-sm flex h-10 shadow-md shrink-0" style={{ outline: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <div className="p-1 bg-panel-dark rounded-sm flex h-10 shadow-md shrink-0" style={{ outline: `1px solid ${panelOutline}` }}>
               <label className="flex-1 flex items-center justify-center cursor-pointer group">
                 <input
                   checked={selectedEngine === 'discover'}
@@ -295,15 +324,15 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
 
             {/* Piece Data Poster - fixed at bottom */}
             <div className="shrink-0">
-              <PiecePoster pieces={filteredPieces} selectedPiece={selectedPiece} theme="data_visual" />
+              <PiecePoster pieces={filteredPieces} selectedPiece={selectedPiece} theme={isLightMode ? 'paper' : 'data_visual'} />
             </div>
           </section>
 
           {/* BLOCK B: ARTICLE_DISPLAY */}
           <section className="col-span-12 lg:col-span-6 bg-background-dark p-4 flex flex-col gap-4 overflow-hidden shadow-lg border-r" style={{ 
-            backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)', 
+            backgroundImage: `radial-gradient(circle, ${panelDot} 1px, transparent 1px)`,
             backgroundSize: '24px 24px',
-            borderColor: 'rgba(255, 255, 255, 0.1)'
+            borderColor: panelBorder,
           }}>
             {selectedPiece ? (
               <>
@@ -321,7 +350,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                   </button>
                 </div>
                 
-                <div className="flex items-center gap-4 text-[9px] text-[#666] font-mono pb-3 border-b" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+                <div className="flex items-center gap-4 text-[9px] text-[#666] font-mono pb-3 border-b" style={{ borderColor: panelBorder }}>
                   <span>{selectedPiece.date}</span>
                   <span>•</span>
                   <span>{selectedPiece.readTime}</span>
@@ -336,7 +365,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                 </div>
                 
                 <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
-                  <div className="prose prose-invert max-w-none">
+                  <div className="max-w-none px-3">
                     <Markdown content={selectedPiece.content} />
                   </div>
                 </div>
@@ -355,7 +384,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
             "col-span-12 lg:col-span-3 bg-background-dark p-4 flex flex-col gap-4 overflow-hidden transition-all duration-500 cursor-pointer relative",
             selectedEngine === 'focus' && "opacity-40",
           )} style={{
-            backgroundImage: 'radial-gradient(circle, #1a1a1a 1px, transparent 1px)', 
+            backgroundImage: `radial-gradient(circle, ${panelDot} 1px, transparent 1px)`,
             backgroundSize: '24px 24px',
             ...(selectedEngine === 'focus' && {
               backdropFilter: 'blur(12px) saturate(0.8)',
@@ -415,7 +444,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                 </div>
               </div>
 
-              <div className="space-y-2 border-t pt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <div className="space-y-2 border-t pt-3" style={{ borderColor: panelBorder }}>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-white">LOOP_INTEGRITY</span>
                   <span className="text-[9px] font-mono text-primary">
@@ -425,7 +454,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                 <div className="grid grid-cols-4 gap-2">
                   {loopStages.map((stage) => {
                     const indicatorClass = stage.status === 'complete'
-                      ? 'bg-primary shadow-[0_0_6px_#f96706]'
+                      ? 'bg-primary shadow-[0_0_6px_var(--color-primary)]'
                       : stage.status === 'partial'
                         ? 'bg-white/70'
                         : stage.status === 'pending'
@@ -442,7 +471,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                 </div>
               </div>
 
-              <div className="space-y-2 border-t pt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+              <div className="space-y-2 border-t pt-3" style={{ borderColor: panelBorder }}>
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-white">LOCAL_GEOMETRY</span>
                   <span className="text-[8px] text-[#666]">3D_FIELD</span>
@@ -457,6 +486,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                           score,
                         }))}
                         originTitle={selectedPiece.title}
+                        variant={isLightMode ? 'light' : 'dark'}
                       />
                     </div>
                     {geometryNeighbors.length ? (
@@ -478,8 +508,8 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-                <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div className="grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: panelBorder }}>
+                <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: `1px solid ${panelOutline}` }}>
                   <span className="text-[9px] font-bold text-white">EXCERPTS</span>
                   <button
                     onClick={() => setShowExcerpts(!showExcerpts)}
@@ -490,7 +520,7 @@ export default function SystemDashboard({ pieces, contextById = {} }: SystemDash
                     <div className={`size-3 ${showExcerpts ? 'bg-black translate-x-5' : 'bg-white translate-x-0'} rounded-sm transition-all`}></div>
                   </button>
                 </div>
-                <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: `1px solid ${panelOutline}` }}>
                   <span className="text-[9px] font-bold text-white">COMPACT</span>
                   <button
                     onClick={() => setCompactView(!compactView)}

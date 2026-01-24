@@ -10,6 +10,7 @@ interface LocalGeometrySceneProps {
     score: number
   }>
   originTitle: string
+  variant?: 'dark' | 'light'
   className?: string
 }
 
@@ -23,15 +24,50 @@ const disposeMaterial = (material: THREE.Material | THREE.Material[]) => {
   }
 }
 
-export function LocalGeometryScene({ neighbors, originTitle, className = '' }: LocalGeometrySceneProps) {
+export function LocalGeometryScene({
+  neighbors,
+  originTitle,
+  variant = 'dark',
+  className = '',
+}: LocalGeometrySceneProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
+    const palette = variant === 'light'
+      ? {
+          background: '#f6f2ec',
+          gridMajor: '#d6cdbf',
+          gridMinor: '#e4ddd2',
+          center: '#95122c',
+          nodeStart: '#95122c',
+          nodeEnd: '#ca3f16',
+          line: '#ca3f16',
+          keyLight: '#95122c',
+          rimLight: '#ca3f16',
+          emissive: '#2a1208',
+          ambient: 0.55,
+          key: 1.1,
+        }
+      : {
+          background: '#0a0a0a',
+          gridMajor: '#2a2520',
+          gridMinor: '#1a1814',
+          center: '#ff9408',
+          nodeStart: '#ff9408',
+          nodeEnd: '#ca3f16',
+          line: '#ca3f16',
+          keyLight: '#ff9408',
+          rimLight: '#ca3f16',
+          emissive: '#2a1208',
+          ambient: 0.55,
+          key: 1.2,
+        }
+
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color('#0a0a0a')
+    scene.background = new THREE.Color(palette.background)
 
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100)
     camera.position.set(0, 0, 3.6)
@@ -40,34 +76,34 @@ export function LocalGeometryScene({ neighbors, originTitle, className = '' }: L
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     container.appendChild(renderer.domElement)
 
-    const ambient = new THREE.AmbientLight(0xffffff, 0.55)
-    const key = new THREE.PointLight(0xff9408, 1.2, 10)
+    const ambient = new THREE.AmbientLight(0xffffff, palette.ambient)
+    const key = new THREE.PointLight(new THREE.Color(palette.keyLight), palette.key, 10)
     key.position.set(2.2, 2.6, 3.4)
-    const rim = new THREE.PointLight(0xca3f16, 0.6, 10)
+    const rim = new THREE.PointLight(new THREE.Color(palette.rimLight), 0.6, 10)
     rim.position.set(-2.2, -1.6, 2.4)
     scene.add(ambient, key, rim)
 
     const group = new THREE.Group()
     scene.add(group)
 
-    const grid = new THREE.GridHelper(3.2, 14, 0x2a2520, 0x1a1814)
+    const grid = new THREE.GridHelper(3.2, 14, palette.gridMajor, palette.gridMinor)
     grid.rotation.x = Math.PI / 2
     grid.position.z = -0.4
     scene.add(grid)
 
     const centerGeometry = new THREE.SphereGeometry(0.12, 16, 16)
-    const centerMaterial = new THREE.MeshStandardMaterial({ color: 0xff9408, emissive: 0x2a1208 })
+    const centerMaterial = new THREE.MeshStandardMaterial({ color: palette.center, emissive: palette.emissive })
     const centerNode = new THREE.Mesh(centerGeometry, centerMaterial)
     group.add(centerNode)
 
     const ringGeometry = new THREE.TorusGeometry(0.2, 0.015, 8, 48)
-    const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xca3f16, transparent: true, opacity: 0.7 })
+    const ringMaterial = new THREE.MeshBasicMaterial({ color: palette.line, transparent: true, opacity: 0.7 })
     const ring = new THREE.Mesh(ringGeometry, ringMaterial)
     ring.rotation.x = Math.PI / 2
     group.add(ring)
 
     const nodeGeometry = new THREE.SphereGeometry(0.08, 12, 12)
-    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xca3f16, transparent: true, opacity: 0.55 })
+    const lineMaterial = new THREE.LineBasicMaterial({ color: palette.line, transparent: true, opacity: 0.55 })
 
     const nodeMeshes: THREE.Mesh[] = []
     const lineMeshes: THREE.Line[] = []
@@ -76,8 +112,8 @@ export function LocalGeometryScene({ neighbors, originTitle, className = '' }: L
     neighbors.forEach((neighbor, index) => {
       const angle = (index / count) * Math.PI * 2
       const distance = clamp(0.6 + (1 - neighbor.score) * 0.8, 0.55, 1.3)
-      const color = new THREE.Color('#ff9408').lerp(new THREE.Color('#ca3f16'), 1 - neighbor.score)
-      const material = new THREE.MeshStandardMaterial({ color, emissive: 0x2a1208 })
+      const color = new THREE.Color(palette.nodeStart).lerp(new THREE.Color(palette.nodeEnd), 1 - neighbor.score)
+      const material = new THREE.MeshStandardMaterial({ color, emissive: palette.emissive })
       const node = new THREE.Mesh(nodeGeometry, material)
       node.position.set(Math.cos(angle) * distance, Math.sin(angle) * distance, 0)
       group.add(node)
@@ -147,7 +183,7 @@ export function LocalGeometryScene({ neighbors, originTitle, className = '' }: L
       key.dispose()
       rim.dispose()
     }
-  }, [neighbors])
+  }, [neighbors, variant])
 
   return (
     <div className={`relative h-20 w-full ${className}`} aria-hidden="true">

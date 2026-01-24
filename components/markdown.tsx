@@ -208,7 +208,7 @@ function createSectionHeadingRenderer(
             role="presentation"
             className={cn(
               'markdown-ascii-heading',
-              'mb-3 whitespace-pre text-[11px] font-mono uppercase text-[#ff6600]',
+              'mb-3 whitespace-pre text-[11px] font-mono uppercase text-primary',
             )}
           >
             {ascii}
@@ -295,7 +295,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
             <span
               tabIndex={0}
               className={cn(
-                'cursor-help underline decoration-dotted underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40',
+                'cursor-help underline decoration-dotted underline-offset-2 decoration-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
                 className,
               )}
             >
@@ -310,7 +310,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
           {...props}
           href={href}
           className={cn(
-            'text-xs font-semibold uppercase tracking-wide text-black underline underline-offset-4',
+            'text-sm font-semibold tracking-[0.08em] text-primary underline decoration-primary/50 underline-offset-4 transition-colors hover:text-secondary',
             className,
           )}
         >
@@ -319,17 +319,29 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       )
     },
     ul: ({ node: _node, children, ...props }) => (
-      <ul {...props} className={cn('mb-4 list-disc pl-5 text-sm leading-relaxed', props.className)}>
+      <ul
+        {...props}
+        className={cn(
+          'mb-4 list-disc list-outside pl-6 text-sm leading-relaxed marker:text-primary space-y-2',
+          props.className,
+        )}
+      >
         {children}
       </ul>
     ),
     ol: ({ node: _node, children, ...props }) => (
-      <ol {...props} className={cn('mb-4 list-decimal pl-5 text-sm leading-relaxed', props.className)}>
+      <ol
+        {...props}
+        className={cn(
+          'mb-4 list-decimal list-outside pl-6 text-sm leading-relaxed marker:text-primary space-y-2',
+          props.className,
+        )}
+      >
         {children}
       </ol>
     ),
     li: ({ node: _node, children, ...props }) => (
-      <li {...props} className={cn('mb-2 text-sm leading-relaxed', props.className)}>
+      <li {...props} className={cn('text-sm leading-relaxed', props.className)}>
         {children}
       </li>
     ),
@@ -352,21 +364,27 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     } & ComponentPropsWithoutRef<'code'>) => {
       if (inline) {
         return (
-          <code {...props} className={cn('rounded bg-black/5 px-1 py-[2px] text-xs font-mono', className)}>
+          <code
+            {...props}
+            className={cn(
+              'rounded bg-border-dark px-1 py-[2px] text-xs font-mono normal-case text-[#1c130d] dark:text-white',
+              className,
+            )}
+          >
             {children}
           </code>
         )
       }
 
       return (
-        <pre className="mb-4 overflow-x-auto rounded border border-black/10 bg-black text-white">
-          <code {...props} className={cn('block whitespace-pre px-4 py-3 text-xs font-mono', className)}>
+        <pre className="mb-4 overflow-x-auto rounded border border-border-dark bg-panel-dark text-[#1c130d] dark:text-white">
+          <code {...props} className={cn('block whitespace-pre px-4 py-3 text-xs font-mono normal-case', className)}>
             {children}
           </code>
         </pre>
       )
     },
-    hr: ({ node: _node, ...props }) => <hr {...props} className={cn('my-8 border-black/20', props.className)} />,
+    hr: ({ node: _node, ...props }) => <hr {...props} className={cn('my-8 border-border-dark', props.className)} />,
     strong: ({ node: _node, children, ...props }) => (
       <strong {...props} className={cn('font-semibold', props.className)}>
         {children}
@@ -379,15 +397,20 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     ),
     table: ({ node: _node, children, ...props }) => (
       <div className="my-6 overflow-x-auto">
-        <table {...props} className={cn('w-full text-left text-sm', props.className)}>
+        <table {...props} className={cn('w-full border-collapse text-left text-sm', props.className)}>
           {children}
         </table>
       </div>
     ),
+    tbody: ({ node: _node, children, ...props }) => (
+      <tbody {...props} className={cn('divide-y divide-border-dark', props.className)}>
+        {children}
+      </tbody>
+    ),
     thead: ({ node: _node, children, ...props }) => (
       <thead
         {...props}
-        className={cn('border-b border-black/20 bg-black/5 text-[10px] uppercase tracking-wide', props.className)}
+        className={cn('border-b border-border-dark bg-border-dark/40 text-[10px] uppercase tracking-wide', props.className)}
       >
         {children}
       </thead>
@@ -408,7 +431,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
         {...props}
         alt={alt ?? ''}
         loading={loading ?? 'lazy'}
-        className={cn('max-w-full rounded border border-black/10 bg-black/5', className)}
+        className={cn('max-w-full rounded border border-border-dark bg-border-dark/40', className)}
       />
     ),
   }
@@ -442,7 +465,7 @@ function renderParagraph({ node, children, className, fragment, extraProps }: Pa
           alt={imageNode.alt ?? ''}
           title={imageNode.title ?? undefined}
           loading="lazy"
-          className="w-full rounded border border-black/10 bg-black/5"
+          className="w-full rounded border border-border-dark bg-border-dark/40"
         />
         {caption ? (
           <figcaption className="mt-2 text-center text-[10px] uppercase tracking-[0.25em]">{caption}</figcaption>
@@ -526,7 +549,7 @@ export function Markdown({ content, className, pieceId, headingVariant = 'defaul
   }, [baseComponents, fragmentMetadata])
 
   return (
-    <div className={cn('prose prose-sm max-w-none', className)}>
+    <div className={cn('markdown-content max-w-none text-sm leading-relaxed', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}

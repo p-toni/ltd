@@ -6,7 +6,7 @@ import type { Piece } from '@/lib/pieces'
 interface PiecePosterProps {
   pieces: Piece[]
   selectedPiece: Piece | null
-  theme?: 'noir' | 'blueprint' | 'ocean' | 'sunset' | 'midnight_blue' | 'data_visual'
+  theme?: 'noir' | 'blueprint' | 'ocean' | 'sunset' | 'midnight_blue' | 'data_visual' | 'paper'
 }
 
 const themes = {
@@ -57,6 +57,14 @@ const themes = {
     accent: '#95122C',
     data: '#FF9408',
     cluster: '#CA3F16'
+  },
+  paper: {
+    bg: '#f6f2ec',
+    primary: '#1c130d',
+    secondary: '#d4c8bb',
+    accent: '#CA3F16',
+    data: '#95122C',
+    cluster: '#b9ada1'
   }
 }
 
