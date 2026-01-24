@@ -1,4 +1,4 @@
-import SystemDashboard from '@/components/system-dashboard'
+import SystemDashboardWrapper from '@/components/system-dashboard-wrapper'
 import { getPieces } from '@/lib/pieces'
 import { getPieceEmbeddingContext } from '@/lib/retrieval'
 
@@ -12,5 +12,5 @@ export default async function Page() {
     console.warn('Embedding context unavailable:', error)
   }
 
-  return <SystemDashboard pieces={pieces} contextById={contextById} />
+  return <SystemDashboardWrapper pieces={pieces} contextById={contextById} />
 }
