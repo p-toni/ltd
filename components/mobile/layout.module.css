@@ -109,6 +109,85 @@
   flex: 1;
 }
 
+.readingHeader {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid #1f1f1f;
+}
+
+.readingMetaLine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #777;
+}
+
+.metaBadge {
+  padding: 4px 6px;
+  border: 1px solid #222;
+  background: #0f0f0f;
+}
+
+.readingNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0 12px;
+}
+
+.navCompact {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #333;
+  background: #0f0f0f;
+  color: #bbb;
+  font-size: 18px;
+  line-height: 1;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.navCompact:disabled {
+  opacity: 0.3;
+}
+
+.navCompact:not(:disabled):active {
+  color: #ff6600;
+  border-color: #ff6600;
+}
+
+.progressCompact {
+  flex: 1;
+  text-align: center;
+}
+
+.readingTitle {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 10px 0 8px;
+  letter-spacing: -0.02em;
+}
+
+.readingExcerpt {
+  margin-bottom: 16px;
+  color: #ddd;
+  font-size: 14px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.readingSubline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #666;
+  text-transform: uppercase;
+}
+
 .heroTop {
   display: flex;
   align-items: flex-start;
@@ -488,7 +567,7 @@
   right: 0;
   height: 64px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   border-top: 1px solid #333;
   background: #000;
   z-index: 20;
@@ -647,6 +726,96 @@
   font-size: 9px;
   letter-spacing: 0.2em;
   color: #666;
+}
+
+.infoOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 30;
+}
+
+.infoOverlayVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.infoSheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52vh;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+  border-top: 1px solid #222;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 35;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.infoSheetOpen {
+  transform: translateY(0);
+}
+
+.infoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 52px;
+  border-bottom: 1px solid #222;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+}
+
+.infoClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #333;
+  background: transparent;
+  color: #fff;
+  font-size: 20px;
+}
+
+.infoContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.infoRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #181818;
+}
+
+.infoLabel {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.infoValue {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #f3f4f5;
+  word-break: break-word;
 }
 
 .chatOverlay {

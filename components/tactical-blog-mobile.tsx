@@ -1,11 +1,11 @@
 'use client'
 
-import clsx from 'clsx'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
 import { FlashMessage } from '@/components/mobile/flash-message'
+import { InfoSheet } from '@/components/mobile/info-sheet'
 import { NavSheet } from '@/components/mobile/nav-sheet'
 import { ProgressBar } from '@/components/mobile/progress-bar'
 import { ReadingProgress } from '@/components/mobile/reading-progress'
@@ -30,6 +30,7 @@ export function TacticalBlogMobile() {
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
   const [isNavSheetOpen, setNavSheetOpen] = useState(false)
+  const [isInfoOpen, setInfoOpen] = useState(false)
   const [isNavigating, setNavigating] = useState(false)
   const { light, medium } = useHaptic()
   const scrollProgress = useReadingProgress(contentWrapperRef)
@@ -90,6 +91,7 @@ export function TacticalBlogMobile() {
         triggerNavigationPulse()
       }
       setNavSheetOpen(false)
+      setInfoOpen(false)
       setActiveTab('read')
     },
     [goToPiece, medium, resetScroll, triggerNavigationPulse],
@@ -101,12 +103,29 @@ export function TacticalBlogMobile() {
     medium()
   }, [medium])
 
+  const handleCloseInfo = useCallback(() => {
+    setInfoOpen(false)
+    setActiveTab('read')
+  }, [])
+
   const handleNavSelect = useCallback(
     (tab: MobileNavTab) => {
       if (tab === 'list') {
         setNavSheetOpen((open) => {
           const nextOpen = !open
+          setInfoOpen(false)
           setActiveTab(nextOpen ? 'list' : 'read')
+          medium()
+          return nextOpen
+        })
+        return
+      }
+
+      if (tab === 'info') {
+        setInfoOpen((open) => {
+          const nextOpen = !open
+          setNavSheetOpen(false)
+          setActiveTab(nextOpen ? 'info' : 'read')
           medium()
           return nextOpen
         })
@@ -115,6 +134,7 @@ export function TacticalBlogMobile() {
 
       setActiveTab('read')
       setNavSheetOpen(false)
+      setInfoOpen(false)
       medium()
     },
     [medium],
@@ -160,7 +180,6 @@ export function TacticalBlogMobile() {
     )
   }
 
-  const hexId = `0x${selectedPiece.id.toString(16).padStart(2, '0')}`.toUpperCase()
   const moodLabel = selectedPiece.mood[0]?.toUpperCase() ?? 'N/A'
   const publishedDate = new Date(selectedPiece.publishedAt)
   const hasValidPublishedDate = Number.isFinite(publishedDate.getTime())
@@ -190,63 +209,39 @@ export function TacticalBlogMobile() {
 
       <div ref={contentWrapperRef} className={styles.contentWrapper}>
         <div className={styles.content}>
-          <section className={clsx(styles.hero, styles.heroCorners, styles.heroCornersBottom)}>
-            <div className={styles.heroOverlay} aria-hidden />
-            <div className={styles.heroHeader}>
-              <div className={styles.heroMeta}>
-                <div className={styles.heroTop}>
-                  <div className={styles.heroIdBlock}>
-                    <span className={styles.heroIdLabel}>PIECE</span>
-                    <span className={styles.heroIdValue}>#{String(selectedPiece.id).padStart(3, '0')}</span>
-                    <span className={styles.heroHex}>[{hexId}]</span>
-                  </div>
-                </div>
-                <div className={styles.heroNavRow}>
-                  <button
-                    type="button"
-                    className={clsx(styles.navButton, styles.glitchable)}
-                    onClick={handlePrevious}
-                    disabled={!prevPieceId}
-                    aria-label="Previous piece"
-                  >
-                    <span className={styles.navButtonLabel}>PREV</span>
-                    <span className={styles.navButtonArrow}>‹</span>
-                  </button>
-                  <ProgressBar current={currentPosition} total={totalPieces} className={styles.heroProgress} />
-                  <button
-                    type="button"
-                    className={clsx(styles.navButton, styles.glitchable)}
-                    onClick={handleNext}
-                    disabled={!nextPieceId}
-                    aria-label="Next piece"
-                  >
-                    <span className={styles.navButtonArrow}>›</span>
-                    <span className={styles.navButtonLabel}>NEXT</span>
-                  </button>
-                </div>
-                <h1 className={clsx(styles.pieceTitle, styles.glitchable)}>{selectedPiece.title}</h1>
-                <p className={styles.heroExcerpt}>{selectedPiece.excerpt}</p>
-                <div className={styles.metaRow}>
-                  <div className={styles.metaChip}>
-                    <span className={styles.metaChipLabel}>READ</span>
-                    <span className={styles.metaChipValue}>{selectedPiece.readTime}</span>
-                  </div>
-                  <div className={styles.metaChip}>
-                    <span className={styles.metaChipLabel}>WORDS</span>
-                    <span className={styles.metaChipValue}>{selectedPiece.wordCount.toLocaleString()}</span>
-                  </div>
-                  <div className={styles.metaChip}>
-                    <span className={styles.metaChipLabel}>MOOD</span>
-                    <span className={styles.metaChipValue}>{moodLabel}</span>
-                  </div>
-                </div>
-                <div className={styles.heroFooter}>
-                  <span>{lsDate}</span>
-                  <span>{selectedPiece.slug}.md</span>
-                </div>
-              </div>
+          <section className={styles.readingHeader}>
+            <div className={styles.readingMetaLine}>
+              <span className={styles.metaBadge}>#{String(selectedPiece.id).padStart(3, '0')}</span>
+              <span className={styles.metaBadge}>{selectedPiece.readTime}</span>
+              <span className={styles.metaBadge}>{moodLabel}</span>
             </div>
-
+            <div className={styles.readingNav}>
+              <button
+                type="button"
+                className={styles.navCompact}
+                onClick={handlePrevious}
+                disabled={!prevPieceId}
+                aria-label="Previous piece"
+              >
+                ‹
+              </button>
+              <ProgressBar current={currentPosition} total={totalPieces} className={styles.progressCompact} />
+              <button
+                type="button"
+                className={styles.navCompact}
+                onClick={handleNext}
+                disabled={!nextPieceId}
+                aria-label="Next piece"
+              >
+                ›
+              </button>
+            </div>
+            <h1 className={styles.readingTitle}>{selectedPiece.title}</h1>
+            <p className={styles.readingExcerpt}>{selectedPiece.excerpt}</p>
+            <div className={styles.readingSubline}>
+              <span>{lsDate}</span>
+              <span>{selectedPiece.slug}.md</span>
+            </div>
           </section>
 
           <section className={styles.contentSection}>
@@ -260,6 +255,7 @@ export function TacticalBlogMobile() {
         onSelect={handleNavSelect}
         listState={isListLoading ? 'active' : 'idle'}
         readState={isNavigating ? 'active' : 'idle'}
+        infoState={isInfoOpen ? 'active' : 'idle'}
       />
       <NavSheet
         pieces={sortedPieces}
@@ -268,6 +264,7 @@ export function TacticalBlogMobile() {
         onClose={handleCloseNavSheet}
         onSelect={handlePieceSelect}
       />
+      <InfoSheet piece={selectedPiece} isOpen={isInfoOpen} onClose={handleCloseInfo} />
       <FlashMessage message={flashMessage} />
     </div>
   )

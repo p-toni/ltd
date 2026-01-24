@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import styles from '@/components/mobile/layout.module.css'
 
-export type MobileNavTab = 'list' | 'read'
+export type MobileNavTab = 'list' | 'read' | 'info'
 
 type ActivityState = 'idle' | 'active'
 
@@ -18,16 +18,19 @@ interface NavConfig {
 const NAV_ITEMS: NavConfig[] = [
   { id: 'list', cmd: '$ ls -la', label: 'LIST' },
   { id: 'read', cmd: '$ cat', label: 'READ' },
+  { id: 'info', cmd: '$ stat', label: 'INFO' },
 ]
 
 const LIST_FRAMES = ['[≡]', '[⋮]', '[∴]'] as const
 const READ_FRAMES = ['[▷]', '[▶]'] as const
+const INFO_FRAMES = ['[i]', '[ℹ]'] as const
 
 interface BottomNavProps {
   active: MobileNavTab
   onSelect: (tab: MobileNavTab) => void
   listState?: ActivityState
   readState?: ActivityState
+  infoState?: ActivityState
 }
 
 function useAnimatedIcon(base: string, frames: readonly string[], state: ActivityState, interval: number) {
@@ -55,13 +58,16 @@ export function BottomNav({
   onSelect,
   listState = 'idle',
   readState = 'idle',
+  infoState = 'idle',
 }: BottomNavProps) {
   const listIcon = useAnimatedIcon('[≡]', LIST_FRAMES, listState, 300)
   const readIcon = useAnimatedIcon('[▷]', READ_FRAMES, readState, 220)
+  const infoIcon = useAnimatedIcon('[i]', INFO_FRAMES, infoState, 380)
 
   const iconMap: Record<MobileNavTab, string> = {
     list: listIcon,
     read: readIcon,
+    info: infoIcon,
   }
 
   return (
