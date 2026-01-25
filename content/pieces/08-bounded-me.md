@@ -17,7 +17,6 @@ Learning as “matching a distribution.”
 Those definitions are elegant, but they don’t cash out in my actual life.
 
 In my life, “information” is not what exists in the world. It’s what I can [*pull into myself* under constraints](tooltip:A1): time, attention, energy, compute, mood, calendar, context.
-
 I don’t experience the universe. I experience the slice I can process.
 
 So the question isn’t “how much information is there?”
@@ -167,6 +166,8 @@ That’s a ghostwriter.
 The role I want is different: co-authoring as instrumentation. The AI helps me scan the space, but the piece must be a faithful compression of *my loop*.
 
 Which means the draft has to contain my constraints, not just my references.
+
+**New (minimal) add:** I’ve started treating “me + AI” as a point in a *coupling space*: how much [human–AI exchange](tooltip:E3) exists, how much [human feedback control](tooltip:E2) I retain, and how much complexity I’m importing. When exchange rises but feedback control weakens, the loop doesn’t get smarter—it gets **tighter and wrong**. It amplifies errors, dependencies, and delusions. My default target is *high control, moderate exchange*: fast scanning, slow believing.
 
 ---
 

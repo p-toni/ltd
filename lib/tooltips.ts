@@ -32,6 +32,11 @@ export const PAPER_SOURCES: Record<string, PaperSource> = {
     label: 'arXiv 2402.06184',
     url: 'https://arxiv.org/html/2402.06184v1',
   },
+  E: {
+    id: 'E',
+    label: 'arXiv 2601.12837',
+    url: 'https://arxiv.org/html/2601.12837v1',
+  },
 }
 
 export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
@@ -59,6 +64,24 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     title: "Computation can 'create information'",
     body: "Under bounded observers, deterministic computation can generate new learnable structure, even when classical definitions say information can't increase.",
   },
+  A5: {
+    id: 'A5',
+    paper: 'A',
+    title: 'Computationally bounded observer',
+    body: 'Core move: distinguish unbounded simulation from bounded learning that exploits emergent structure.',
+  },
+  A6: {
+    id: 'A6',
+    paper: 'A',
+    title: 'Epiplexity',
+    body: 'Structural information extractable by computationally bounded observers, separating structure from unpredictable randomness.',
+  },
+  A7: {
+    id: 'A7',
+    paper: 'A',
+    title: 'Area under the loss curve',
+    body: 'Practical heuristic: model description length or absorbed information can be visualized as area under the loss curve above final loss.',
+  },
   B1: {
     id: 'B1',
     paper: 'B',
@@ -70,6 +93,18 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     paper: 'B',
     title: 'Sources, sinks, leakage',
     body: 'The flow framing highlights where information concentrates or dissipates (sources/sinks), a useful metaphor for where my loop loses signal.',
+  },
+  B3: {
+    id: 'B3',
+    paper: 'B',
+    title: 'Continuity equation',
+    body: 'Information-flux metaphor made literal: define Fisher-information flux and a continuity equation with sources and sinks.',
+  },
+  B4: {
+    id: 'B4',
+    paper: 'B',
+    title: 'Information flux',
+    body: 'Fisher information flow as a vectorial flux field, analogous (but not identical) to energy flow.',
   },
   C1: {
     id: 'C1',
@@ -83,6 +118,12 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     title: 'Global structure from local facts',
     body: 'In tasks like path-finding on path-star graphs, models can succeed after memorizing only local edges, suggesting embeddings reflect global topology.',
   },
+  C3: {
+    id: 'C3',
+    paper: 'C',
+    title: 'Geometric memory',
+    body: 'A neat representation can materialize from memorizing incompressible atomic facts, implying geometric parametric memory of global relationships.',
+  },
   D1: {
     id: 'D1',
     paper: 'D',
@@ -94,6 +135,48 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     paper: 'D',
     title: 'Fractal boundary intuition',
     body: 'The stable/unstable boundary can be fractal: zooming in reveals persistent intricacy, explaining why tiny changes can flip outcomes.',
+  },
+  D3: {
+    id: 'D3',
+    paper: 'D',
+    title: 'Trainability boundary (fractal)',
+    body: 'Boundary between stable vs divergent training is fractal, sensitive to tiny hyperparameter changes across many scales.',
+  },
+  E1: {
+    id: 'E1',
+    paper: 'E',
+    title: 'Coupled feedback system',
+    body: 'A framing: what matters is the stability and viability of composite systems formed through sustained human-AI coupling, not AI in isolation.',
+  },
+  E2: {
+    id: 'E2',
+    paper: 'E',
+    title: 'Human feedback control',
+    body: 'Axis in the morphospace: ability to monitor, interpret, and constrain the coupled system.',
+  },
+  E3: {
+    id: 'E3',
+    paper: 'E',
+    title: 'Human-AI exchange',
+    body: 'Axis: richness, bandwidth, and persistence of information flow across the interface.',
+  },
+  E4: {
+    id: 'E4',
+    paper: 'E',
+    title: 'Regulated integrated hybrid',
+    body: 'Tight integration where human feedback control remains strong; shorter loops can improve robustness.',
+  },
+  E5: {
+    id: 'E5',
+    paper: 'E',
+    title: 'Dysregulated integrated hybrid',
+    body: 'High coupling plus weakened human control; loops amplify errors, dependencies, and delusions.',
+  },
+  E6: {
+    id: 'E6',
+    paper: 'E',
+    title: 'Humanbot',
+    body: 'Example region: over-attachment plus persistent reinforcement can weaken feedback control despite high coupling.',
   },
   SYN1: {
     id: 'SYN1',
