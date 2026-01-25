@@ -21,9 +21,9 @@ const NAV_ITEMS: NavConfig[] = [
   { id: 'info', cmd: '$ stat', label: 'INFO' },
 ]
 
-const LIST_FRAMES = ['[≡]', '[⋮]', '[∴]'] as const
-const READ_FRAMES = ['[▷]', '[▶]'] as const
-const INFO_FRAMES = ['[i]', '[ℹ]'] as const
+const LIST_FRAMES = ['▦', '▥', '▧'] as const
+const READ_FRAMES = ['▭', '▮'] as const
+const INFO_FRAMES = ['◌', '◉'] as const
 
 interface BottomNavProps {
   active: MobileNavTab
@@ -60,9 +60,9 @@ export function BottomNav({
   readState = 'idle',
   infoState = 'idle',
 }: BottomNavProps) {
-  const listIcon = useAnimatedIcon('[≡]', LIST_FRAMES, listState, 300)
-  const readIcon = useAnimatedIcon('[▷]', READ_FRAMES, readState, 220)
-  const infoIcon = useAnimatedIcon('[i]', INFO_FRAMES, infoState, 380)
+  const listIcon = useAnimatedIcon('▦', LIST_FRAMES, listState, 300)
+  const readIcon = useAnimatedIcon('▭', READ_FRAMES, readState, 220)
+  const infoIcon = useAnimatedIcon('◌', INFO_FRAMES, infoState, 380)
 
   const iconMap: Record<MobileNavTab, string> = {
     list: listIcon,
@@ -81,9 +81,12 @@ export function BottomNav({
             className={clsx(styles.navItem, active === item.id && styles.navItemActive)}
             onClick={() => onSelect(item.id)}
           >
+            <span className={styles.navIndicator} aria-hidden />
+            <span className={styles.navIcon} aria-hidden>
+              {icon}
+            </span>
+            <span className={styles.navLabel}>{item.label}</span>
             <span className={styles.navCmd}>{item.cmd}</span>
-            <span className={styles.navIcon}>{icon}</span>
-            <span>{item.label}</span>
           </button>
         )
       })}
