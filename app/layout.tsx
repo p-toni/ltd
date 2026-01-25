@@ -19,8 +19,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 
 export const metadata: Metadata = {
-  title: 'System Configuration Dashboard',
-  description: 'Advanced system monitoring and configuration interface',
+  title: 'toni.ltd',
+  description: 'stabilizing the human-AI loop',
 }
 
 export default function RootLayout({
