@@ -16,13 +16,20 @@ type MoodFilter = 'all' | 'contemplative' | 'analytical' | 'exploratory' | 'crit
 interface SystemDashboardProps {
   pieces: Piece[]
   contextById?: Record<number, number>
+  initialPieceId?: number | null
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-export default function SystemDashboard({ pieces, contextById = {} }: SystemDashboardProps) {
+export default function SystemDashboard({ pieces, contextById = {}, initialPieceId }: SystemDashboardProps) {
   const [selectedEngine, setSelectedEngine] = useState<'discover' | 'focus'>('discover')
-  const [selectedPiece, setSelectedPiece] = useState<Piece | null>(pieces[0] || null)
+  const [selectedPiece, setSelectedPiece] = useState<Piece | null>(() => {
+    if (typeof initialPieceId === 'number') {
+      return pieces.find((piece) => piece.id === initialPieceId) ?? pieces[0] ?? null
+    }
+
+    return pieces[0] ?? null
+  })
   const [moodFilter, setMoodFilter] = useState<MoodFilter>('all')
   const [showExcerpts, setShowExcerpts] = useState(true)
   const [compactView, setCompactView] = useState(false)

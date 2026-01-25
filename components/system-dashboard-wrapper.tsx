@@ -9,18 +9,19 @@ import SystemDashboard from '@/components/system-dashboard'
 interface SystemDashboardWrapperProps {
   pieces: Piece[]
   contextById: Record<number, number>
+  initialPieceId?: number | null
 }
 
-export default function SystemDashboardWrapper({ pieces, contextById }: SystemDashboardWrapperProps) {
+export default function SystemDashboardWrapper({ pieces, contextById, initialPieceId }: SystemDashboardWrapperProps) {
   const isMobile = useBreakpoint('(max-width: 767px)')
 
   if (isMobile) {
     return (
-      <TacticalBlogProvider pieces={pieces}>
+      <TacticalBlogProvider pieces={pieces} initialPieceId={initialPieceId}>
         <TacticalBlogMobile />
       </TacticalBlogProvider>
     )
   }
 
-  return <SystemDashboard pieces={pieces} contextById={contextById} />
+  return <SystemDashboard pieces={pieces} contextById={contextById} initialPieceId={initialPieceId} />
 }
