@@ -9,8 +9,6 @@ excerpt: A safety manual for keeping control in the human-AI loop.
 pinned: true
 ---
 
-## 0) What I’m actually doing
-
 I am not “using AI.”
 
 I am regulating a [coupled feedback system](tooltip:E1):
