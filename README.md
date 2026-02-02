@@ -18,12 +18,25 @@ pnpm dev
 
 Open `http://localhost:3000` to view the Tactical Blog interface.
 
+### Environment
+
+Copy `.env.example` to `.env.local` and fill in the keys you plan to use.
+
 ### AI Chat & Retrieval
 
 1. Export a Hugging Face token with access to `nvidia/NV-Embed-v2` (`HF_TOKEN=...`).
 2. Generate embeddings: `pnpm ts-node scripts/embed-pieces.ts` (rerun after content changes).
 3. In the chat drawer, pick a provider (Anthropic or OpenAI) and supply your API key. Keys are kept client-side.
 4. Ask questions—answers stream live with references to the indexed pieces.
+
+### Research Swarm (PR-Approved)
+
+The daily research pipeline uses OpenAI + Brave Search to propose short inline updates and opens a PR for review.
+
+```bash
+pnpm ts-node scripts/research/run-daily.ts --dry-run
+pnpm ts-node scripts/research/run-daily.ts
+```
 
 ### Useful Scripts
 
@@ -33,6 +46,7 @@ Open `http://localhost:3000` to view the Tactical Blog interface.
 | `pnpm build`   | Create a production build                    |
 | `pnpm start`   | Run the built app                            |
 | `pnpm lint`    | Lint the codebase with ESLint                |
+| `pnpm ts-node scripts/research/run-daily.ts` | Run the daily research swarm |
 
 ## Content Workflow
 
@@ -49,6 +63,12 @@ mood:
   - analytical
 excerpt: Short logline displayed in the UI
 pinned: true
+watch_queries:
+  - example keyword
+watch_domains:
+  - example.com
+watch_feeds:
+  - https://example.com/rss.xml
 ---
 
 Write your piece in Markdown here. Lists, code blocks, tables, and blockquotes are supported.
@@ -66,6 +86,10 @@ The loader validates required fields, parses the date, computes `wordCount`, and
 - `content/pieces/` — Markdown sources for pieces
 - `lib/` — Helpers like the Markdown loader (`lib/pieces.ts`)
 - `public/` — Static assets
+
+## Agent-First Notes
+
+See the capability map in [docs/capability-map.md](file:///Users/ptoni/Downloads/Projects/ltd/docs/capability-map.md) to keep UI actions and agent actions in parity.
 
 ## Contributing
 

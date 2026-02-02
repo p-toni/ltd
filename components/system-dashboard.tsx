@@ -8,10 +8,9 @@ import { Markdown } from '@/components/markdown'
 import { ActivityTicker } from '@/components/activity-ticker'
 import PiecePoster from '@/components/piece-poster'
 import { LocalGeometryScene } from '@/components/local-geometry-scene'
+import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
 import { cn } from '@/lib/utils'
 import { X } from '@phosphor-icons/react'
-
-type MoodFilter = 'all' | 'contemplative' | 'analytical' | 'exploratory' | 'critical'
 
 interface SystemDashboardProps {
   pieces: Piece[]
@@ -21,34 +20,32 @@ interface SystemDashboardProps {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-export default function SystemDashboard({ pieces, contextById = {}, initialPieceId }: SystemDashboardProps) {
-  const [selectedEngine, setSelectedEngine] = useState<'discover' | 'focus'>('discover')
-  const [selectedPiece, setSelectedPiece] = useState<Piece | null>(() => {
-    if (typeof initialPieceId === 'number') {
-      return pieces.find((piece) => piece.id === initialPieceId) ?? pieces[0] ?? null
-    }
-
-    return pieces[0] ?? null
-  })
-  const [moodFilter, setMoodFilter] = useState<MoodFilter>('all')
-  const [showExcerpts, setShowExcerpts] = useState(true)
-  const [compactView, setCompactView] = useState(false)
-  const [currentTime, setCurrentTime] = useState('')
-  const [isLightMode, setIsLightMode] = useState(true)
+export default function SystemDashboard({ pieces, contextById = {}, initialPieceId: _initialPieceId }: SystemDashboardProps) {
+  const {
+    currentTime,
+    selectedMood,
+    setSelectedMood,
+    setSelectedPieceId,
+    selectedPiece: selectedPieceFromContext,
+    goToPiece,
+    showExcerpts,
+    compactView,
+    engineMode,
+    themeMode,
+    setShowExcerpts,
+    setCompactView,
+    setEngineMode,
+    setThemeMode,
+    handleAgentSubmit,
+    agentInput,
+    setAgentInput,
+  } = useTacticalBlogContext()
+  const [selectedEngine, setSelectedEngine] = useState<'discover' | 'focus'>(engineMode)
+  const [isAgentOpen, setIsAgentOpen] = useState(false)
+  const [isLightMode, setIsLightMode] = useState(themeMode === 'light')
   const panelBorder = isLightMode ? 'rgba(28, 19, 13, 0.12)' : 'rgba(255, 255, 255, 0.1)'
   const panelOutline = isLightMode ? 'rgba(28, 19, 13, 0.08)' : 'rgba(255, 255, 255, 0.08)'
   const panelDot = isLightMode ? 'rgba(28, 19, 13, 0.08)' : '#1a1a1a'
-
-  useEffect(() => {
-    const updateTime = () => {
-      setCurrentTime(new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }))
-    }
-    
-    updateTime()
-    const interval = setInterval(updateTime, 1000)
-    
-    return () => clearInterval(interval)
-  }, [])
 
   useEffect(() => {
     const root = document.documentElement
@@ -60,20 +57,35 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
     }
   }, [isLightMode])
 
-  const filteredPieces = useMemo(() => (
-    moodFilter === 'all'
-      ? pieces
-      : pieces.filter(piece => piece.mood.includes(moodFilter))
-  ), [pieces, moodFilter])
+  useEffect(() => {
+    setIsLightMode(themeMode === 'light')
+  }, [themeMode])
 
   useEffect(() => {
-    if (!selectedPiece) return
+    setSelectedEngine(engineMode)
+  }, [engineMode])
+
+  const filteredPieces = useMemo(() => (
+    selectedMood === 'all'
+      ? pieces
+      : pieces.filter(piece => piece.mood.includes(selectedMood))
+  ), [pieces, selectedMood])
+
+  const selectedPiece = selectedPieceFromContext
+
+  useEffect(() => {
+    if (!selectedPiece) {
+      return
+    }
 
     const stillVisible = filteredPieces.some((piece) => piece.id === selectedPiece.id)
     if (!stillVisible) {
-      setSelectedPiece(filteredPieces[0] ?? null)
+      const fallback = filteredPieces[0] ?? null
+      if (fallback) {
+        setSelectedPieceId(fallback.id)
+      }
     }
-  }, [filteredPieces, selectedPiece])
+  }, [filteredPieces, selectedPiece, setSelectedPieceId])
 
   const handlePanelClick = (event: MouseEvent<HTMLElement>) => {
     if (event.target !== event.currentTarget) return
@@ -180,6 +192,24 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
     ]
   }, [selectedPiece, boundedMetrics.recencyScore])
 
+  const researchStats = useMemo(() => {
+    if (!selectedPiece) {
+      return {
+        latestUpdateAt: 'NONE',
+        updateCount: 0,
+        watchDomains: 'NONE',
+        watchQueriesCount: 0,
+      }
+    }
+
+    return {
+      latestUpdateAt: selectedPiece.latestUpdateAt ?? 'NONE',
+      updateCount: selectedPiece.updateCount ?? 0,
+      watchDomains: selectedPiece.watchDomains.length ? selectedPiece.watchDomains.join(', ') : 'NONE',
+      watchQueriesCount: selectedPiece.watchQueries.length,
+    }
+  }, [selectedPiece])
+
   return (
     <div
       className={cn(
@@ -215,16 +245,20 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
             <div className="flex items-center gap-4">
             <div className="flex flex-col items-end px-3 border-r" style={{ borderColor: panelBorder }}>
               <span className="text-[9px] text-[#666]">BLOG_LOAD</span>
-              <span className="text-[11px] font-bold text-primary">{pieces.length} PIECES</span>
-            </div>
-            <ActivityTicker className="max-w-xs" />
-            <div className="flex gap-2">
-              <div className="flex h-10 items-center justify-center px-4" role="timer" aria-live="polite" aria-label="Current time">
+                <span className="text-[11px] font-bold text-primary">{pieces.length} PIECES</span>
+              </div>
+              <ActivityTicker className="max-w-xs" />
+              <div className="flex gap-2">
+                <div className="flex h-10 items-center justify-center px-4" role="timer" aria-live="polite" aria-label="Current time">
                 <span className="text-white text-[11px] font-mono tabular-nums">{currentTime}</span>
               </div>
               <button
                 type="button"
-                onClick={() => setIsLightMode((prev) => !prev)}
+                onClick={() => {
+                  const nextIsLight = !isLightMode
+                  setIsLightMode(nextIsLight)
+                  setThemeMode(nextIsLight ? 'light' : 'dark')
+                }}
                 className="flex h-10 items-center gap-2 px-3 bg-panel-dark border border-border-dark text-[9px] font-bold tracking-[0.2em] transition-colors"
                 aria-label={isLightMode ? 'Switch to dark mode' : 'Switch to light mode'}
                 aria-pressed={isLightMode}
@@ -267,7 +301,10 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
               <label className="flex-1 flex items-center justify-center cursor-pointer group">
                 <input
                   checked={selectedEngine === 'discover'}
-                  onChange={() => setSelectedEngine('discover')}
+                  onChange={() => {
+                    setSelectedEngine('discover')
+                    setEngineMode('discover')
+                  }}
                   className="hidden peer"
                   name="engine"
                   type="radio"
@@ -279,7 +316,10 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
               <label className="flex-1 flex items-center justify-center cursor-pointer group">
                 <input
                   checked={selectedEngine === 'focus'}
-                  onChange={() => setSelectedEngine('focus')}
+                  onChange={() => {
+                    setSelectedEngine('focus')
+                    setEngineMode('focus')
+                  }}
                   className="hidden peer"
                   name="engine"
                   type="radio"
@@ -293,12 +333,12 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
             {/* Article List - scrollable middle section */}
             <div className="flex-1 overflow-y-auto custom-scrollbar min-h-0">
               <div className={cn("space-y-2", compactView && "space-y-1")}>
-                {filteredPieces.slice(0, 5).map((piece) => (
-                  <div
-                    key={piece.id}
-                    onClick={() => setSelectedPiece(piece)}
-                    className={cn(
-                      "bg-panel-dark rounded-sm cursor-pointer transition-all hover:border-primary shadow-md",
+                  {filteredPieces.slice(0, 5).map((piece) => (
+                    <div
+                      key={piece.id}
+                      onClick={() => goToPiece(piece.id, { announce: 'GOTO' })}
+                      className={cn(
+                        "bg-panel-dark rounded-sm cursor-pointer transition-all hover:border-primary shadow-md",
                       compactView ? "p-2" : "p-3",
                       selectedPiece?.id === piece.id && "border-primary bg-primary/10"
                     )}
@@ -480,6 +520,29 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
 
               <div className="space-y-2 border-t pt-3" style={{ borderColor: panelBorder }}>
                 <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-white">RESEARCH</span>
+                  <span className="text-[8px] text-[#666]">AUTO</span>
+                </div>
+                <div className="bg-panel-dark p-2 border-l-2 border-primary">
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[8px] font-mono">
+                    <span className="text-[#666]">AUTO_RESEARCH</span>
+                    <span className="text-white">ON</span>
+                    <span className="text-[#666]">LAST_UPDATE</span>
+                    <span className="text-white">{researchStats.latestUpdateAt}</span>
+                    <span className="text-[#666]">UPDATES_FOUND</span>
+                    <span className="text-white">{researchStats.updateCount}</span>
+                    <span className="text-[#666]">WATCH_QUERIES</span>
+                    <span className="text-white">{researchStats.watchQueriesCount}</span>
+                    <span className="text-[#666]">WATCH_DOMAINS</span>
+                    <span className="text-white truncate" title={researchStats.watchDomains}>
+                      {researchStats.watchDomains}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 border-t pt-3" style={{ borderColor: panelBorder }}>
+                <div className="flex items-center justify-between">
                   <span className="text-[10px] font-bold text-white">LOCAL_GEOMETRY</span>
                   <span className="text-[8px] text-[#666]">3D_FIELD</span>
                 </div>
@@ -519,7 +582,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                 <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: `1px solid ${panelOutline}` }}>
                   <span className="text-[9px] font-bold text-white">EXCERPTS</span>
                   <button
-                    onClick={() => setShowExcerpts(!showExcerpts)}
+                    onClick={() => setShowExcerpts((prev) => !prev)}
                     className={`w-10 h-5 ${showExcerpts ? 'bg-primary' : 'bg-border-dark'} rounded-sm relative flex items-center px-1 transition-colors`}
                     aria-label={showExcerpts ? 'Hide excerpts' : 'Show excerpts'}
                     aria-pressed={showExcerpts}
@@ -530,7 +593,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                 <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: `1px solid ${panelOutline}` }}>
                   <span className="text-[9px] font-bold text-white">COMPACT</span>
                   <button
-                    onClick={() => setCompactView(!compactView)}
+                    onClick={() => setCompactView((prev) => !prev)}
                     className={`w-10 h-5 ${compactView ? 'bg-primary' : 'bg-border-dark'} rounded-sm relative flex items-center px-1 transition-colors`}
                     aria-label={compactView ? 'Disable compact view' : 'Enable compact view'}
                     aria-pressed={compactView}
@@ -547,13 +610,13 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => setMoodFilter('all')}
+                    onClick={() => setSelectedMood('all')}
                     className={cn(
                       "col-span-2 rounded-sm border border-border-dark bg-panel-dark px-3 py-2 text-left transition-colors",
-                      moodFilter === 'all' ? 'border-primary text-white' : 'text-[#666] hover:text-white'
+                      selectedMood === 'all' ? 'border-primary text-white' : 'text-[#666] hover:text-white'
                     )}
                     aria-label="Show all articles"
-                    aria-pressed={moodFilter === 'all'}
+                    aria-pressed={selectedMood === 'all'}
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[9px] font-bold">ALL</span>
@@ -574,13 +637,13 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                     return (
                       <button
                         key={id}
-                        onClick={() => setMoodFilter(id)}
+                        onClick={() => setSelectedMood(id)}
                         className={cn(
                           "rounded-sm border border-border-dark bg-panel-dark px-3 py-2 text-left transition-colors",
-                          moodFilter === id ? 'border-primary text-white' : 'text-[#666] hover:text-white'
+                          selectedMood === id ? 'border-primary text-white' : 'text-[#666] hover:text-white'
                         )}
                         aria-label={`Show ${label.toLowerCase()} articles`}
-                        aria-pressed={moodFilter === id}
+                        aria-pressed={selectedMood === id}
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-[9px] font-bold">{label}</span>
@@ -588,7 +651,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                         </div>
                         <div className="mt-2 h-1 bg-border-dark">
                           <div
-                            className={cn("h-full", moodFilter === id ? 'bg-primary' : 'bg-white/60')}
+                            className={cn("h-full", selectedMood === id ? 'bg-primary' : 'bg-white/60')}
                             style={{ width: `${width}%` }}
                           />
                         </div>
@@ -598,6 +661,49 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                 </div>
               </div>
             </div>
+          </section>
+
+          {/* BLOCK D: AGENT CONSOLE */}
+          <section className="col-span-12 lg:col-span-12 bg-black text-white border-t border-black">
+            <div className="flex items-center justify-between px-4 py-2 text-[10px] tracking-[0.3em] border-b border-white/10">
+              <span>AGENT CONSOLE</span>
+              <button
+                type="button"
+                onClick={() => setIsAgentOpen((prev) => !prev)}
+                className="rounded border border-white/20 px-2 py-[2px] text-[10px] uppercase tracking-[0.2em] text-white/70 transition hover:border-white/40 hover:text-white"
+              >
+                {isAgentOpen ? 'HIDE' : 'SHOW'}
+              </button>
+            </div>
+            {isAgentOpen && (
+              <div className="px-4 py-3">
+                <div className="rounded border border-white/20 bg-black/60 focus-within:border-white/40">
+                  <textarea
+                    rows={3}
+                    className="h-full w-full resize-none bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-white/30"
+                    placeholder=">_ Tell the agent what to do (e.g., 'open piece 004', 'filter to analytical', 'toggle compact')"
+                    value={agentInput}
+                    onChange={(event) => setAgentInput(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                        event.preventDefault()
+                        handleAgentSubmit()
+                        return
+                      }
+
+                      if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault()
+                        handleAgentSubmit()
+                      }
+                    }}
+                  />
+                </div>
+                <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-white/40">
+                  <span>Enter to submit · Shift+Enter for newline</span>
+                  <span>Agent runs in-place</span>
+                </div>
+              </div>
+            )}
           </section>
 
         </main>

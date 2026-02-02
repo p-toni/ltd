@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 
-import { streamLlmResponse, type LlmProvider } from '@/lib/llm'
+import { runAgentResponse, streamLlmResponse, type LlmProvider } from '@/lib/llm'
+import type { AgentState } from '@/lib/agent-types'
+import { buildAgentContext } from '@/lib/agent-context'
+import { getPieces } from '@/lib/pieces'
 import { retrieveContext } from '@/lib/retrieval'
 
 interface ChatRequestBody {
@@ -10,6 +13,8 @@ interface ChatRequestBody {
   limitPieces?: number
   provider?: LlmProvider
   apiKey?: string
+  mode?: 'synth' | 'agent'
+  agentState?: AgentState
 }
 
 export async function POST(request: Request) {
@@ -37,6 +42,25 @@ export async function POST(request: Request) {
   }
 
   try {
+    if (body.mode === 'agent') {
+      const state = body.agentState
+      if (!state) {
+        return NextResponse.json({ error: 'Agent state is required' }, { status: 400 })
+      }
+
+      const pieces = await getPieces()
+      const context = buildAgentContext(pieces, state)
+      const response = await runAgentResponse({
+        provider,
+        apiKey,
+        prompt,
+        state,
+        context,
+      })
+
+      return NextResponse.json(response)
+    }
+
     const retrieval = await retrieveContext(prompt, {
       limitFragments: body.limitFragments ?? 6,
       limitPieces: body.limitPieces ?? 3,

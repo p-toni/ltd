@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import styles from '@/components/mobile/layout.module.css'
 
-export type MobileNavTab = 'list' | 'read' | 'info'
+export type MobileNavTab = 'list' | 'read' | 'info' | 'agent'
 
 type ActivityState = 'idle' | 'active'
 
@@ -17,6 +17,7 @@ interface NavConfig {
 
 const NAV_ITEMS: NavConfig[] = [
   { id: 'list', cmd: '$ ls -la', label: 'LIST' },
+  { id: 'agent', cmd: '$ agent', label: 'AGENT' },
   { id: 'read', cmd: '$ cat', label: 'READ' },
   { id: 'info', cmd: '$ stat', label: 'INFO' },
 ]
@@ -24,11 +25,13 @@ const NAV_ITEMS: NavConfig[] = [
 const LIST_FRAMES = ['▦', '▥', '▧'] as const
 const READ_FRAMES = ['▭', '▮'] as const
 const INFO_FRAMES = ['◌', '◉'] as const
+const AGENT_FRAMES = ['◎', '◉', '●'] as const
 
 interface BottomNavProps {
   active: MobileNavTab
   onSelect: (tab: MobileNavTab) => void
   listState?: ActivityState
+  agentState?: ActivityState
   readState?: ActivityState
   infoState?: ActivityState
 }
@@ -57,15 +60,18 @@ export function BottomNav({
   active,
   onSelect,
   listState = 'idle',
+  agentState = 'idle',
   readState = 'idle',
   infoState = 'idle',
 }: BottomNavProps) {
   const listIcon = useAnimatedIcon('▦', LIST_FRAMES, listState, 300)
+  const agentIcon = useAnimatedIcon('◎', AGENT_FRAMES, agentState, 240)
   const readIcon = useAnimatedIcon('▭', READ_FRAMES, readState, 220)
   const infoIcon = useAnimatedIcon('◌', INFO_FRAMES, infoState, 380)
 
   const iconMap: Record<MobileNavTab, string> = {
     list: listIcon,
+    agent: agentIcon,
     read: readIcon,
     info: infoIcon,
   }

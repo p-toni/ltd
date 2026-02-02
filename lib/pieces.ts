@@ -17,6 +17,11 @@ export interface Piece {
   readTimeMinutes: number
   pinned: boolean
   slug: string
+  watchQueries: string[]
+  watchDomains: string[]
+  watchFeeds: string[]
+  updateCount: number
+  latestUpdateAt: string | null
 }
 
 const PIECE_DIRECTORY = path.join(process.cwd(), 'content', 'pieces')
@@ -24,6 +29,7 @@ const VALID_MOODS: Mood[] = ['contemplative', 'analytical', 'exploratory', 'crit
 const VALID_MOOD_SET = new Set<Mood>(VALID_MOODS)
 const FRONTMATTER_PATTERN = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/m
 const WORDS_PER_MINUTE = 220
+const UPDATE_MARKER_REGEX = /Update \((\d{4}-\d{2}-\d{2})\):/g
 
 export interface PieceFragment {
   id: string
@@ -71,8 +77,12 @@ export async function getPieces(): Promise<Piece[]> {
       const excerpt = ensureString(data.excerpt, 'excerpt', entry.name)
 
       const moods = normalizeMoods(data.mood, entry.name)
+      const watchQueries = normalizeWatchList(data.watch_queries)
+      const watchDomains = normalizeWatchList(data.watch_domains)
+      const watchFeeds = normalizeWatchList(data.watch_feeds)
       const normalizedContent = content.trim()
       const wordCount = countWords(normalizedContent)
+      const updateMeta = extractUpdateMetadata(normalizedContent)
 
       const publishedAt = parseDate(date, entry.name)
       const readTimeMinutes = Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE))
@@ -93,6 +103,11 @@ export async function getPieces(): Promise<Piece[]> {
         readTimeMinutes,
         pinned,
         slug,
+        watchQueries,
+        watchDomains,
+        watchFeeds,
+        updateCount: updateMeta.count,
+        latestUpdateAt: updateMeta.latestDate,
       }
     }),
   )
@@ -225,6 +240,32 @@ function normalizeMoods(value: FrontmatterValue | undefined, filename: string): 
   }
 
   return moods
+}
+
+function normalizeWatchList(value: FrontmatterValue | undefined): string[] {
+  const values = Array.isArray(value) ? value : typeof value === 'string' && value ? [value] : []
+  return values
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function extractUpdateMetadata(content: string) {
+  let match: RegExpExecArray | null
+  let count = 0
+  let latestDate: string | null = null
+
+  while ((match = UPDATE_MARKER_REGEX.exec(content)) !== null) {
+    const date = match[1]
+    if (!date) {
+      continue
+    }
+    count += 1
+    if (!latestDate || date > latestDate) {
+      latestDate = date
+    }
+  }
+
+  return { count, latestDate }
 }
 
 function parseDate(value: string, filename: string) {

@@ -34,3 +34,4 @@ Treat this workflow as the source of truth for merge readiness. Any changes to s
 - Node 20 / pnpm 10.10
 - `.env.local` for local dev, Vercel env groups for preview/production
 - Required env keys live in `.env.example`; keep it in sync whenever you add/remove config
+- Research swarm requires `OPENAI_API_KEY` and `BRAVE_API_KEY` in CI for daily runs

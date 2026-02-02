@@ -1,3 +1,4 @@
+import { AgentResponse, AgentState } from './agent-types'
 import { RetrievalResult } from './retrieval'
 
 export type LlmProvider = 'anthropic' | 'openai'
@@ -9,8 +10,18 @@ interface StreamParams {
   retrieval: RetrievalResult
 }
 
+interface AgentParams {
+  provider: LlmProvider
+  apiKey: string
+  prompt: string
+  state: AgentState
+  context: string
+}
+
 const OPENAI_MODEL = 'gpt-4o-mini'
 const ANTHROPIC_MODEL = 'claude-3-5-sonnet-20240620'
+const AGENT_OPENAI_MODEL = 'gpt-4o-mini'
+const AGENT_ANTHROPIC_MODEL = 'claude-3-5-sonnet-20240620'
 
 function buildContextPrompt(prompt: string, retrieval: RetrievalResult) {
   const lines: string[] = []
@@ -51,6 +62,35 @@ function buildSystemPrompt() {
   ].join(' ')
 }
 
+function buildAgentSystemPrompt(context: string) {
+  return `You are the Toni.LTD site agent. You can help readers navigate, filter, and control the interface.
+
+You MUST return a JSON object with two keys:
+- "message": a short response to show the user.
+- "actions": an array of actions for the UI to take.
+
+Valid actions:
+- {"type":"open_piece","pieceId":number}
+- {"type":"set_mood_filter","mood":"all"|"contemplative"|"analytical"|"exploratory"|"critical"}
+- {"type":"toggle_excerpts","value"?:boolean}
+- {"type":"toggle_compact","value"?:boolean}
+- {"type":"set_theme","theme":"light"|"dark"}
+- {"type":"set_engine","engine":"discover"|"focus"}
+- {"type":"noop","reason"?:string}
+
+Only include actions that match the user's request. If the request is informational, respond with message and a noop action.
+
+${context}`
+}
+
+function parseAgentResponse(payload: string): AgentResponse {
+  const parsed = JSON.parse(payload) as AgentResponse
+  if (!parsed || typeof parsed.message !== 'string' || !Array.isArray(parsed.actions)) {
+    throw new Error('Invalid agent response shape')
+  }
+  return parsed
+}
+
 export async function* streamLlmResponse({ provider, apiKey, prompt, retrieval }: StreamParams) {
   const systemPrompt = buildSystemPrompt()
   const userPrompt = buildContextPrompt(prompt, retrieval)
@@ -67,10 +107,26 @@ export async function* streamLlmResponse({ provider, apiKey, prompt, retrieval }
   }
 }
 
+export async function runAgentResponse({ provider, apiKey, prompt, state, context }: AgentParams) {
+  const systemPrompt = buildAgentSystemPrompt(context)
+  const userPrompt = `State: ${JSON.stringify(state)}\n\nUser request: ${prompt.trim()}`
+
+  const content =
+    provider === 'openai'
+      ? await completeOpenAI({ apiKey, systemPrompt, userPrompt, model: AGENT_OPENAI_MODEL })
+      : await completeAnthropic({ apiKey, systemPrompt, userPrompt, model: AGENT_ANTHROPIC_MODEL })
+
+  return parseAgentResponse(content)
+}
+
 interface ProviderParams {
   apiKey: string
   systemPrompt: string
   userPrompt: string
+}
+
+interface CompletionParams extends ProviderParams {
+  model: string
 }
 
 async function* streamOpenAI({ apiKey, systemPrompt, userPrompt }: ProviderParams) {
@@ -210,4 +266,63 @@ async function* streamAnthropic({ apiKey, systemPrompt, userPrompt }: ProviderPa
       }
     }
   }
+}
+
+async function completeOpenAI({ apiKey, systemPrompt, userPrompt, model }: CompletionParams) {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      temperature: 0.2,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`OpenAI request failed: ${errorText}`)
+  }
+
+  const payload = (await response.json()) as { choices?: Array<{ message?: { content?: string } }> }
+  const content = payload.choices?.[0]?.message?.content
+  if (!content) {
+    throw new Error('OpenAI completion missing content')
+  }
+  return content
+}
+
+async function completeAnthropic({ apiKey, systemPrompt, userPrompt, model }: CompletionParams) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: 600,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+    }),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`Anthropic request failed: ${errorText}`)
+  }
+
+  const payload = (await response.json()) as { content?: Array<{ text?: string }> }
+  const content = payload.content?.[0]?.text
+  if (!content) {
+    throw new Error('Anthropic completion missing content')
+  }
+  return content
 }

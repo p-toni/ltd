@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Markdown } from '@/components/markdown'
 import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
+import { ChatSheet } from '@/components/mobile/chat-sheet'
 import { FlashMessage } from '@/components/mobile/flash-message'
 import { InfoSheet } from '@/components/mobile/info-sheet'
 import { NavSheet } from '@/components/mobile/nav-sheet'
@@ -25,12 +26,26 @@ export function TacticalBlogMobile() {
     goToNextPiece,
     goToPreviousPiece,
     flashMessage,
+    chatMessages,
+    agentInput,
+    setAgentInput,
+    handleAgentSubmit,
+    isChatLoading,
+    chatProvider,
+    setChatProvider,
+    chatApiKey,
+    setChatApiKey,
+    handleCitationClick,
+    registerChatContainer,
+    registerChatInput,
+    focusChatInput,
   } = useTacticalBlogContext()
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
   const [isNavSheetOpen, setNavSheetOpen] = useState(false)
   const [isInfoOpen, setInfoOpen] = useState(false)
+  const [isChatOpen, setChatOpen] = useState(false)
   const [isNavigating, setNavigating] = useState(false)
   const { light, medium } = useHaptic()
   const scrollProgress = useReadingProgress(contentWrapperRef)
@@ -108,6 +123,11 @@ export function TacticalBlogMobile() {
     setActiveTab('read')
   }, [])
 
+  const handleCloseChat = useCallback(() => {
+    setChatOpen(false)
+    setActiveTab('read')
+  }, [])
+
   const handleNavSelect = useCallback(
     (tab: MobileNavTab) => {
       if (tab === 'list') {
@@ -125,7 +145,20 @@ export function TacticalBlogMobile() {
         setInfoOpen((open) => {
           const nextOpen = !open
           setNavSheetOpen(false)
+          setChatOpen(false)
           setActiveTab(nextOpen ? 'info' : 'read')
+          medium()
+          return nextOpen
+        })
+        return
+      }
+
+      if (tab === 'agent') {
+        setChatOpen((open) => {
+          const nextOpen = !open
+          setNavSheetOpen(false)
+          setInfoOpen(false)
+          setActiveTab(nextOpen ? 'agent' : 'read')
           medium()
           return nextOpen
         })
@@ -135,6 +168,7 @@ export function TacticalBlogMobile() {
       setActiveTab('read')
       setNavSheetOpen(false)
       setInfoOpen(false)
+      setChatOpen(false)
       medium()
     },
     [medium],
@@ -254,6 +288,7 @@ export function TacticalBlogMobile() {
         active={activeTab}
         onSelect={handleNavSelect}
         listState={isListLoading ? 'active' : 'idle'}
+        agentState={isChatOpen ? 'active' : 'idle'}
         readState={isNavigating ? 'active' : 'idle'}
         infoState={isInfoOpen ? 'active' : 'idle'}
       />
@@ -265,6 +300,23 @@ export function TacticalBlogMobile() {
         onSelect={handlePieceSelect}
       />
       <InfoSheet piece={selectedPiece} isOpen={isInfoOpen} onClose={handleCloseInfo} />
+      <ChatSheet
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        messages={chatMessages}
+        chatInput={agentInput}
+        setChatInput={setAgentInput}
+        onSubmit={handleAgentSubmit}
+        isLoading={isChatLoading}
+        provider={chatProvider}
+        setProvider={setChatProvider}
+        apiKey={chatApiKey}
+        setApiKey={setChatApiKey}
+        onCitation={handleCitationClick}
+        registerContainer={registerChatContainer}
+        registerInput={registerChatInput}
+        focusInput={focusChatInput}
+      />
       <FlashMessage message={flashMessage} />
     </div>
   )

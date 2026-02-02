@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Piece } from '@/lib/pieces'
 import type { RetrievalResult } from '@/lib/retrieval'
+import type { AgentAction, AgentResponse, AgentState, AgentTheme, AgentEngine } from '@/lib/agent-types'
 
 export type MoodFilter = Piece['mood'][number] | 'all'
 
@@ -106,6 +107,10 @@ export interface TacticalBlogExperience {
   pinnedCount: number
   selectedPiece: Piece | null
   currentPieceId: number | null
+  showExcerpts: boolean
+  compactView: boolean
+  engineMode: AgentEngine
+  themeMode: AgentTheme
   flashMessage: string | null
   showFlash: (message: string, duration?: number) => void
   clearFlash: () => void
@@ -123,9 +128,16 @@ export interface TacticalBlogExperience {
   setShowChatShortcutHint: (value: boolean) => void
   setSelectedMood: (value: MoodFilter) => void
   setSelectedPieceId: (value: number | null | ((prev: number | null) => number | null)) => void
+  setShowExcerpts: (value: boolean | ((prev: boolean) => boolean)) => void
+  setCompactView: (value: boolean | ((prev: boolean) => boolean)) => void
+  setEngineMode: (value: AgentEngine) => void
+  setThemeMode: (value: AgentTheme) => void
   handleChatSubmit: () => Promise<void>
+  handleAgentSubmit: (input?: string) => Promise<void>
   handleCitationClick: (pieceNumber: number, fragmentOrder?: number) => void
   setPendingFragmentAnchor: (value: string | null) => void
+  setAgentInput: (value: string) => void
+  agentInput: string
 }
 
 export function useTacticalBlogExperience(
@@ -145,6 +157,7 @@ export function useTacticalBlogExperience(
       createdAt: Date.now(),
     },
   ])
+  const [agentInput, setAgentInput] = useState('')
   const [chatInput, setChatInput] = useState('')
   const [isChatLoading, setIsChatLoading] = useState(false)
   const [chatProvider, setChatProvider] = useState<'anthropic' | 'openai'>('anthropic')
@@ -158,6 +171,10 @@ export function useTacticalBlogExperience(
   })
   const [pendingFragmentAnchor, setPendingFragmentAnchor] = useState<string | null>(null)
   const [flashMessage, setFlashMessage] = useState<string | null>(null)
+  const [engineMode, setEngineMode] = useState<AgentEngine>('discover')
+  const [themeMode, setThemeMode] = useState<AgentTheme>('light')
+  const [showExcerpts, setShowExcerpts] = useState(true)
+  const [compactView, setCompactView] = useState(false)
   const flashTimeoutRef = useRef<number | null>(null)
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null)
@@ -495,6 +512,132 @@ export function useTacticalBlogExperience(
     }
   }, [chatApiKey, chatInput, chatProvider, isChatLoading, selectedPiece?.id])
 
+  const applyAgentAction = useCallback(
+    (action: AgentAction) => {
+      switch (action.type) {
+        case 'open_piece': {
+          if (Number.isFinite(action.pieceId)) {
+            goToPiece(action.pieceId, { announce: 'GOTO' })
+          }
+          break
+        }
+        case 'set_mood_filter': {
+          setSelectedMood(action.mood)
+          break
+        }
+        case 'toggle_excerpts': {
+          setShowExcerpts((prev) => (typeof action.value === 'boolean' ? action.value : !prev))
+          break
+        }
+        case 'toggle_compact': {
+          setCompactView((prev) => (typeof action.value === 'boolean' ? action.value : !prev))
+          break
+        }
+        case 'set_theme': {
+          setThemeMode(action.theme)
+          break
+        }
+        case 'set_engine': {
+          setEngineMode(action.engine)
+          break
+        }
+        case 'noop':
+        default:
+          break
+      }
+    },
+    [goToPiece, setSelectedMood],
+  )
+
+  const handleAgentSubmit = useCallback(async (input?: string) => {
+    if (isChatLoading) {
+      return
+    }
+
+    const prompt = (input ?? agentInput).trim()
+    if (!prompt) {
+      return
+    }
+
+    const apiKey = chatApiKey.trim()
+    if (!apiKey) {
+      const errorMessage: ChatMessage = {
+        id: createMessageId('error'),
+        role: 'error',
+        content: '⚠️ Provide an API key before querying the agent.',
+        createdAt: Date.now(),
+      }
+      setChatMessages((previous) => [...previous, errorMessage])
+      return
+    }
+
+    const userMessage: ChatMessage = {
+      id: createMessageId('user'),
+      role: 'user',
+      content: prompt,
+      createdAt: Date.now(),
+    }
+
+    setChatMessages((previous) => [...previous, userMessage])
+    setAgentInput('')
+    setChatInput('')
+    setIsChatLoading(true)
+
+    const state: AgentState = {
+      selectedPieceId: selectedPiece?.id ?? null,
+      moodFilter: selectedMood,
+      showExcerpts,
+      compactView,
+      theme: themeMode,
+      engine: engineMode,
+    }
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          provider: chatProvider,
+          apiKey,
+          mode: 'agent',
+          agentState: state,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => ({}))
+        throw new Error(errorBody.error ?? 'Unexpected response from agent API')
+      }
+
+      const payload = (await response.json()) as AgentResponse
+      if (!payload.message) {
+        throw new Error('Agent response missing message')
+      }
+
+      payload.actions?.forEach((action) => applyAgentAction(action))
+
+      const assistantMessage: ChatMessage = {
+        id: createMessageId('assistant'),
+        role: 'assistant',
+        content: payload.message,
+        createdAt: Date.now(),
+      }
+      setChatMessages((previous) => [...previous, assistantMessage])
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error'
+      const errorMessage: ChatMessage = {
+        id: createMessageId('error'),
+        role: 'error',
+        content: `⚠️ ${message}`,
+        createdAt: Date.now(),
+      }
+      setChatMessages((previous) => [...previous, errorMessage])
+    } finally {
+      setIsChatLoading(false)
+    }
+  }, [agentInput, applyAgentAction, chatApiKey, chatProvider, engineMode, isChatLoading, selectedMood, selectedPiece?.id, showExcerpts, compactView, themeMode, setChatInput])
+
   const handleCitationClick = useCallback(
     (pieceNumber: number, fragmentOrder?: number) => {
       const pieceId = Number(pieceNumber)
@@ -581,6 +724,10 @@ export function useTacticalBlogExperience(
     pinnedCount,
     selectedPiece,
     currentPieceId,
+    showExcerpts,
+    compactView,
+    engineMode,
+    themeMode,
     flashMessage,
     showFlash,
     clearFlash,
@@ -598,8 +745,15 @@ export function useTacticalBlogExperience(
     setShowChatShortcutHint,
     setSelectedMood,
     setSelectedPieceId,
+    setShowExcerpts,
+    setCompactView,
+    setEngineMode,
+    setThemeMode,
     handleChatSubmit,
+    handleAgentSubmit,
     handleCitationClick,
     setPendingFragmentAnchor,
+    setAgentInput,
+    agentInput,
   }
 }

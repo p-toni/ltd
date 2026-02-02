@@ -7,7 +7,9 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "test": "vitest"
+    "test": "vitest",
+    "research:daily": "ts-node scripts/research/run-daily.ts",
+    "research:rewrite": "ts-node scripts/research/run-rewrite.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

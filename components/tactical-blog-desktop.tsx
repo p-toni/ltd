@@ -108,8 +108,6 @@ export function TacticalBlogDesktop() {
     showChatShortcutHint,
     setShowChatShortcutHint,
     chatMessages,
-    chatInput,
-    setChatInput,
     isChatLoading,
     chatProvider,
     setChatProvider,
@@ -122,6 +120,11 @@ export function TacticalBlogDesktop() {
     setSelectedPieceId,
     sortedPieces,
     pinnedCount,
+    handleAgentSubmit,
+    agentInput,
+    setAgentInput,
+    chatInput,
+    setChatInput,
     handleChatSubmit,
     handleCitationClick,
     registerChatContainer,
@@ -730,9 +733,9 @@ export function TacticalBlogDesktop() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 border-b border-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-white/60">
-            <label className="flex items-center gap-2">
-              <span>Provider</span>
+            <div className="flex flex-wrap items-center gap-3 border-b border-white/10 px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-white/60">
+              <label className="flex items-center gap-2">
+                <span>Provider</span>
               <select
                 value={chatProvider}
                 onChange={(event) => setChatProvider(event.target.value as 'anthropic' | 'openai')}
@@ -742,8 +745,8 @@ export function TacticalBlogDesktop() {
                 <option value="openai">OpenAI</option>
               </select>
             </label>
-            <label className="flex flex-1 min-w-[220px] items-center gap-2">
-              <span>API Key</span>
+              <label className="flex flex-1 min-w-[220px] items-center gap-2">
+                <span>API Key</span>
               <input
                 type="password"
                 value={chatApiKey}
@@ -751,8 +754,15 @@ export function TacticalBlogDesktop() {
                 placeholder="sk-..."
                 className="flex-1 rounded border border-white/20 bg-black px-2 py-1 text-white/80 focus:border-white/40 focus:outline-none"
               />
-            </label>
-          </div>
+              </label>
+              <button
+                type="button"
+                onClick={() => handleChatSubmit()}
+                className="rounded border border-white/20 px-2 py-[2px] text-[10px] uppercase tracking-[0.2em] text-white/70 transition hover:border-white/40 hover:text-white"
+              >
+                SYNTH
+              </button>
+            </div>
 
           <div
             ref={registerChatContainer}
@@ -791,7 +801,29 @@ export function TacticalBlogDesktop() {
                 ref={registerChatInput}
                 rows={isChatDetached ? 3 : 2}
                 className="h-full w-full resize-none bg-transparent px-3 py-2 text-xs text-white outline-none placeholder:text-white/30"
-                placeholder=">_ Ask the system (Shift+Enter for newline)"
+                placeholder=">_ Ask the agent (Shift+Enter for newline)"
+                value={agentInput}
+                onChange={(event) => setAgentInput(event.target.value)}
+                disabled={isChatLoading}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                    event.preventDefault()
+                    handleAgentSubmit()
+                    return
+                  }
+
+                  if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault()
+                    handleAgentSubmit()
+                  }
+                }}
+              />
+            </div>
+            <div className="mt-2 rounded border border-white/20 bg-black/60 focus-within:border-white/40">
+              <textarea
+                rows={isChatDetached ? 2 : 1}
+                className="h-full w-full resize-none bg-transparent px-3 py-2 text-[10px] text-white outline-none placeholder:text-white/30"
+                placeholder=">_ Ask the synthesizer (uses retrieval)"
                 value={chatInput}
                 onChange={(event) => setChatInput(event.target.value)}
                 disabled={isChatLoading}

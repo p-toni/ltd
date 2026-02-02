@@ -23,6 +23,8 @@ export function InfoSheet({ piece, isOpen, onClose }: InfoSheetProps) {
         year: 'numeric',
       })
     : piece.date
+  const watchDomains = piece.watchDomains.length ? piece.watchDomains.join(', ') : 'NONE'
+  const latestUpdate = piece.latestUpdateAt ?? 'NONE'
 
   return (
     <>
@@ -62,6 +64,22 @@ export function InfoSheet({ piece, isOpen, onClose }: InfoSheetProps) {
           <div className={styles.infoRow}>
             <span className={styles.infoLabel}>SLUG</span>
             <span className={styles.infoValue}>{piece.slug}.md</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>RESEARCH</span>
+            <span className={styles.infoValue}>AUTO</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>LAST_UPDATE</span>
+            <span className={styles.infoValue}>{latestUpdate}</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>UPDATES_FOUND</span>
+            <span className={styles.infoValue}>{piece.updateCount}</span>
+          </div>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>WATCH_DOMAINS</span>
+            <span className={styles.infoValue} title={watchDomains}>{watchDomains}</span>
           </div>
         </div>
       </section>

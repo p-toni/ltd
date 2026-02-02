@@ -18,6 +18,11 @@ const SAMPLE_PIECES: Piece[] = [
     readTimeMinutes: 1,
     pinned: false,
     slug: 'field-notes',
+    watchQueries: [],
+    watchDomains: [],
+    watchFeeds: [],
+    updateCount: 0,
+    latestUpdateAt: null,
   },
   {
     id: 2,
@@ -32,6 +37,11 @@ const SAMPLE_PIECES: Piece[] = [
     readTimeMinutes: 2,
     pinned: false,
     slug: 'terminal-dreams',
+    watchQueries: [],
+    watchDomains: [],
+    watchFeeds: [],
+    updateCount: 0,
+    latestUpdateAt: null,
   },
   {
     id: 3,
@@ -46,6 +56,11 @@ const SAMPLE_PIECES: Piece[] = [
     readTimeMinutes: 3,
     pinned: false,
     slug: 'gesture-theory',
+    watchQueries: [],
+    watchDomains: [],
+    watchFeeds: [],
+    updateCount: 0,
+    latestUpdateAt: null,
   },
 ]
 

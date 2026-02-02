@@ -23,5 +23,9 @@ export default function SystemDashboardWrapper({ pieces, contextById, initialPie
     )
   }
 
-  return <SystemDashboard pieces={pieces} contextById={contextById} initialPieceId={initialPieceId} />
+  return (
+    <TacticalBlogProvider pieces={pieces} initialPieceId={initialPieceId}>
+      <SystemDashboard pieces={pieces} contextById={contextById} initialPieceId={initialPieceId} />
+    </TacticalBlogProvider>
+  )
 }

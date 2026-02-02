@@ -19,7 +19,7 @@ interface ChatSheetProps {
   messages: ChatMessage[]
   chatInput: string
   setChatInput: (value: string) => void
-  onSubmit: () => Promise<void>
+  onSubmit: (input?: string) => Promise<void>
   isLoading: boolean
   provider: 'anthropic' | 'openai'
   setProvider: (provider: 'anthropic' | 'openai') => void
@@ -82,7 +82,7 @@ export function ChatSheet({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    await onSubmit()
+    await onSubmit(chatInput)
     focusInput()
   }
 
@@ -180,7 +180,7 @@ export function ChatSheet({
               value={chatInput}
               onChange={(event) => setChatInput(event.target.value)}
               rows={3}
-              placeholder=">_ Ask the system..."
+              placeholder=">_ Ask the agent..."
               disabled={isLoading}
               ref={registerInput}
             />

@@ -134,6 +134,50 @@ Content.
       await fs.rm(root, { recursive: true, force: true })
     }
   })
+
+  it('parses watch lists and update markers', async () => {
+    const root = await createTempRoot()
+    try {
+      await writePiece(
+        root,
+        'watched.md',
+        `---
+id: 10
+title: Watched Piece
+date: 2025.06.01
+mood:
+  - analytical
+excerpt: Watched excerpt
+watch_queries:
+  - supply chain resilience
+watch_domains:
+  - example.com
+  - another.com
+watch_feeds:
+  - https://example.com/feed.xml
+pinned: false
+---
+
+First paragraph.
+
+Update (2025-06-15): Added a new data point. (Source: https://example.com/article)
+Update (2025-08-03): Another update. (Source: https://another.com/post)
+`,
+      )
+
+      const { getPieces } = await loadPiecesModule(root)
+      const pieces = await getPieces()
+      const piece = pieces[0]
+
+      expect(piece.watchQueries).toEqual(['supply chain resilience'])
+      expect(piece.watchDomains).toEqual(['example.com', 'another.com'])
+      expect(piece.watchFeeds).toEqual(['https://example.com/feed.xml'])
+      expect(piece.updateCount).toBe(2)
+      expect(piece.latestUpdateAt).toBe('2025-08-03')
+    } finally {
+      await fs.rm(root, { recursive: true, force: true })
+    }
+  })
 })
 
 describe('getPieceFragments', () => {
