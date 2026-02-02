@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Piece } from '@/lib/pieces'
 import type { RetrievalResult } from '@/lib/retrieval'
 import type { AgentAction, AgentResponse, AgentState, AgentTheme, AgentEngine } from '@/lib/agent-types'
+import { ENABLE_AI } from '@/lib/feature-flags'
 
 export type MoodFilter = Piece['mood'][number] | 'all'
 
@@ -138,6 +139,7 @@ export interface TacticalBlogExperience {
   setPendingFragmentAnchor: (value: string | null) => void
   setAgentInput: (value: string) => void
   agentInput: string
+  aiEnabled: boolean
 }
 
 export function useTacticalBlogExperience(
@@ -175,6 +177,7 @@ export function useTacticalBlogExperience(
   const [themeMode, setThemeMode] = useState<AgentTheme>('light')
   const [showExcerpts, setShowExcerpts] = useState(true)
   const [compactView, setCompactView] = useState(false)
+  const aiEnabled = ENABLE_AI
   const flashTimeoutRef = useRef<number | null>(null)
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
   const chatInputRef = useRef<HTMLTextAreaElement | null>(null)
@@ -370,6 +373,10 @@ export function useTacticalBlogExperience(
   }, [goToPiece, selectedPieceId, sortedPieces])
 
   const handleChatSubmit = useCallback(async () => {
+    if (!aiEnabled) {
+      showFlash('AI_DISABLED')
+      return
+    }
     if (isChatLoading) {
       return
     }
@@ -510,7 +517,7 @@ export function useTacticalBlogExperience(
     } finally {
       setIsChatLoading(false)
     }
-  }, [chatApiKey, chatInput, chatProvider, isChatLoading, selectedPiece?.id])
+  }, [aiEnabled, chatApiKey, chatInput, chatProvider, isChatLoading, selectedPiece?.id, showFlash])
 
   const applyAgentAction = useCallback(
     (action: AgentAction) => {
@@ -550,6 +557,10 @@ export function useTacticalBlogExperience(
   )
 
   const handleAgentSubmit = useCallback(async (input?: string) => {
+    if (!aiEnabled) {
+      showFlash('AI_DISABLED')
+      return
+    }
     if (isChatLoading) {
       return
     }
@@ -636,7 +647,7 @@ export function useTacticalBlogExperience(
     } finally {
       setIsChatLoading(false)
     }
-  }, [agentInput, applyAgentAction, chatApiKey, chatProvider, engineMode, isChatLoading, selectedMood, selectedPiece?.id, showExcerpts, compactView, themeMode, setChatInput])
+  }, [agentInput, aiEnabled, applyAgentAction, chatApiKey, chatProvider, engineMode, isChatLoading, selectedMood, selectedPiece?.id, showExcerpts, compactView, themeMode, setChatInput, showFlash])
 
   const handleCitationClick = useCallback(
     (pieceNumber: number, fragmentOrder?: number) => {
@@ -755,5 +766,6 @@ export function useTacticalBlogExperience(
     setPendingFragmentAnchor,
     setAgentInput,
     agentInput,
+    aiEnabled,
   }
 }

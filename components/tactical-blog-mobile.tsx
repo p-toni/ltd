@@ -39,6 +39,7 @@ export function TacticalBlogMobile() {
     registerChatContainer,
     registerChatInput,
     focusChatInput,
+    aiEnabled,
   } = useTacticalBlogContext()
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
@@ -128,6 +129,15 @@ export function TacticalBlogMobile() {
     setActiveTab('read')
   }, [])
 
+  useEffect(() => {
+    if (!aiEnabled) {
+      setChatOpen(false)
+      if (activeTab === 'agent') {
+        setActiveTab('read')
+      }
+    }
+  }, [aiEnabled, activeTab])
+
   const handleNavSelect = useCallback(
     (tab: MobileNavTab) => {
       if (tab === 'list') {
@@ -154,6 +164,11 @@ export function TacticalBlogMobile() {
       }
 
       if (tab === 'agent') {
+        if (!aiEnabled) {
+          setChatOpen(false)
+          setActiveTab('read')
+          return
+        }
         setChatOpen((open) => {
           const nextOpen = !open
           setNavSheetOpen(false)
@@ -171,7 +186,7 @@ export function TacticalBlogMobile() {
       setChatOpen(false)
       medium()
     },
-    [medium],
+    [aiEnabled, medium],
   )
 
   useSwipeable(contentWrapperRef, {
@@ -291,6 +306,7 @@ export function TacticalBlogMobile() {
         agentState={isChatOpen ? 'active' : 'idle'}
         readState={isNavigating ? 'active' : 'idle'}
         infoState={isInfoOpen ? 'active' : 'idle'}
+        aiEnabled={aiEnabled}
       />
       <NavSheet
         pieces={sortedPieces}
@@ -301,7 +317,7 @@ export function TacticalBlogMobile() {
       />
       <InfoSheet piece={selectedPiece} isOpen={isInfoOpen} onClose={handleCloseInfo} />
       <ChatSheet
-        isOpen={isChatOpen}
+        isOpen={aiEnabled && isChatOpen}
         onClose={handleCloseChat}
         messages={chatMessages}
         chatInput={agentInput}

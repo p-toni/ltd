@@ -95,6 +95,12 @@ body {
   text-transform: uppercase;
 }
 
+html, body, #__next {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
 .material-symbols-outlined {
   font-family: "Material Symbols Outlined";
   font-weight: 400;

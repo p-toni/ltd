@@ -47,6 +47,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
     handleAgentSubmit,
     agentInput,
     setAgentInput,
+    aiEnabled,
   } = useTacticalBlogContext()
   const [selectedEngine, setSelectedEngine] = useState<'discover' | 'focus'>(engineMode)
   const [isAgentOpen, setIsAgentOpen] = useState(false)
@@ -266,7 +267,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
   return (
     <div
       className={cn(
-        'min-h-screen bg-background-light dark:bg-background-dark text-[#1c130d] dark:text-white selection:bg-primary selection:text-white relative overflow-x-hidden custom-scrollbar',
+        'min-h-screen bg-background-light dark:bg-background-dark text-[#1c130d] dark:text-white selection:bg-primary selection:text-white relative overflow-hidden custom-scrollbar',
         isLightMode ? 'dashboard-light' : 'dark',
       )}
     >
@@ -731,12 +732,17 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
               <button
                 type="button"
                 onClick={() => setIsAgentOpen((prev) => !prev)}
-                className="rounded border border-white/20 px-2 py-[2px] text-[10px] uppercase tracking-[0.2em] text-white/70 transition hover:border-white/40 hover:text-white"
+                disabled={!aiEnabled}
+                className={cn(
+                  'rounded border border-white/20 px-2 py-[2px] text-[10px] uppercase tracking-[0.2em] text-white/70 transition',
+                  aiEnabled ? 'hover:border-white/40 hover:text-white' : 'opacity-40 cursor-not-allowed',
+                )}
               >
-                {isAgentOpen ? 'HIDE' : 'SHOW'}
+                {aiEnabled ? (isAgentOpen ? 'HIDE' : 'SHOW') : 'DISABLED'}
               </button>
             </div>
-            {isAgentOpen && (
+            {aiEnabled ? (
+              isAgentOpen && (
               <div className="px-4 py-3">
                 <div className="rounded border border-white/20 bg-black/60 focus-within:border-white/40">
                   <textarea
@@ -763,6 +769,11 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                   <span>Enter to submit · Shift+Enter for newline</span>
                   <span>Agent runs in-place</span>
                 </div>
+              </div>
+            )
+            ) : (
+              <div className="px-4 py-3 text-[10px] uppercase tracking-[0.2em] text-white/40">
+                AI_DISABLED · ENABLE_AI=false
               </div>
             )}
           </section>

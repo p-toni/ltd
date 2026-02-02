@@ -34,6 +34,7 @@ interface BottomNavProps {
   agentState?: ActivityState
   readState?: ActivityState
   infoState?: ActivityState
+  aiEnabled?: boolean
 }
 
 function useAnimatedIcon(base: string, frames: readonly string[], state: ActivityState, interval: number) {
@@ -63,6 +64,7 @@ export function BottomNav({
   agentState = 'idle',
   readState = 'idle',
   infoState = 'idle',
+  aiEnabled = true,
 }: BottomNavProps) {
   const listIcon = useAnimatedIcon('▦', LIST_FRAMES, listState, 300)
   const agentIcon = useAnimatedIcon('◎', AGENT_FRAMES, agentState, 240)
@@ -76,9 +78,11 @@ export function BottomNav({
     info: infoIcon,
   }
 
+  const items = aiEnabled ? NAV_ITEMS : NAV_ITEMS.filter((item) => item.id !== 'agent')
+
   return (
     <nav className={styles.bottomNav} aria-label="Terminal navigation">
-      {NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const icon = iconMap[item.id]
         return (
           <button

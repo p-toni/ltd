@@ -18,6 +18,10 @@ interface ChatRequestBody {
 }
 
 export async function POST(request: Request) {
+  if (process.env.ENABLE_AI !== 'true') {
+    return NextResponse.json({ error: 'AI access disabled' }, { status: 403 })
+  }
+
   let body: ChatRequestBody
 
   try {

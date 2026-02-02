@@ -21,6 +21,7 @@ Open `http://localhost:3000` to view the Tactical Blog interface.
 ### Environment
 
 Copy `.env.example` to `.env.local` and fill in the keys you plan to use.
+Set `ENABLE_AI=true` and `NEXT_PUBLIC_ENABLE_AI=true` only if you want to enable chat/agent features.
 
 ### AI Chat & Retrieval
 

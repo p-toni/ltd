@@ -125,6 +125,7 @@ export function TacticalBlogDesktop() {
     setAgentInput,
     chatInput,
     setChatInput,
+    aiEnabled,
     handleChatSubmit,
     handleCitationClick,
     registerChatContainer,
@@ -173,6 +174,12 @@ export function TacticalBlogDesktop() {
   }, [])
 
   useEffect(() => {
+    if (!aiEnabled) {
+      setIsChatOpen(false)
+      setIsChatDetached(false)
+      return
+    }
+
     const openChat = () => {
       setIsChatOpen(true)
       setShowChatShortcutHint(false)
@@ -236,7 +243,7 @@ export function TacticalBlogDesktop() {
         hotkeyTimeoutRef.current = null
       }
     }
-  }, [focusChatInput, isChatDetached, isChatOpen, setIsChatDetached, setIsChatOpen, setShowChatShortcutHint])
+  }, [aiEnabled, focusChatInput, isChatDetached, isChatOpen, setIsChatDetached, setIsChatOpen, setShowChatShortcutHint])
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia === 'undefined') {
@@ -657,7 +664,7 @@ export function TacticalBlogDesktop() {
         <div className="flex items-center gap-6">
           <span>MODE: READ</span>
           <span>FILTER: {selectedMood.toUpperCase()}</span>
-          {!isChatOpen && (
+          {aiEnabled && !isChatOpen && (
             <button
               onClick={() => setIsChatOpen(true)}
               className="text-[color:var(--te-orange,#ff6600)] transition-colors hover:underline"
@@ -684,21 +691,22 @@ export function TacticalBlogDesktop() {
       )}
 
       {/* Chat Drawer */}
-      <div
-        className={cn(
-          'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[279px] lg:right-[279px]',
-          isChatOpen ? 'pointer-events-auto' : 'pointer-events-none',
-        )}
-        style={{
-          transform: isChatOpen ? 'translateY(0%)' : 'translateY(100%)',
-        }}
-      >
+      {aiEnabled && (
         <div
           className={cn(
-            'mx-auto flex w-full flex-col border-t border-black bg-black text-white shadow-[0_-8px_40px_rgba(0,0,0,0.25)] transition-all duration-300',
-            isChatDetached ? 'h-[60vh]' : 'h-[260px]',
+            'pointer-events-none fixed bottom-0 left-0 right-0 flex justify-center transition-all duration-300 lg:left-[279px] lg:right-[279px]',
+            isChatOpen ? 'pointer-events-auto' : 'pointer-events-none',
           )}
+          style={{
+            transform: isChatOpen ? 'translateY(0%)' : 'translateY(100%)',
+          }}
         >
+          <div
+            className={cn(
+              'mx-auto flex w-full flex-col border-t border-black bg-black text-white shadow-[0_-8px_40px_rgba(0,0,0,0.25)] transition-all duration-300',
+              isChatDetached ? 'h-[60vh]' : 'h-[260px]',
+            )}
+          >
           <div
             className="flex items-center justify-between border-b border-white/10 px-4 text-[10px] tracking-[0.3em]"
             style={{ height: `${STATUS_BAR_HEIGHT}px` }}
@@ -850,8 +858,9 @@ export function TacticalBlogDesktop() {
               <span>/help · /summarize · /connect</span>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
