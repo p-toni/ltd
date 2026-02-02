@@ -18,6 +18,14 @@ interface SystemDashboardProps {
   initialPieceId?: number | null
 }
 
+interface ResearchStatusPayload {
+  lastRunAt?: string
+  lastAppliedUpdateAt?: string | null
+  proposals?: number
+  updatesApplied?: number
+  piecesReviewed?: number
+}
+
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
 export default function SystemDashboard({ pieces, contextById = {}, initialPieceId: _initialPieceId }: SystemDashboardProps) {
@@ -43,6 +51,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
   const [selectedEngine, setSelectedEngine] = useState<'discover' | 'focus'>(engineMode)
   const [isAgentOpen, setIsAgentOpen] = useState(false)
   const [isLightMode, setIsLightMode] = useState(themeMode === 'light')
+  const [researchStatus, setResearchStatus] = useState<ResearchStatusPayload | null>(null)
   const panelBorder = isLightMode ? 'rgba(28, 19, 13, 0.12)' : 'rgba(255, 255, 255, 0.1)'
   const panelOutline = isLightMode ? 'rgba(28, 19, 13, 0.08)' : 'rgba(255, 255, 255, 0.08)'
   const panelDot = isLightMode ? 'rgba(28, 19, 13, 0.08)' : '#1a1a1a'
@@ -64,6 +73,31 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
   useEffect(() => {
     setSelectedEngine(engineMode)
   }, [engineMode])
+
+  useEffect(() => {
+    let isActive = true
+
+    const loadStatus = async () => {
+      try {
+        const response = await fetch('/research/status.json', { cache: 'no-store' })
+        if (!response.ok) {
+          return
+        }
+        const payload = (await response.json()) as ResearchStatusPayload
+        if (isActive) {
+          setResearchStatus(payload)
+        }
+      } catch (error) {
+        // Ignore missing status during local dev.
+      }
+    }
+
+    loadStatus()
+
+    return () => {
+      isActive = false
+    }
+  }, [])
 
   const filteredPieces = useMemo(() => (
     selectedMood === 'all'
@@ -199,7 +233,22 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
         updateCount: 0,
         watchDomains: 'NONE',
         watchQueriesCount: 0,
+        lastRunAt: 'NONE',
+        lastAppliedUpdateAt: 'NONE',
+        runProposals: 0,
+        runUpdatesApplied: 0,
       }
+    }
+
+    const formatDate = (value?: string | null) => {
+      if (!value) {
+        return 'NONE'
+      }
+      const parsed = Date.parse(value)
+      if (Number.isNaN(parsed)) {
+        return value
+      }
+      return new Date(parsed).toISOString().slice(0, 10)
     }
 
     return {
@@ -207,8 +256,12 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
       updateCount: selectedPiece.updateCount ?? 0,
       watchDomains: selectedPiece.watchDomains.length ? selectedPiece.watchDomains.join(', ') : 'NONE',
       watchQueriesCount: selectedPiece.watchQueries.length,
+      lastRunAt: formatDate(researchStatus?.lastRunAt),
+      lastAppliedUpdateAt: formatDate(researchStatus?.lastAppliedUpdateAt),
+      runProposals: researchStatus?.proposals ?? 0,
+      runUpdatesApplied: researchStatus?.updatesApplied ?? 0,
     }
-  }, [selectedPiece])
+  }, [selectedPiece, researchStatus])
 
   return (
     <div
@@ -527,6 +580,14 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                   <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-[8px] font-mono">
                     <span className="text-[#666]">AUTO_RESEARCH</span>
                     <span className="text-white">ON</span>
+                    <span className="text-[#666]">LAST_RUN</span>
+                    <span className="text-white">{researchStats.lastRunAt}</span>
+                    <span className="text-[#666]">LAST_APPLIED</span>
+                    <span className="text-white">{researchStats.lastAppliedUpdateAt}</span>
+                    <span className="text-[#666]">RUN_UPDATES</span>
+                    <span className="text-white">{researchStats.runUpdatesApplied}</span>
+                    <span className="text-[#666]">RUN_PROPOSALS</span>
+                    <span className="text-white">{researchStats.runProposals}</span>
                     <span className="text-[#666]">LAST_UPDATE</span>
                     <span className="text-white">{researchStats.latestUpdateAt}</span>
                     <span className="text-[#666]">UPDATES_FOUND</span>

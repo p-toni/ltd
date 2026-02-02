@@ -19,6 +19,26 @@ function isoDateLabel(date = new Date()) {
   return date.toISOString().slice(0, 10)
 }
 
+interface ResearchStatus {
+  lastRunAt: string
+  lastAppliedUpdateAt: string | null
+  proposals: number
+  updatesApplied: number
+  piecesReviewed: number
+}
+
+async function loadPreviousStatus(statusPath: string): Promise<ResearchStatus | null> {
+  try {
+    const raw = await fs.readFile(statusPath, 'utf8')
+    return JSON.parse(raw) as ResearchStatus
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      return null
+    }
+    throw error
+  }
+}
+
 async function run() {
   const dryRun = process.argv.includes('--dry-run')
   const pieces = await getPieces()
@@ -92,11 +112,14 @@ async function run() {
     })
   }
 
-  if (!dryRun && (updatesApplied > 0 || proposalsCount > 0)) {
+  if (!dryRun) {
     const statusPath = path.join(process.cwd(), 'public', 'research', 'status.json')
     await fs.mkdir(path.dirname(statusPath), { recursive: true })
-    const statusPayload = {
+    const previousStatus = await loadPreviousStatus(statusPath)
+    const statusPayload: ResearchStatus = {
       lastRunAt: new Date().toISOString(),
+      lastAppliedUpdateAt:
+        updatesApplied > 0 ? dateLabel : previousStatus?.lastAppliedUpdateAt ?? null,
       proposals: proposalsCount,
       updatesApplied,
       piecesReviewed,
