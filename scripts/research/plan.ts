@@ -79,7 +79,9 @@ Return JSON with keys:
 Constraints:
 - Use recencyDays=14 and maxResultsPerQuery=5.
 - Include watch domains/feeds as provided.
-- Queries must be short and specific.
+- Queries must be short, specific, and anchored to the piece content.
+- Each query must include at least one concrete noun phrase or named entity from the piece (avoid generic methodology/intro guides).
+- If the piece is personal or reflective, focus on named people, projects, tools, or claims mentioned in the piece.
 - stanceTargets uses: support, extend, contradict.
 `
 
