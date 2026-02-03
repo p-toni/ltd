@@ -36,6 +36,7 @@ jobs:
       - name: Create pull request
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.REPO_PAT }}
           commit-message: 'Rewrite proposal'
           title: 'Rewrite proposal'
           body: 'Automated rewrite proposal from labeled issue.'
