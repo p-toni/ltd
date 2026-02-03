@@ -14,12 +14,16 @@ import {
   type ChatMessage,
   type MoodFilter,
 } from '@/hooks/use-tactical-blog-experience'
+import { useViewportHeight } from '@/hooks/use-viewport-height'
 import { cn } from '@/lib/utils'
 
 const NAV_VISIBLE_LIMIT = 5
 const NAV_ITEM_HEIGHT = 48
 const NAV_ITEM_GAP = 4
 const STATUS_BAR_HEIGHT = 32
+const HEIGHT_GUARDS = {
+  activityTicker: 860,
+}
 const MOOD_FILTERS: MoodFilter[] = ['all', 'contemplative', 'analytical', 'exploratory', 'critical']
 const INTERACTIVE_SELECTOR =
   'a, button, [role="button"], [data-cursor-interactive], input, textarea, select, summary, label'
@@ -139,6 +143,7 @@ export function TacticalBlogDesktop() {
   const [isCursorMoving, setIsCursorMoving] = useState(false)
   const [isCursorInteractive, setIsCursorInteractive] = useState(false)
   const [cursorSpeed, setCursorSpeed] = useState(0)
+  const viewportHeight = useViewportHeight()
 
   const movementTimeoutRef = useRef<number | null>(null)
   const animationFrameRef = useRef<number | null>(null)
@@ -149,6 +154,7 @@ export function TacticalBlogDesktop() {
   const navListMaxHeight =
     NAV_VISIBLE_LIMIT * NAV_ITEM_HEIGHT + (NAV_VISIBLE_LIMIT - 1) * NAV_ITEM_GAP + NAV_ITEM_GAP * 2
   const hotkeyTimeoutRef = useRef<number | null>(null)
+  const hideActivityTicker = viewportHeight < HEIGHT_GUARDS.activityTicker
 
   const resetCursorState = useCallback(() => {
     cursorVisibleRef.current = false
@@ -430,7 +436,7 @@ export function TacticalBlogDesktop() {
 
   if (!pieces.length || !selectedPiece) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-white font-mono text-black">
+      <div className="flex h-[100svh] w-full items-center justify-center bg-white font-mono text-black">
         <span className="text-xs tracking-[0.4em] uppercase">No pieces available</span>
       </div>
     )
@@ -438,7 +444,7 @@ export function TacticalBlogDesktop() {
 
   return (
     <div
-      className="h-screen w-screen overflow-hidden bg-white font-mono text-black"
+      className="h-[100svh] w-full overflow-hidden bg-white font-mono text-black"
       style={isFinePointer ? { cursor: 'none' } : undefined}
     >
       {/* Top System Bar */}
@@ -449,9 +455,11 @@ export function TacticalBlogDesktop() {
         </div>
 
         {/* Center Activity Ticker */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <ActivityTicker />
-        </div>
+        {!hideActivityTicker && (
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <ActivityTicker />
+          </div>
+        )}
         <div className="flex items-center gap-6">
           <span>TIME: {currentTime}</span>
           <span>
@@ -461,7 +469,7 @@ export function TacticalBlogDesktop() {
       </div>
 
       {/* Main Grid */}
-      <div className="grid h-[calc(100vh-4rem)] grid-cols-[280px_1fr_280px] gap-0">
+      <div className="grid h-[calc(100svh-4rem)] grid-cols-[280px_1fr_280px] gap-0">
         {/* Left Sidebar - Metadata & Navigation */}
         <div className="flex flex-col gap-6 overflow-y-auto border-r border-black p-6">
           <div>

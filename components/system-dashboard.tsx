@@ -9,6 +9,7 @@ import { ActivityTicker } from '@/components/activity-ticker'
 import PiecePoster from '@/components/piece-poster'
 import { LocalGeometryScene } from '@/components/local-geometry-scene'
 import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
+import { useViewportHeight } from '@/hooks/use-viewport-height'
 import { cn } from '@/lib/utils'
 import { X } from '@phosphor-icons/react'
 
@@ -27,6 +28,12 @@ interface ResearchStatusPayload {
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+const HEIGHT_GUARDS = {
+  quickAccessDock: 880,
+  activityTicker: 860,
+  geometryScene: 820,
+  piecePoster: 780,
+}
 
 export default function SystemDashboard({ pieces, contextById = {}, initialPieceId: _initialPieceId }: SystemDashboardProps) {
   const {
@@ -53,6 +60,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
   const [isAgentOpen, setIsAgentOpen] = useState(false)
   const [isLightMode, setIsLightMode] = useState(themeMode === 'light')
   const [researchStatus, setResearchStatus] = useState<ResearchStatusPayload | null>(null)
+  const viewportHeight = useViewportHeight()
   const panelBorder = isLightMode ? 'rgba(28, 19, 13, 0.12)' : 'rgba(255, 255, 255, 0.1)'
   const panelOutline = isLightMode ? 'rgba(28, 19, 13, 0.08)' : 'rgba(255, 255, 255, 0.08)'
   const panelDot = isLightMode ? 'rgba(28, 19, 13, 0.08)' : '#1a1a1a'
@@ -264,17 +272,22 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
     }
   }, [selectedPiece, researchStatus])
 
+  const hideQuickAccessDock = viewportHeight < HEIGHT_GUARDS.quickAccessDock
+  const hideActivityTicker = viewportHeight < HEIGHT_GUARDS.activityTicker
+  const hideGeometryScene = viewportHeight < HEIGHT_GUARDS.geometryScene
+  const hidePiecePoster = viewportHeight < HEIGHT_GUARDS.piecePoster
+
   return (
     <div
       className={cn(
-        'min-h-screen bg-background-light dark:bg-background-dark text-[#1c130d] dark:text-white selection:bg-primary selection:text-white relative overflow-hidden custom-scrollbar',
+        'min-h-[100svh] bg-background-light dark:bg-background-dark text-[#1c130d] dark:text-white selection:bg-primary selection:text-white relative overflow-hidden custom-scrollbar',
         isLightMode ? 'dashboard-light' : 'dark',
       )}
     >
       {/* Scanline Overlay */}
       <div className="scanline-overlay" />
       
-      <div className="flex h-screen max-h-screen flex-col relative z-10">
+      <div className="flex h-[100svh] max-h-[100svh] flex-col relative z-10">
         {/* Top Navigation Bar */}
         <header className="flex flex-wrap sm:flex-nowrap items-center justify-between px-5 py-3 bg-background-dark shadow-lg" style={{ outline: `1px solid ${panelBorder}` }}>
           <div className="flex items-center gap-6">
@@ -301,7 +314,7 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
               <span className="text-[9px] text-[#666]">BLOG_LOAD</span>
                 <span className="text-[11px] font-bold text-primary">{pieces.length} PIECES</span>
               </div>
-              <ActivityTicker className="max-w-xs" />
+              {!hideActivityTicker && <ActivityTicker className="max-w-xs" />}
               <div className="flex gap-2">
                 <div className="flex h-10 items-center justify-center px-4" role="timer" aria-live="polite" aria-label="Current time">
                 <span className="text-white text-[11px] font-mono tabular-nums">{currentTime}</span>
@@ -424,9 +437,11 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
             </div>
 
             {/* Piece Data Poster - fixed at bottom */}
-            <div className="shrink-0">
-              <PiecePoster pieces={filteredPieces} selectedPiece={selectedPiece} theme={isLightMode ? 'paper' : 'data_visual'} />
-            </div>
+            {!hidePiecePoster && (
+              <div className="shrink-0">
+                <PiecePoster pieces={filteredPieces} selectedPiece={selectedPiece} theme={isLightMode ? 'paper' : 'data_visual'} />
+              </div>
+            )}
           </section>
 
           {/* BLOCK B: ARTICLE_DISPLAY */}
@@ -603,42 +618,44 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
                 </div>
               </div>
 
-              <div className="space-y-2 border-t pt-3" style={{ borderColor: panelBorder }}>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-white">LOCAL_GEOMETRY</span>
-                  <span className="text-[8px] text-[#666]">3D_FIELD</span>
-                </div>
-                {selectedPiece ? (
-                  <div className="space-y-2">
-                    <div className="bg-panel-dark border border-border-dark rounded-sm p-2">
-                      <LocalGeometryScene
-                        neighbors={geometryNeighbors.map(({ piece, score }) => ({
-                          id: piece.id,
-                          title: piece.title,
-                          score,
-                        }))}
-                        originTitle={selectedPiece.title}
-                        variant={isLightMode ? 'light' : 'dark'}
-                      />
-                    </div>
-                    {geometryNeighbors.length ? (
-                      <div className="grid grid-cols-3 gap-1">
-                        {geometryNeighbors.map(({ piece, score }) => (
-                          <div key={piece.id} className="bg-panel-dark px-2 py-1 border-l-2 border-border-dark">
-                            <div className="text-[7px] text-[#666]">NEAR</div>
-                            <div className="text-[8px] font-bold text-white truncate">{piece.title}</div>
-                            <div className="text-[7px] font-mono text-primary">{Math.round(score * 100)}%</div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-[8px] text-[#666]">NO_ADJACENT_NODES</div>
-                    )}
+              {!hideGeometryScene && (
+                <div className="space-y-2 border-t pt-3" style={{ borderColor: panelBorder }}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-white">LOCAL_GEOMETRY</span>
+                    <span className="text-[8px] text-[#666]">3D_FIELD</span>
                   </div>
-                ) : (
-                  <div className="text-[8px] text-[#666]">SELECT_A_PIECE_TO_MAP_GEOMETRY</div>
-                )}
-              </div>
+                  {selectedPiece ? (
+                    <div className="space-y-2">
+                      <div className="bg-panel-dark border border-border-dark rounded-sm p-2">
+                        <LocalGeometryScene
+                          neighbors={geometryNeighbors.map(({ piece, score }) => ({
+                            id: piece.id,
+                            title: piece.title,
+                            score,
+                          }))}
+                          originTitle={selectedPiece.title}
+                          variant={isLightMode ? 'light' : 'dark'}
+                        />
+                      </div>
+                      {geometryNeighbors.length ? (
+                        <div className="grid grid-cols-3 gap-1">
+                          {geometryNeighbors.map(({ piece, score }) => (
+                            <div key={piece.id} className="bg-panel-dark px-2 py-1 border-l-2 border-border-dark">
+                              <div className="text-[7px] text-[#666]">NEAR</div>
+                              <div className="text-[8px] font-bold text-white truncate">{piece.title}</div>
+                              <div className="text-[7px] font-mono text-primary">{Math.round(score * 100)}%</div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-[8px] text-[#666]">NO_ADJACENT_NODES</div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-[8px] text-[#666]">SELECT_A_PIECE_TO_MAP_GEOMETRY</div>
+                  )}
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: panelBorder }}>
                 <div className="flex items-center justify-between px-2 py-2 bg-panel-dark shadow-md" style={{ outline: `1px solid ${panelOutline}` }}>
@@ -781,47 +798,49 @@ export default function SystemDashboard({ pieces, contextById = {}, initialPiece
         </main>
 
         {/* Quick Access Dock */}
-        <footer className="bg-background-dark h-8 flex items-center justify-center border-t border-black select-none shrink-0">
-          <div className="flex items-center gap-8">
-            <div className="group relative">
-              <svg 
-                viewBox="10 40 45 50"
-                className="w-[24px] h-[24px] text-[#CA3F16] opacity-50 group-hover:opacity-100 transition-opacity duration-300"
-              >
-                <rect x="20" y="50" width="4" height="10" fill="currentColor">
-                  <animateTransform 
-                    attributeName="transform" 
-                    type="translate" 
-                    values="0 0; 0 10; 0 0" 
-                    begin="0" 
-                    dur="2s" 
-                    repeatCount="indefinite"
-                  />
-                </rect>
-                <rect x="30" y="50" width="4" height="10" fill="currentColor">
-                  <animateTransform 
-                    attributeName="transform" 
-                    type="translate" 
-                    values="0 0; 0 10; 0 0" 
-                    begin="0.4s" 
-                    dur="2s" 
-                    repeatCount="indefinite"
-                  />
-                </rect>
-                <rect x="40" y="50" width="4" height="10" fill="currentColor">
-                  <animateTransform 
-                    attributeName="transform" 
-                    type="translate" 
-                    values="0 0; 0 10; 0 0" 
-                    begin="0.8s" 
-                    dur="2s" 
-                    repeatCount="indefinite"
-                  />
-                </rect>
-              </svg>
+        {!hideQuickAccessDock && (
+          <footer className="bg-background-dark h-8 flex items-center justify-center border-t border-black select-none shrink-0">
+            <div className="flex items-center gap-8">
+              <div className="group relative">
+                <svg 
+                  viewBox="10 40 45 50"
+                  className="w-[24px] h-[24px] text-[#CA3F16] opacity-50 group-hover:opacity-100 transition-opacity duration-300"
+                >
+                  <rect x="20" y="50" width="4" height="10" fill="currentColor">
+                    <animateTransform 
+                      attributeName="transform" 
+                      type="translate" 
+                      values="0 0; 0 10; 0 0" 
+                      begin="0" 
+                      dur="2s" 
+                      repeatCount="indefinite"
+                    />
+                  </rect>
+                  <rect x="30" y="50" width="4" height="10" fill="currentColor">
+                    <animateTransform 
+                      attributeName="transform" 
+                      type="translate" 
+                      values="0 0; 0 10; 0 0" 
+                      begin="0.4s" 
+                      dur="2s" 
+                      repeatCount="indefinite"
+                    />
+                  </rect>
+                  <rect x="40" y="50" width="4" height="10" fill="currentColor">
+                    <animateTransform 
+                      attributeName="transform" 
+                      type="translate" 
+                      values="0 0; 0 10; 0 0" 
+                      begin="0.8s" 
+                      dur="2s" 
+                      repeatCount="indefinite"
+                    />
+                  </rect>
+                </svg>
+              </div>
             </div>
-          </div>
-        </footer>
+          </footer>
+        )}
       </div>
     </div>
   )

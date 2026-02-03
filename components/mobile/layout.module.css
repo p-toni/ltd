@@ -2,6 +2,11 @@
   position: relative;
   display: flex;
   min-height: 100vh;
+  min-height: 100svh;
+  height: 100svh;
+  max-height: 100svh;
+  width: 100%;
+  overflow: hidden;
   background:
     radial-gradient(circle at 18% -10%, rgba(255, 122, 0, 0.22), transparent 45%),
     radial-gradient(circle at 82% 0%, rgba(96, 165, 250, 0.18), transparent 40%),
