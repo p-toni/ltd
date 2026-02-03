@@ -30,6 +30,8 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          RESEARCH_TIME_BUDGET_MINUTES: 4
+          RESEARCH_MAX_DOMAIN_QUERIES: 1
         run: pnpm research:daily
 
       - name: Create pull request

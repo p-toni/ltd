@@ -41,6 +41,7 @@ export async function gatherSearchResults(plan: DiscoveryPlan) {
   const results: SearchResult[] = []
   const recencyDays = plan.sourcePolicy.recencyDays ?? 14
   const maxResultsPerQuery = plan.sourcePolicy.maxResultsPerQuery ?? 5
+  const maxDomainQueries = Number(process.env.RESEARCH_MAX_DOMAIN_QUERIES ?? 1)
 
   for (const focusArea of plan.focusAreas) {
     for (const query of focusArea.queries) {
@@ -48,7 +49,11 @@ export async function gatherSearchResults(plan: DiscoveryPlan) {
       const baseResults = await searchBrave(query, { count: maxResultsPerQuery })
       results.push(...baseResults)
 
+      let domainCount = 0
       for (const domain of plan.sourcePolicy.domains) {
+        if (domainCount >= maxDomainQueries) {
+          break
+        }
         const normalizedDomain = domain.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
         if (!normalizedDomain) {
           continue
@@ -57,6 +62,7 @@ export async function gatherSearchResults(plan: DiscoveryPlan) {
         console.log(`[Scout] Query: "${scopedQuery}"`)
         const scopedResults = await searchBrave(scopedQuery, { count: maxResultsPerQuery })
         results.push(...scopedResults)
+        domainCount += 1
       }
     }
   }
