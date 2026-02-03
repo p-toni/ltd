@@ -43,6 +43,12 @@ function extractContentText(document: Document) {
   return collapseWhitespace(node.textContent ?? '')
 }
 
+function stripStylesheets(html: string) {
+  return html
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+    .replace(/<link[^>]*rel=["']?stylesheet["']?[^>]*>/gi, '')
+}
+
 export async function ingestUrl(url: string, options?: { timeoutMs?: number }): Promise<IngestedSource | null> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), options?.timeoutMs ?? 12000)
@@ -60,7 +66,8 @@ export async function ingestUrl(url: string, options?: { timeoutMs?: number }): 
     }
 
     const html = await response.text()
-    const dom = new JSDOM(html)
+    const sanitizedHtml = stripStylesheets(html)
+    const dom = new JSDOM(sanitizedHtml)
     const { document } = dom.window
 
     const title = document.title || extractMeta(document, 'meta[property="og:title"]') || url
