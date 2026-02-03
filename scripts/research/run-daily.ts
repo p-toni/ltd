@@ -47,6 +47,7 @@ async function run() {
     ? timeBudgetMinutes * 60 * 1000
     : null
   const startTime = Date.now()
+  console.log(`Starting research run. Budget=${timeBudgetMs ? `${timeBudgetMinutes}m` : 'none'}`)
   const pieces = await getPieces()
   const dateLabel = isoDateLabel()
   const proposalsDir = path.join(process.cwd(), 'content', 'proposals', dateLabel)
@@ -68,13 +69,16 @@ async function run() {
       abortedEarly = true
       break
     }
+    console.log(`\n[Piece ${piece.slug}] Gathering sources...`)
     piecesReviewed += 1
     const plan = await loadOrCreatePlan(piece)
     const candidates = await gatherSearchResults(plan)
 
     if (!candidates.length) {
+      console.log(`[Piece ${piece.slug}] No candidates found.`)
       continue
     }
+    console.log(`[Piece ${piece.slug}] Candidates: ${candidates.length}`)
 
     const proposals: InsertionProposal[] = []
 
@@ -112,6 +116,7 @@ async function run() {
     }
 
     if (!proposals.length) {
+      console.log(`[Piece ${piece.slug}] No proposals generated.`)
       continue
     }
 
@@ -136,6 +141,7 @@ async function run() {
       proposals,
       results,
     })
+    console.log(`[Piece ${piece.slug}] Proposals=${proposals.length}, Applied=${appliedCount}`)
   }
 
   if (!dryRun) {

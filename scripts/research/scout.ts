@@ -44,6 +44,7 @@ export async function gatherSearchResults(plan: DiscoveryPlan) {
 
   for (const focusArea of plan.focusAreas) {
     for (const query of focusArea.queries) {
+      console.log(`[Scout] Query: "${query}"`)
       const baseResults = await searchBrave(query, { count: maxResultsPerQuery })
       results.push(...baseResults)
 
@@ -53,6 +54,7 @@ export async function gatherSearchResults(plan: DiscoveryPlan) {
           continue
         }
         const scopedQuery = `${query} site:${normalizedDomain}`
+        console.log(`[Scout] Query: "${scopedQuery}"`)
         const scopedResults = await searchBrave(scopedQuery, { count: maxResultsPerQuery })
         results.push(...scopedResults)
       }
@@ -61,6 +63,7 @@ export async function gatherSearchResults(plan: DiscoveryPlan) {
 
   for (const feed of plan.sourcePolicy.feeds) {
     try {
+      console.log(`[Scout] Feed: ${feed}`)
       const entries = await fetchFeedEntries(feed)
       entries.forEach((entry) => {
         results.push({
