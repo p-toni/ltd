@@ -21,8 +21,10 @@ function parseDate(value: string | undefined) {
   return new Date(parsed).toISOString()
 }
 
-export async function fetchFeedEntries(feedUrl: string) {
-  const response = await fetch(feedUrl)
+export async function fetchFeedEntries(feedUrl: string, options?: { timeoutMs?: number }) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), options?.timeoutMs ?? 12000)
+  const response = await fetch(feedUrl, { signal: controller.signal }).finally(() => clearTimeout(timeout))
   if (!response.ok) {
     throw new Error(`Feed request failed: ${response.status} ${response.statusText}`)
   }

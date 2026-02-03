@@ -14,6 +14,7 @@ import { buildInsertionProposal } from './editor'
 
 const MAX_SOURCES_PER_PIECE = 6
 const MIN_CONFIDENCE = 0.65
+const DEFAULT_TIME_BUDGET_MINUTES = 6
 
 function isoDateLabel(date = new Date()) {
   return date.toISOString().slice(0, 10)
@@ -41,6 +42,11 @@ async function loadPreviousStatus(statusPath: string): Promise<ResearchStatus | 
 
 async function run() {
   const dryRun = process.argv.includes('--dry-run')
+  const timeBudgetMinutes = Number(process.env.RESEARCH_TIME_BUDGET_MINUTES ?? DEFAULT_TIME_BUDGET_MINUTES)
+  const timeBudgetMs = Number.isFinite(timeBudgetMinutes) && timeBudgetMinutes > 0
+    ? timeBudgetMinutes * 60 * 1000
+    : null
+  const startTime = Date.now()
   const pieces = await getPieces()
   const dateLabel = isoDateLabel()
   const proposalsDir = path.join(process.cwd(), 'content', 'proposals', dateLabel)
@@ -48,8 +54,20 @@ async function run() {
   let updatesApplied = 0
   let proposalsCount = 0
   let piecesReviewed = 0
+  let abortedEarly = false
+
+  const isBudgetExceeded = () => {
+    if (!timeBudgetMs) {
+      return false
+    }
+    return Date.now() - startTime >= timeBudgetMs
+  }
 
   for (const piece of pieces) {
+    if (isBudgetExceeded()) {
+      abortedEarly = true
+      break
+    }
     piecesReviewed += 1
     const plan = await loadOrCreatePlan(piece)
     const candidates = await gatherSearchResults(plan)
@@ -61,6 +79,10 @@ async function run() {
     const proposals: InsertionProposal[] = []
 
     for (const candidate of candidates) {
+      if (isBudgetExceeded()) {
+        abortedEarly = true
+        break
+      }
       if (proposals.length >= MAX_SOURCES_PER_PIECE) {
         break
       }
@@ -83,6 +105,10 @@ async function run() {
 
       const insertion = await buildInsertionProposal(piece, ingested, verification, dateLabel)
       proposals.push(insertion)
+    }
+
+    if (abortedEarly) {
+      break
     }
 
     if (!proposals.length) {
@@ -127,6 +153,9 @@ async function run() {
     await fs.writeFile(statusPath, JSON.stringify(statusPayload, null, 2), 'utf8')
   }
 
+  if (abortedEarly) {
+    console.warn('Research run stopped early due to time budget.')
+  }
   console.log(
     `Research run complete. Pieces=${piecesReviewed}, Proposals=${proposalsCount}, Applied=${updatesApplied}`,
   )

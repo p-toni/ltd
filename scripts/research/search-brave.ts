@@ -4,6 +4,7 @@ const BRAVE_ENDPOINT = 'https://api.search.brave.com/res/v1/web/search'
 const MIN_REQUEST_INTERVAL_MS = 1100
 const MAX_RETRIES = 3
 const BASE_BACKOFF_MS = 1200
+const REQUEST_TIMEOUT_MS = 12000
 
 let lastRequestAt = 0
 
@@ -47,12 +48,15 @@ export async function searchBrave(query: string, options: { count?: number; coun
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
     await enforceRateLimit()
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
     const response = await fetch(url.toString(), {
+      signal: controller.signal,
       headers: {
         'X-Subscription-Token': apiKey,
         Accept: 'application/json',
       },
-    })
+    }).finally(() => clearTimeout(timeout))
 
     if (response.ok) {
       const payload = (await response.json()) as BraveResponse
