@@ -76,6 +76,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Noise texture overlay — gives surfaces a lived-in feel */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+.dashboard-light body::before {
+  opacity: 0.018;
+}
+
 /* Custom text utilities */
 .text-display {
   font-family: var(--font-serif);
@@ -100,6 +117,85 @@ body {
 
 input::placeholder {
   color: var(--text-tertiary);
+}
+
+/* Drop cap — editorial character for the first paragraph */
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 3.8em;
+  line-height: 0.8;
+  padding-right: 0.08em;
+  margin-top: 0.05em;
+  color: var(--accent);
+  font-weight: 400;
+}
+
+/* Alive hover — subtle lift for interactive cards */
+.hover-lift {
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Sidebar item slide-in on hover */
+.sidebar-item {
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1), color 0.15s ease, background-color 0.15s ease;
+}
+
+.sidebar-item:hover {
+  transform: translateX(3px);
+}
+
+/* Stagger entrance for lists */
+@keyframes staggerIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-item {
+  animation: staggerIn 0.35s cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* Index card hover — editorial reveal */
+@keyframes accentLineGrow {
+  from { width: 0; }
+  to { width: 48px; }
+}
+
+.index-accent-line {
+  width: 0;
+  transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.group:hover .index-accent-line {
+  width: 48px;
+}
+
+/* End flourish */
+.end-flourish {
+  position: relative;
+}
+
+.end-flourish::before,
+.end-flourish::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+  vertical-align: middle;
+  margin: 0 12px;
+  opacity: 0.5;
 }
 
 /* Blockquote styles */
@@ -145,10 +241,10 @@ input::placeholder {
   to { width: 80px; }
 }
 
-.reader-title { animation: fadeIn 0.25s ease-out both; }
-.reader-meta { animation: fadeIn 0.25s ease-out 0.1s both; }
-.reader-divider { animation: drawLine 0.25s ease-out 0.2s both; }
-.reader-body { animation: fadeIn 0.25s ease-out 0.3s both; }
+.reader-title { animation: fadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) both; }
+.reader-meta { animation: fadeIn 0.4s cubic-bezier(0.2, 0, 0, 1) 0.08s both; }
+.reader-divider { animation: drawLine 0.5s cubic-bezier(0.2, 0, 0, 1) 0.16s both; }
+.reader-body { animation: fadeIn 0.5s cubic-bezier(0.2, 0, 0, 1) 0.24s both; }
 
 /* Command bar slide-up */
 @keyframes slideUp {
@@ -176,7 +272,14 @@ input::placeholder {
   .reader-divider,
   .reader-body,
   .command-bar-enter,
-  .piece-transition {
+  .piece-transition,
+  .stagger-item {
     animation: none;
+  }
+
+  .sidebar-item,
+  .hover-lift,
+  .index-accent-line {
+    transition: none;
   }
 }

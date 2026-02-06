@@ -34,9 +34,14 @@ export function PieceReader() {
   if (!selectedPiece) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="font-mono text-[11px] uppercase tracking-[0.04em] text-text-tertiary">
-          Select a piece to begin reading
-        </p>
+        <div className="text-center">
+          <div className="font-serif italic text-[2.5rem] leading-tight text-text-tertiary/30 mb-4">
+            &ldquo;&rdquo;
+          </div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-text-tertiary">
+            Choose a piece from the left
+          </p>
+        </div>
       </div>
     )
   }
@@ -50,7 +55,7 @@ export function PieceReader() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Reading progress bar below metadata */}
+      {/* Reading progress bar */}
       <div className="h-[2px] bg-border w-full shrink-0">
         <div
           className="h-full bg-accent transition-[width] duration-100 ease-linear"
@@ -61,17 +66,20 @@ export function PieceReader() {
       <div ref={contentRef} className="flex-1 overflow-y-auto custom-scrollbar piece-transition">
         <div className="max-w-[640px] mx-auto px-6">
           {/* Breathing top margin */}
-          <div className="h-[160px]" />
+          <div className="h-[120px]" />
 
-          {/* Piece number */}
-          <div className="reader-meta">
-            <span className="font-mono text-[11px] uppercase tracking-[0.04em] text-text-tertiary">
-              PIECE {numeral}
+          {/* Piece number — large ghost numeral */}
+          <div className="reader-meta relative">
+            <span className="absolute -left-2 -top-8 font-serif italic text-[7rem] leading-none text-text-tertiary/[0.04] select-none pointer-events-none">
+              {numeral}
+            </span>
+            <span className="relative font-mono text-[11px] uppercase tracking-[0.06em] text-text-tertiary">
+              Piece {numeral}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="reader-title mt-4 font-serif text-[3rem] leading-[1.1] tracking-[-0.03em] text-text">
+          <h1 className="reader-title mt-5 font-serif text-[3rem] leading-[1.08] tracking-[-0.03em] text-text">
             {selectedPiece.title}
           </h1>
 
@@ -80,28 +88,34 @@ export function PieceReader() {
 
           {/* Excerpt */}
           {selectedPiece.excerpt && (
-            <p className="reader-meta mt-6 font-sans italic text-base text-text-secondary leading-relaxed">
+            <p className="reader-meta mt-6 font-serif italic text-lg text-text-secondary leading-relaxed">
               {selectedPiece.excerpt}
             </p>
           )}
 
           {/* Metadata bar */}
           <div className="reader-meta mt-6 font-mono text-[11px] uppercase tracking-[0.04em] text-text-tertiary">
-            {dateStr} · {selectedPiece.readTime} · {selectedPiece.wordCount.toLocaleString()} WORDS · {moodLabel}
+            {dateStr} · {selectedPiece.readTime} · {selectedPiece.wordCount.toLocaleString()} words · {moodLabel}
           </div>
 
           {/* Full-bleed divider */}
-          <div className="mt-8 mb-8 h-px bg-border-strong" />
+          <div className="mt-8 mb-10 h-px bg-border-strong" />
 
-          {/* Body */}
-          <div className="reader-body pb-24">
+          {/* Body — first paragraph gets a drop cap */}
+          <div className="reader-body pb-24 [&>div>p:first-of-type]:drop-cap">
             <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} headingVariant="ascii" />
           </div>
 
-          {/* End marker */}
-          <div className="flex flex-col items-center gap-2 pb-32">
-            <span className="text-text-tertiary text-sm">---</span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.04em] text-text-tertiary">End</span>
+          {/* End flourish */}
+          <div className="flex flex-col items-center gap-4 pb-32">
+            <div className="flex items-center gap-3">
+              <span className="block w-6 h-px bg-accent/40" />
+              <span className="font-serif italic text-lg text-accent/60">fin</span>
+              <span className="block w-6 h-px bg-accent/40" />
+            </div>
+            <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-text-tertiary/50">
+              Piece {numeral} · {selectedPiece.wordCount.toLocaleString()} words
+            </span>
           </div>
         </div>
       </div>

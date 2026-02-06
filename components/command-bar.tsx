@@ -134,7 +134,7 @@ export function CommandBar() {
         <button
           type="button"
           onClick={open}
-          className="fixed bottom-6 right-6 w-12 h-12 bg-accent text-white flex items-center justify-center z-40 hover:opacity-90 transition-opacity"
+          className="fixed bottom-6 right-6 w-12 h-12 bg-accent text-white flex items-center justify-center z-40 hover:scale-105 hover:shadow-lg hover:shadow-accent/20 transition-all duration-200"
           aria-label="Open command bar"
         >
           <span className="font-mono text-lg font-bold">/</span>

@@ -39,16 +39,17 @@ export function Sidebar() {
   return (
     <aside className="flex flex-col h-full w-[240px] border-r border-border bg-bg overflow-hidden">
       {/* Site mark */}
-      <div className="px-5 pt-6 pb-4">
+      <div className="px-5 pt-6 pb-2">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-text font-bold">
           TONI.LTD
         </span>
+        <div className="mt-2 h-px w-8 bg-accent" />
       </div>
 
       {/* Piece list */}
-      <nav className="flex-1 overflow-y-auto custom-scrollbar px-2">
-        <div className="flex flex-col">
-          {sortedPieces.map((piece) => {
+      <nav className="flex-1 overflow-y-auto custom-scrollbar px-2 mt-2">
+        <div className="flex flex-col gap-px">
+          {sortedPieces.map((piece, index) => {
             const isActive = piece.id === selectedPieceId
             return (
               <button
@@ -56,13 +57,18 @@ export function Sidebar() {
                 type="button"
                 onClick={() => setSelectedPieceId(piece.id)}
                 className={cn(
-                  'text-left px-3 py-2.5 text-sm font-sans transition-none border-l-[3px]',
+                  'sidebar-item text-left px-3 py-2.5 text-sm font-sans border-l-[3px]',
                   isActive
                     ? 'border-accent text-text bg-accent-muted'
-                    : 'border-transparent text-text-secondary hover:text-accent',
+                    : 'border-transparent text-text-secondary hover:text-text hover:bg-surface/50',
                 )}
               >
-                {piece.title}
+                <span className="flex items-baseline gap-2">
+                  <span className="font-mono text-[10px] text-text-tertiary/40 tabular-nums">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="truncate">{piece.title}</span>
+                </span>
               </button>
             )
           })}
@@ -81,7 +87,7 @@ export function Sidebar() {
                 type="button"
                 onClick={() => setSelectedMood(id)}
                 className={cn(
-                  'font-mono text-[11px] uppercase tracking-[0.04em] pb-0.5 transition-none',
+                  'font-mono text-[11px] uppercase tracking-[0.04em] pb-0.5 transition-colors duration-150',
                   isActive
                     ? 'text-accent border-b border-accent'
                     : 'text-text-tertiary hover:text-text-secondary',
@@ -100,18 +106,23 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setThemeMode(isLight ? 'dark' : 'light')}
-          className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.04em] text-text-secondary hover:text-text transition-none"
+          className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.04em] text-text-secondary hover:text-text transition-colors duration-150"
         >
-          <span>{isLight ? '☀' : '☾'}</span>
+          <span className="inline-block transition-transform duration-200 group-hover:scale-110">
+            {isLight ? '☀' : '☾'}
+          </span>
           <span>{isLight ? 'LIGHT' : 'DARK'}</span>
         </button>
       </div>
 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-border">
-        <span className="font-mono text-[10px] text-text-tertiary leading-relaxed">
-          stabilizing the human-AI loop
-        </span>
+        <div className="font-serif italic text-[13px] text-text-secondary leading-snug">
+          stabilizing the<br />human-AI loop
+        </div>
+        <div className="mt-2 font-mono text-[9px] text-text-tertiary tracking-[0.08em] uppercase">
+          by Toni Petrina
+        </div>
       </div>
     </aside>
   )
