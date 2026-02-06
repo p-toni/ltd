@@ -197,7 +197,7 @@ function createSectionHeadingRenderer(
   }: HeadingProps) => {
     const ascii = buildAsciiSectionHeader(extractTextContent(children))
     const { containerClassName, headingClassName } = options
-    const headingClasses = cn('markdown-heading', headingClassName, className)
+    const headingClasses = cn('markdown-heading', headingClassName, className, ascii && 'sr-only')
     const HeadingTag = Tag
 
     return (
