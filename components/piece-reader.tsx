@@ -103,7 +103,7 @@ export function PieceReader() {
 
           {/* Body — first paragraph gets a drop cap */}
           <div className="reader-body pb-24 [&>div>p:first-of-type]:drop-cap">
-            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} headingVariant="ascii" />
+            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} headingVariant="default" />
           </div>
 
           {/* End flourish */}
