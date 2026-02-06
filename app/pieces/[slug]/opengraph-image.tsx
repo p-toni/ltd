@@ -35,15 +35,15 @@ export default async function OpenGraphImage({ params }: { params: { slug: strin
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '70px 80px',
-          backgroundColor: '#0b0b0b',
+          backgroundColor: '#101012',
           backgroundImage:
-            'radial-gradient(circle at 18% 12%, rgba(255, 122, 0, 0.25), transparent 45%), radial-gradient(circle at 82% 78%, rgba(255, 255, 255, 0.08), transparent 40%), linear-gradient(135deg, #0b0b0b, #141414)',
-          color: '#f5f5f5',
+            'linear-gradient(135deg, #101012, #18181B)',
+          color: '#EDEDEF',
           fontFamily: 'sans-serif',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontSize: 26, letterSpacing: 6, color: '#ff7a00', fontWeight: 700 }}>
+          <div style={{ fontSize: 26, letterSpacing: 6, color: '#E03E2D', fontWeight: 700 }}>
             TONI.LTD
           </div>
           {date ? (
@@ -69,9 +69,9 @@ export default async function OpenGraphImage({ params }: { params: { slug: strin
                   fontSize: 20,
                   letterSpacing: 2,
                   textTransform: 'uppercase',
-                  backgroundColor: 'rgba(255, 122, 0, 0.15)',
-                  color: '#ff7a00',
-                  border: '1px solid rgba(255, 122, 0, 0.45)',
+                  backgroundColor: 'rgba(224, 62, 45, 0.15)',
+                  color: '#E03E2D',
+                  border: '1px solid rgba(224, 62, 45, 0.45)',
                   padding: '8px 14px',
                   borderRadius: 999,
                 }}

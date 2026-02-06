@@ -40,7 +40,26 @@ export function TacticalBlogMobile() {
     registerChatInput,
     focusChatInput,
     aiEnabled,
+    themeMode,
+    setThemeMode,
   } = useTacticalBlogContext()
+
+  const isLight = themeMode === 'light'
+
+  useEffect(() => {
+    const root = document.documentElement
+    if (isLight) {
+      root.classList.remove('dark')
+      root.style.colorScheme = 'light'
+    } else {
+      root.classList.add('dark')
+      root.style.colorScheme = 'dark'
+    }
+    return () => {
+      root.classList.add('dark')
+      root.style.colorScheme = 'dark'
+    }
+  }, [isLight])
 
   const contentWrapperRef = useRef<HTMLDivElement | null>(null)
   const [activeTab, setActiveTab] = useState<MobileNavTab>('read')
@@ -208,23 +227,25 @@ export function TacticalBlogMobile() {
 
   if (!selectedPiece) {
     return (
-      <div className={styles.mobileRoot}>
-        <div className={styles.statusBar}>
-          <div className={styles.statusLeft}>
-            <span className={styles.statusLogo}>TONI.LTD</span>
+      <div className={styles.mobileRoot} style={isLight ? { ['--bg' as string]: 'var(--bg)' } : undefined}>
+        <div className={isLight ? 'dashboard-light' : ''}>
+          <div className={styles.statusBar}>
+            <div className={styles.statusLeft}>
+              <span className={styles.statusLogo}>TONI.LTD</span>
+            </div>
+            <div className={styles.statusRight}>
+              <span>{currentTime}</span>
+            </div>
           </div>
-          <div className={styles.statusRight}>
-            <span>{currentTime}</span>
+          <div className={styles.contentWrapper}>
+            <div className={styles.content}>
+              <p style={{ padding: '80px 24px', textAlign: 'center', fontSize: 14, fontFamily: 'var(--font-mono)' }}>
+                NO PIECES LOADED
+              </p>
+            </div>
           </div>
+          <FlashMessage message={flashMessage} />
         </div>
-        <div className={styles.contentWrapper}>
-          <div className={styles.content}>
-            <p style={{ padding: '80px 24px', textAlign: 'center', fontSize: 12, letterSpacing: '0.2em' }}>
-              NO PIECES LOADED
-            </p>
-          </div>
-        </div>
-        <FlashMessage message={flashMessage} />
       </div>
     )
   }
@@ -233,107 +254,105 @@ export function TacticalBlogMobile() {
   const publishedDate = new Date(selectedPiece.publishedAt)
   const hasValidPublishedDate = Number.isFinite(publishedDate.getTime())
   const lsDate = hasValidPublishedDate
-    ? [
-        publishedDate.toLocaleString('en-US', { month: 'short' }),
-        publishedDate.toLocaleString('en-US', { day: '2-digit' }),
-        publishedDate.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      ].join(' ')
+    ? `${publishedDate.getFullYear()}.${String(publishedDate.getMonth() + 1).padStart(2, '0')}.${String(publishedDate.getDate()).padStart(2, '0')}`
     : selectedPiece.date
   const isListLoading = sortedPieces.length === 0 || !selectedPiece
 
   return (
-    <div className={styles.mobileRoot}>
-      <div className={styles.statusBar}>
-        <div className={styles.statusLeft}>
-          <span className={styles.statusDot} />
-          <span className={styles.statusLogo}>TONI.LTD</span>
+    <div className={isLight ? 'dashboard-light' : ''}>
+      <div className={styles.mobileRoot}>
+        <div className={styles.statusBar}>
+          <div className={styles.statusLeft}>
+            <span className={styles.statusDot} />
+            <span className={styles.statusLogo}>TONI.LTD</span>
+          </div>
+          <div className={styles.statusRight}>
+            <span>{currentTime}</span>
+            <span>{pieceCounter}</span>
+          </div>
         </div>
-        <div className={styles.statusRight}>
-          <span>{currentTime}</span>
-          <span>{pieceCounter}</span>
+
+        <ReadingProgress value={scrollProgress} />
+
+        <div ref={contentWrapperRef} className={styles.contentWrapper}>
+          <div className={styles.content}>
+            <section className={styles.readingHeader}>
+              <div className={styles.readingMetaLine}>
+                <span className={styles.metaBadge}>#{String(selectedPiece.id).padStart(3, '0')}</span>
+                <span className={styles.metaBadge}>{selectedPiece.readTime}</span>
+                <span className={styles.metaBadge}>{moodLabel}</span>
+              </div>
+              <div className={styles.readingNav}>
+                <button
+                  type="button"
+                  className={styles.navCompact}
+                  onClick={handlePrevious}
+                  disabled={!prevPieceId}
+                  aria-label="Previous piece"
+                >
+                  ‹
+                </button>
+                <ProgressBar current={currentPosition} total={totalPieces} className={styles.progressCompact} />
+                <button
+                  type="button"
+                  className={styles.navCompact}
+                  onClick={handleNext}
+                  disabled={!nextPieceId}
+                  aria-label="Next piece"
+                >
+                  ›
+                </button>
+              </div>
+              <h1 className={styles.readingTitle}>{selectedPiece.title}</h1>
+              <p className={styles.readingExcerpt}>{selectedPiece.excerpt}</p>
+              <div className={styles.readingSubline}>
+                <span>{lsDate}</span>
+                <span>{selectedPiece.wordCount.toLocaleString()} words</span>
+              </div>
+            </section>
+
+            <section className={styles.contentSection}>
+              <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} headingVariant="ascii" />
+            </section>
+          </div>
         </div>
+
+        <BottomNav
+          active={activeTab}
+          onSelect={handleNavSelect}
+          listState={isListLoading ? 'active' : 'idle'}
+          agentState={isChatOpen ? 'active' : 'idle'}
+          readState={isNavigating ? 'active' : 'idle'}
+          infoState={isInfoOpen ? 'active' : 'idle'}
+          aiEnabled={aiEnabled}
+        />
+        <NavSheet
+          pieces={sortedPieces}
+          selectedPieceId={selectedPieceId}
+          isOpen={isNavSheetOpen}
+          onClose={handleCloseNavSheet}
+          onSelect={handlePieceSelect}
+        />
+        <InfoSheet piece={selectedPiece} isOpen={isInfoOpen} onClose={handleCloseInfo} />
+        <ChatSheet
+          isOpen={aiEnabled && isChatOpen}
+          onClose={handleCloseChat}
+          messages={chatMessages}
+          chatInput={agentInput}
+          setChatInput={setAgentInput}
+          onSubmit={handleAgentSubmit}
+          isLoading={isChatLoading}
+          provider={chatProvider}
+          setProvider={setChatProvider}
+          apiKey={chatApiKey}
+          setApiKey={setChatApiKey}
+          onCitation={handleCitationClick}
+          registerContainer={registerChatContainer}
+          registerInput={registerChatInput}
+          focusInput={focusChatInput}
+        />
+        <FlashMessage message={flashMessage} />
       </div>
-
-      <ReadingProgress value={scrollProgress} />
-
-      <div ref={contentWrapperRef} className={styles.contentWrapper}>
-        <div className={styles.content}>
-          <section className={styles.readingHeader}>
-            <div className={styles.readingMetaLine}>
-              <span className={styles.metaBadge}>#{String(selectedPiece.id).padStart(3, '0')}</span>
-              <span className={styles.metaBadge}>{selectedPiece.readTime}</span>
-              <span className={styles.metaBadge}>{moodLabel}</span>
-            </div>
-            <div className={styles.readingNav}>
-              <button
-                type="button"
-                className={styles.navCompact}
-                onClick={handlePrevious}
-                disabled={!prevPieceId}
-                aria-label="Previous piece"
-              >
-                ‹
-              </button>
-              <ProgressBar current={currentPosition} total={totalPieces} className={styles.progressCompact} />
-              <button
-                type="button"
-                className={styles.navCompact}
-                onClick={handleNext}
-                disabled={!nextPieceId}
-                aria-label="Next piece"
-              >
-                ›
-              </button>
-            </div>
-            <h1 className={styles.readingTitle}>{selectedPiece.title}</h1>
-            <p className={styles.readingExcerpt}>{selectedPiece.excerpt}</p>
-            <div className={styles.readingSubline}>
-              <span>{lsDate}</span>
-              <span>{selectedPiece.slug}.md</span>
-            </div>
-          </section>
-
-          <section className={styles.contentSection}>
-            <Markdown content={selectedPiece.content} pieceId={selectedPiece.id} headingVariant="ascii" />
-          </section>
-        </div>
-      </div>
-
-      <BottomNav
-        active={activeTab}
-        onSelect={handleNavSelect}
-        listState={isListLoading ? 'active' : 'idle'}
-        agentState={isChatOpen ? 'active' : 'idle'}
-        readState={isNavigating ? 'active' : 'idle'}
-        infoState={isInfoOpen ? 'active' : 'idle'}
-        aiEnabled={aiEnabled}
-      />
-      <NavSheet
-        pieces={sortedPieces}
-        selectedPieceId={selectedPieceId}
-        isOpen={isNavSheetOpen}
-        onClose={handleCloseNavSheet}
-        onSelect={handlePieceSelect}
-      />
-      <InfoSheet piece={selectedPiece} isOpen={isInfoOpen} onClose={handleCloseInfo} />
-      <ChatSheet
-        isOpen={aiEnabled && isChatOpen}
-        onClose={handleCloseChat}
-        messages={chatMessages}
-        chatInput={agentInput}
-        setChatInput={setAgentInput}
-        onSubmit={handleAgentSubmit}
-        isLoading={isChatLoading}
-        provider={chatProvider}
-        setProvider={setChatProvider}
-        apiKey={chatApiKey}
-        setApiKey={setChatApiKey}
-        onCitation={handleCitationClick}
-        registerContainer={registerChatContainer}
-        registerInput={registerChatInput}
-        focusInput={focusChatInput}
-      />
-      <FlashMessage message={flashMessage} />
     </div>
   )
 }

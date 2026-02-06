@@ -29,14 +29,14 @@ export const CHAT_ROLE_CLASSNAME: Record<ChatRole, string> = {
   system: 'text-white/60',
   user: 'text-white',
   assistant: 'text-white/60',
-  error: 'text-[color:var(--te-orange,#ff6600)]',
+  error: 'text-[color:var(--accent,#E03E2D)]',
 }
 
 export const CHAT_CONTENT_CLASSNAME: Record<ChatRole, string> = {
   system: 'text-white/70',
   user: 'text-white',
   assistant: 'text-white/70',
-  error: 'text-[color:var(--te-orange,#ff6600)]',
+  error: 'text-[color:var(--accent,#E03E2D)]',
 }
 
 export const CITATION_REGEX = /\[#(\d{3})(?:-F(\d{3}))?]/g

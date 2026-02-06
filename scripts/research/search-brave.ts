@@ -63,14 +63,14 @@ export async function searchBrave(query: string, options: { count?: number; coun
       const results = payload.web?.results ?? []
 
       return results
-        .map((result) => ({
+        .map((result): SearchResult => ({
           title: result.title ?? result.url ?? 'Untitled',
           url: result.url ?? '',
           description: result.description,
           publishedAt: result.published,
           source: result.source,
         }))
-        .filter((result): result is SearchResult => Boolean(result.url))
+        .filter((result) => Boolean(result.url))
     }
 
     const errorText = await response.text()

@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 
 import SystemDashboardWrapper from '@/components/system-dashboard-wrapper'
 import { getPieces } from '@/lib/pieces'
-import { getPieceEmbeddingContext } from '@/lib/retrieval'
 
 interface PiecePageParams {
   slug: string
@@ -72,13 +71,5 @@ export default async function PiecePage({ params }: PiecePageProps) {
     notFound()
   }
 
-  let contextById: Record<number, number> = {}
-
-  try {
-    contextById = await getPieceEmbeddingContext()
-  } catch (error) {
-    console.warn('Embedding context unavailable:', error)
-  }
-
-  return <SystemDashboardWrapper pieces={pieces} contextById={contextById} initialPieceId={piece.id} />
+  return <SystemDashboardWrapper pieces={pieces} initialPieceId={piece.id} />
 }

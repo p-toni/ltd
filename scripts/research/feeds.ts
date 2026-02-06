@@ -34,9 +34,9 @@ export async function fetchFeedEntries(feedUrl: string, options?: { timeoutMs?: 
 
   const entries: FeedEntry[] = []
 
-  const items = Array.from(document.querySelectorAll('item'))
+  const items: Element[] = Array.from(document.querySelectorAll('item'))
   if (items.length) {
-    items.forEach((item) => {
+    items.forEach((item: Element) => {
       const link = extractText(item.querySelector('link'))
       if (!link) {
         return
@@ -49,9 +49,9 @@ export async function fetchFeedEntries(feedUrl: string, options?: { timeoutMs?: 
     })
   }
 
-  const atomEntries = Array.from(document.querySelectorAll('entry'))
+  const atomEntries: Element[] = Array.from(document.querySelectorAll('entry'))
   if (atomEntries.length) {
-    atomEntries.forEach((entry) => {
+    atomEntries.forEach((entry: Element) => {
       const linkEl = entry.querySelector('link')
       const href = linkEl?.getAttribute('href') ?? extractText(linkEl)
       if (!href) {

@@ -5,6 +5,13 @@ set -euo pipefail
 # It uses commands recorded by post-tool-use-tracker.sh and surfaces
 # friendly guidance to Claude when compilation fails.
 
+# Ensure nvm-managed node/pnpm are on PATH
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+    # shellcheck source=/dev/null
+    . "$NVM_DIR/nvm.sh"
+fi
+
 event_info=$(cat)
 session_id=$(echo "$event_info" | jq -r '.session_id // "default"')
 project_dir="${CLAUDE_PROJECT_DIR:-$PWD}"

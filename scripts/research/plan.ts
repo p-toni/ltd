@@ -116,11 +116,11 @@ Constraints:
     contentHash,
     focusAreas,
     sourcePolicy: {
-      domains: piece.watchDomains,
-      feeds: piece.watchFeeds,
-      recencyDays: 14,
-      maxResultsPerQuery: 5,
       ...(plan.sourcePolicy ?? {}),
+      domains: plan.sourcePolicy?.domains ?? piece.watchDomains,
+      feeds: plan.sourcePolicy?.feeds ?? piece.watchFeeds,
+      recencyDays: plan.sourcePolicy?.recencyDays ?? 14,
+      maxResultsPerQuery: plan.sourcePolicy?.maxResultsPerQuery ?? 5,
     },
   }
 }

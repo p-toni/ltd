@@ -101,17 +101,17 @@ function TooltipBody({ tooltip, source }: { tooltip: TooltipDefinition; source?:
           href={source.url}
           target="_blank"
           rel="noreferrer"
-          className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/70 underline decoration-dotted underline-offset-2"
+          className="text-[10px] font-mono uppercase tracking-[0.04em] text-text-secondary underline decoration-dotted underline-offset-2"
         >
           Source {tooltip.paper}
         </a>
       ) : (
-        <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-black/50">
+        <div className="text-[10px] font-mono uppercase tracking-[0.04em] text-text-tertiary">
           Source {tooltip.paper}
         </div>
       )}
-      <div className="text-xs font-semibold">{tooltip.title}</div>
-      <div className="text-xs leading-relaxed text-black/80">{tooltip.body}</div>
+      <div className="text-xs font-sans font-semibold text-text">{tooltip.title}</div>
+      <div className="text-xs font-sans leading-relaxed text-text-secondary">{tooltip.body}</div>
     </div>
   )
 }
@@ -130,7 +130,7 @@ function TooltipShell({
       <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent
         sideOffset={8}
-        className="max-w-[280px] border border-black/20 bg-white text-black shadow-lg"
+        className="max-w-[280px] border border-border bg-surface-raised text-text shadow-lg"
       >
         <TooltipBody tooltip={tooltip} source={source} />
       </TooltipContent>
@@ -174,9 +174,9 @@ function buildAsciiSectionHeader(raw: string): string | null {
   const innerWidth = Math.max(baseLength, minWidth)
   const padding = innerWidth - baseLength
   const lineContent = ` ${label}${' '.repeat(padding + 1)}`
-  const top = `┌${'─'.repeat(innerWidth)}┐`
-  const middle = `│${lineContent}│`
-  const bottom = `└${'─'.repeat(innerWidth)}┘`
+  const top = `\u250C${'\u2500'.repeat(innerWidth)}\u2510`
+  const middle = `\u2502${lineContent}\u2502`
+  const bottom = `\u2514${'\u2500'.repeat(innerWidth)}\u2518`
 
   return `${top}\n${middle}\n${bottom}`
 }
@@ -208,7 +208,7 @@ function createSectionHeadingRenderer(
             role="presentation"
             className={cn(
               'markdown-ascii-heading',
-              'mb-3 whitespace-pre text-[11px] font-mono uppercase text-primary',
+              'mb-3 whitespace-pre text-[11px] font-mono uppercase text-accent',
             )}
           >
             {ascii}
@@ -228,7 +228,7 @@ function createSectionHeadingRenderer(
 
 function createMarkdownComponents(variant: HeadingVariant): Components {
   const h1 = ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h1'> & { node?: unknown }) => (
-    <h1 {...props} className={cn('mb-6 text-3xl font-bold tracking-tight', props.className)}>
+    <h1 {...props} className={cn('mb-6 font-serif text-[2.25rem] font-normal tracking-tight', props.className)}>
       {children}
     </h1>
   )
@@ -237,12 +237,12 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     variant === 'ascii'
       ? createSectionHeadingRenderer('h2', {
           containerClassName: 'mt-8',
-          headingClassName: 'mb-5 text-2xl font-semibold tracking-tight',
+          headingClassName: 'mb-5 font-sans text-[1.5rem] font-semibold tracking-tight border-l-[3px] border-accent pl-4',
         })
       : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h2'> & { node?: unknown }) => (
           <h2
             {...props}
-            className={cn('mb-5 mt-8 text-2xl font-semibold tracking-tight', props.className)}
+            className={cn('mb-5 mt-8 font-sans text-[1.5rem] font-semibold tracking-tight border-l-[3px] border-accent pl-4', props.className)}
           >
             {children}
           </h2>
@@ -252,12 +252,12 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     variant === 'ascii'
       ? createSectionHeadingRenderer('h3', {
           containerClassName: 'mt-6',
-          headingClassName: 'mb-4 text-xl font-semibold tracking-tight',
+          headingClassName: 'mb-4 font-sans text-[1.125rem] font-semibold tracking-tight',
         })
       : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h3'> & { node?: unknown }) => (
           <h3
             {...props}
-            className={cn('mb-4 mt-6 text-xl font-semibold tracking-tight', props.className)}
+            className={cn('mb-4 mt-6 font-sans text-[1.125rem] font-semibold tracking-tight', props.className)}
           >
             {children}
           </h3>
@@ -295,7 +295,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
             <span
               tabIndex={0}
               className={cn(
-                'cursor-help underline decoration-dotted underline-offset-2 decoration-primary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+                'cursor-help underline decoration-dotted underline-offset-2 decoration-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40',
                 className,
               )}
             >
@@ -310,7 +310,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
           {...props}
           href={href}
           className={cn(
-            'text-sm font-semibold tracking-[0.08em] text-primary underline decoration-primary/50 underline-offset-4 transition-colors hover:text-secondary',
+            'text-accent underline underline-offset-4 decoration-accent/40 hover:decoration-accent transition-colors',
             className,
           )}
         >
@@ -322,7 +322,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       <ul
         {...props}
         className={cn(
-          'mb-4 list-disc list-outside pl-6 text-sm leading-relaxed marker:text-primary space-y-2',
+          'mb-4 list-disc list-outside pl-6 text-base leading-[1.75] marker:text-accent space-y-2 font-sans',
           props.className,
         )}
       >
@@ -333,7 +333,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       <ol
         {...props}
         className={cn(
-          'mb-4 list-decimal list-outside pl-6 text-sm leading-relaxed marker:text-primary space-y-2',
+          'mb-4 list-decimal list-outside pl-6 text-base leading-[1.75] marker:text-accent space-y-2 font-sans',
           props.className,
         )}
       >
@@ -341,12 +341,12 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       </ol>
     ),
     li: ({ node: _node, children, ...props }) => (
-      <li {...props} className={cn('text-sm leading-relaxed', props.className)}>
+      <li {...props} className={cn('text-base leading-[1.75] font-sans', props.className)}>
         {children}
       </li>
     ),
     blockquote: ({ node: _node, children, ...props }) => (
-      <blockquote {...props} className={cn('markdown-blockquote my-6 text-sm leading-relaxed', props.className)}>
+      <blockquote {...props} className={cn('markdown-blockquote my-6 text-base leading-[1.75] font-sans', props.className)}>
         {children}
       </blockquote>
     ),
@@ -367,7 +367,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
           <code
             {...props}
             className={cn(
-              'rounded bg-border-dark px-1 py-[2px] text-xs font-mono normal-case text-[#1c130d] dark:text-white',
+              'bg-surface px-1.5 py-0.5 text-[13px] font-mono text-text',
               className,
             )}
           >
@@ -377,14 +377,14 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       }
 
       return (
-        <pre className="mb-4 overflow-x-auto rounded border border-border-dark bg-panel-dark text-[#1c130d] dark:text-white">
-          <code {...props} className={cn('block whitespace-pre px-4 py-3 text-xs font-mono normal-case', className)}>
+        <pre className="mb-4 overflow-x-auto border border-border bg-surface p-5 text-text">
+          <code {...props} className={cn('block whitespace-pre text-[13px] font-mono', className)}>
             {children}
           </code>
         </pre>
       )
     },
-    hr: ({ node: _node, ...props }) => <hr {...props} className={cn('my-8 border-border-dark', props.className)} />,
+    hr: ({ node: _node, ...props }) => <hr {...props} className={cn('my-8 border-border', props.className)} />,
     strong: ({ node: _node, children, ...props }) => (
       <strong {...props} className={cn('font-semibold', props.className)}>
         {children}
@@ -397,31 +397,31 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     ),
     table: ({ node: _node, children, ...props }) => (
       <div className="my-6 overflow-x-auto">
-        <table {...props} className={cn('w-full border-collapse text-left text-sm', props.className)}>
+        <table {...props} className={cn('w-full border-collapse text-left text-sm font-sans', props.className)}>
           {children}
         </table>
       </div>
     ),
     tbody: ({ node: _node, children, ...props }) => (
-      <tbody {...props} className={cn('divide-y divide-border-dark', props.className)}>
+      <tbody {...props} className={cn('divide-y divide-border', props.className)}>
         {children}
       </tbody>
     ),
     thead: ({ node: _node, children, ...props }) => (
       <thead
         {...props}
-        className={cn('border-b border-border-dark bg-border-dark/40 text-[10px] uppercase tracking-wide', props.className)}
+        className={cn('border-b border-border font-mono text-[10px] uppercase tracking-wide', props.className)}
       >
         {children}
       </thead>
     ),
     th: ({ node: _node, children, ...props }) => (
-      <th {...props} className={cn('px-3 py-2 text-left font-semibold', props.className)}>
+      <th {...props} className={cn('px-3 py-2 text-left font-semibold font-sans', props.className)}>
         {children}
       </th>
     ),
     td: ({ node: _node, children, ...props }) => (
-      <td {...props} className={cn('px-3 py-2 align-top text-sm', props.className)}>
+      <td {...props} className={cn('px-3 py-2 align-top text-sm font-sans', props.className)}>
         {children}
       </td>
     ),
@@ -431,7 +431,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
         {...props}
         alt={alt ?? ''}
         loading={loading ?? 'lazy'}
-        className={cn('max-w-full rounded border border-border-dark bg-border-dark/40', className)}
+        className={cn('max-w-full border border-border', className)}
       />
     ),
   }
@@ -465,17 +465,17 @@ function renderParagraph({ node, children, className, fragment, extraProps }: Pa
           alt={imageNode.alt ?? ''}
           title={imageNode.title ?? undefined}
           loading="lazy"
-          className="w-full rounded border border-border-dark bg-border-dark/40"
+          className="w-full border border-border"
         />
         {caption ? (
-          <figcaption className="mt-2 text-center text-[10px] uppercase tracking-[0.25em]">{caption}</figcaption>
+          <figcaption className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.04em] text-text-tertiary">{caption}</figcaption>
         ) : null}
       </figure>
     )
   }
 
   return (
-    <p {...baseProps} className={cn('mb-4 text-sm leading-relaxed', className)}>
+    <p {...baseProps} className={cn('mb-4 text-base leading-[1.75] font-sans', className)}>
       {children}
     </p>
   )
@@ -537,7 +537,7 @@ export function Markdown({ content, className, pieceId, headingVariant = 'defaul
           <li
             {...mergedProps}
             className={cn(
-              'mb-2 text-sm leading-relaxed',
+              'mb-2 text-base leading-[1.75] font-sans',
               typeof className === 'string' ? className : undefined,
             )}
           >
@@ -549,7 +549,7 @@ export function Markdown({ content, className, pieceId, headingVariant = 'defaul
   }, [baseComponents, fragmentMetadata])
 
   return (
-    <div className={cn('markdown-content max-w-none text-sm leading-relaxed', className)}>
+    <div className={cn('markdown-content max-w-none text-base leading-[1.75] font-sans', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}

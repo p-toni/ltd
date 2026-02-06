@@ -18,14 +18,14 @@ export default function OpenGraphImage() {
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '70px 80px',
-          backgroundColor: '#0b0b0b',
+          backgroundColor: '#101012',
           backgroundImage:
-            'radial-gradient(circle at 18% 12%, rgba(255, 122, 0, 0.25), transparent 45%), radial-gradient(circle at 82% 78%, rgba(255, 255, 255, 0.08), transparent 40%), linear-gradient(135deg, #0b0b0b, #141414)',
-          color: '#f5f5f5',
+            'linear-gradient(135deg, #101012, #18181B)',
+          color: '#EDEDEF',
           fontFamily: 'sans-serif',
         }}
       >
-        <div style={{ fontSize: 26, letterSpacing: 6, color: '#ff7a00', fontWeight: 700 }}>
+        <div style={{ fontSize: 26, letterSpacing: 6, color: '#E03E2D', fontWeight: 700 }}>
           TONI.LTD
         </div>
 
