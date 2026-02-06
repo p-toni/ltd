@@ -197,8 +197,21 @@ function createSectionHeadingRenderer(
   }: HeadingProps) => {
     const ascii = buildAsciiSectionHeader(extractTextContent(children))
     const { containerClassName, headingClassName } = options
-    const headingClasses = cn('markdown-heading', headingClassName, className, ascii && 'sr-only')
+    const headingClasses = cn('markdown-heading', headingClassName, className)
     const HeadingTag = Tag
+
+    // Inline styles beat Tailwind utility specificity — sr-only via class didn't work
+    const visuallyHidden: React.CSSProperties = {
+      position: 'absolute',
+      width: 1,
+      height: 1,
+      padding: 0,
+      margin: -1,
+      overflow: 'hidden',
+      clip: 'rect(0,0,0,0)',
+      whiteSpace: 'nowrap',
+      border: 0,
+    }
 
     return (
       <div className={cn(containerClassName)}>
@@ -214,7 +227,11 @@ function createSectionHeadingRenderer(
             {ascii}
           </pre>
         ) : null}
-        <HeadingTag {...(props as ComponentPropsWithoutRef<typeof Tag>)} className={headingClasses}>
+        <HeadingTag
+          {...(props as ComponentPropsWithoutRef<typeof Tag>)}
+          className={headingClasses}
+          style={ascii ? visuallyHidden : undefined}
+        >
           {children}
         </HeadingTag>
       </div>
