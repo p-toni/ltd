@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/sidebar'
 import { PieceIndex } from '@/components/piece-index'
 import { PieceReader } from '@/components/piece-reader'
 import { RedThread } from '@/components/red-thread'
+import { CornerMark } from '@/components/corner-mark'
 import { CommandBar } from '@/components/command-bar'
 import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
 
@@ -33,6 +34,7 @@ export function SwissLayout() {
   return (
     <div className="h-[100svh] w-full overflow-hidden">
       <RedThread />
+      <CornerMark />
       <div className="grid h-full" style={{ gridTemplateColumns: '240px 1fr' }}>
         <Sidebar />
         <main className="flex flex-col overflow-hidden bg-bg">
