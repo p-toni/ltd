@@ -9,7 +9,7 @@ export function PieceIndex() {
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       {/* Index header */}
       <div className="px-8 pt-12 pb-6 max-w-[960px]">
-        <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-text-tertiary">
+        <span className="font-mono text-[12px] leading-[16px] uppercase tracking-[0.06em] text-text-tertiary">
           {sortedPieces.length} Pieces
         </span>
       </div>
@@ -32,13 +32,13 @@ export function PieceIndex() {
           >
             <div className="flex items-start gap-6 max-w-[960px]">
               {/* Ghost numeral */}
-              <span className="font-serif italic text-[48px] leading-none text-text-tertiary/10 group-hover:text-accent/20 select-none shrink-0 pt-1 transition-colors duration-300">
+              <span className="font-serif italic text-[48px] leading-[48px] text-text-tertiary/10 group-hover:text-accent/20 select-none shrink-0 pt-1 transition-colors duration-300">
                 {numeral}
               </span>
 
               <div className="flex-1 min-w-0">
                 {/* Title */}
-                <h2 className="font-serif text-[36px] leading-[1.15] text-text group-hover:text-text transition-colors duration-200">
+                <h2 className="font-serif text-[36px] leading-[40px] text-text group-hover:text-text transition-colors duration-200">
                   {piece.title}
                 </h2>
 
@@ -53,7 +53,7 @@ export function PieceIndex() {
                 )}
 
                 {/* Metadata */}
-                <div className="mt-3 font-mono text-[11px] uppercase tracking-[0.04em] text-text-tertiary">
+                <div className="mt-3 font-mono text-[12px] leading-[16px] uppercase tracking-[0.04em] text-text-tertiary">
                   {dateStr} · {piece.readTime} · {piece.wordCount.toLocaleString()} words · {moodLabel}
                 </div>
               </div>

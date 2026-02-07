@@ -5,6 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* 8px baseline grid */
+  --grid: 8px;
+  --grid-half: 4px;
+
   --bg: #101012;
   --surface: #18181B;
   --surface-raised: #1F1F23;
@@ -102,14 +106,16 @@ body::before {
 
 .text-caption {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 16px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .text-overline {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 16px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-tertiary);

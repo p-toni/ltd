@@ -39,7 +39,7 @@ export function Sidebar() {
   return (
     <aside className="flex flex-col h-full w-[240px] border-r border-border bg-bg overflow-hidden">
       {/* Site mark */}
-      <div className="px-5 pt-6 pb-2">
+      <div className="px-[24px] pt-6 pb-2">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-text font-bold">
           TONI.LTD
         </span>
@@ -57,7 +57,7 @@ export function Sidebar() {
                 type="button"
                 onClick={() => setSelectedPieceId(piece.id)}
                 className={cn(
-                  'sidebar-item text-left px-3 py-2.5 text-sm font-sans border-l-[3px]',
+                  'sidebar-item text-left px-3 py-[8px] text-sm leading-[20px] font-sans border-l-[3px]',
                   isActive
                     ? 'border-accent text-text bg-accent-muted'
                     : 'border-transparent text-text-secondary hover:text-text hover:bg-surface/50',
@@ -77,7 +77,7 @@ export function Sidebar() {
 
       {/* Mood filters */}
       <div className="px-4 py-3 border-t border-border">
-        <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+        <div className="flex flex-wrap gap-x-3 gap-y-[4px]">
           {MOOD_OPTIONS.map(({ id, label }) => {
             const isActive = selectedMood === id
             const count = moodCounts[id] ?? 0
@@ -87,7 +87,7 @@ export function Sidebar() {
                 type="button"
                 onClick={() => setSelectedMood(id)}
                 className={cn(
-                  'font-mono text-[11px] uppercase tracking-[0.04em] pb-0.5 transition-colors duration-150',
+                  'font-mono text-[12px] leading-[16px] uppercase tracking-[0.04em] pb-0.5 transition-colors duration-150',
                   isActive
                     ? 'text-accent border-b border-accent'
                     : 'text-text-tertiary hover:text-text-secondary',
@@ -106,7 +106,7 @@ export function Sidebar() {
         <button
           type="button"
           onClick={() => setThemeMode(isLight ? 'dark' : 'light')}
-          className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.04em] text-text-secondary hover:text-text transition-colors duration-150"
+          className="group flex items-center gap-2 font-mono text-[12px] leading-[16px] uppercase tracking-[0.04em] text-text-secondary hover:text-text transition-colors duration-150"
         >
           <span className="inline-block transition-transform duration-200 group-hover:scale-110">
             {isLight ? '☀' : '☾'}
@@ -117,10 +117,10 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-border">
-        <div className="font-serif italic text-[13px] text-text-secondary leading-snug">
+        <div className="font-serif italic text-[14px] leading-[20px] text-text-secondary">
           stabilizing the<br />human-AI loop
         </div>
-        <div className="mt-2 font-mono text-[9px] text-text-tertiary tracking-[0.08em] uppercase">
+        <div className="mt-2 font-mono text-[10px] leading-[16px] text-text-tertiary tracking-[0.08em] uppercase">
           by Toni Petrina
         </div>
       </div>

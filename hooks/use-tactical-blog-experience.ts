@@ -140,6 +140,8 @@ export interface TacticalBlogExperience {
   setAgentInput: (value: string) => void
   agentInput: string
   aiEnabled: boolean
+  showGrid: boolean
+  toggleGrid: () => void
 }
 
 export function useTacticalBlogExperience(
@@ -177,6 +179,14 @@ export function useTacticalBlogExperience(
   const [themeMode, setThemeMode] = useState<AgentTheme>('light')
   const [showExcerpts, setShowExcerpts] = useState(true)
   const [compactView, setCompactView] = useState(false)
+  const [showGrid, setShowGrid] = useState(() => {
+    if (typeof window === 'undefined') return false
+    try {
+      return localStorage.getItem('toni-grid') === '1'
+    } catch {
+      return false
+    }
+  })
   const aiEnabled = ENABLE_AI
   const flashTimeoutRef = useRef<number | null>(null)
   const chatContainerRef = useRef<HTMLDivElement | null>(null)
@@ -291,6 +301,18 @@ export function useTacticalBlogExperience(
     },
     [clearFlash, setFlashMessage],
   )
+
+  const toggleGrid = useCallback(() => {
+    setShowGrid((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem('toni-grid', next ? '1' : '0')
+      } catch {
+        // Storage unavailable
+      }
+      return next
+    })
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -767,5 +789,7 @@ export function useTacticalBlogExperience(
     setAgentInput,
     agentInput,
     aiEnabled,
+    showGrid,
+    toggleGrid,
   }
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { GridOverlay } from '@/components/grid-overlay'
 import { Markdown } from '@/components/markdown'
 import { BottomNav, type MobileNavTab } from '@/components/mobile/bottom-nav'
 import { ChatSheet } from '@/components/mobile/chat-sheet'
@@ -352,6 +353,7 @@ export function TacticalBlogMobile() {
           focusInput={focusChatInput}
         />
         <FlashMessage message={flashMessage} />
+        <GridOverlay />
       </div>
     </div>
   )

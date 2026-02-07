@@ -221,7 +221,7 @@ function createSectionHeadingRenderer(
             role="presentation"
             className={cn(
               'markdown-ascii-heading',
-              'mb-3 whitespace-pre text-[11px] font-mono uppercase text-accent',
+              'mb-3 whitespace-pre text-[12px] leading-[16px] font-mono uppercase text-accent',
             )}
           >
             {ascii}
@@ -245,7 +245,7 @@ function createSectionHeadingRenderer(
 
 function createMarkdownComponents(variant: HeadingVariant): Components {
   const h1 = ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h1'> & { node?: unknown }) => (
-    <h1 {...props} className={cn('mb-6 font-serif text-[2.25rem] font-normal tracking-tight', props.className)}>
+    <h1 {...props} className={cn('mb-6 font-serif text-[2.25rem] leading-[40px] font-normal tracking-tight', props.className)}>
       {children}
     </h1>
   )
@@ -254,12 +254,12 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     variant === 'ascii'
       ? createSectionHeadingRenderer('h2', {
           containerClassName: 'mt-8',
-          headingClassName: 'mb-5 font-sans text-[1.5rem] font-semibold tracking-tight border-l-[3px] border-accent pl-4',
+          headingClassName: 'mb-[24px] font-sans text-[1.5rem] leading-[32px] font-semibold tracking-tight border-l-[3px] border-accent pl-4',
         })
       : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h2'> & { node?: unknown }) => (
           <h2
             {...props}
-            className={cn('mb-5 mt-8 font-sans text-[1.5rem] font-semibold tracking-tight border-l-[3px] border-accent pl-4', props.className)}
+            className={cn('mb-[24px] mt-8 font-sans text-[1.5rem] leading-[32px] font-semibold tracking-tight border-l-[3px] border-accent pl-4', props.className)}
           >
             {children}
           </h2>
@@ -269,12 +269,12 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
     variant === 'ascii'
       ? createSectionHeadingRenderer('h3', {
           containerClassName: 'mt-6',
-          headingClassName: 'mb-4 font-sans text-[1.125rem] font-semibold tracking-tight',
+          headingClassName: 'mb-4 font-sans text-[1.125rem] leading-[24px] font-semibold tracking-tight',
         })
       : ({ node: _node, children, ...props }: ComponentPropsWithoutRef<'h3'> & { node?: unknown }) => (
           <h3
             {...props}
-            className={cn('mb-4 mt-6 font-sans text-[1.125rem] font-semibold tracking-tight', props.className)}
+            className={cn('mb-4 mt-6 font-sans text-[1.125rem] leading-[24px] font-semibold tracking-tight', props.className)}
           >
             {children}
           </h3>
@@ -339,7 +339,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       <ul
         {...props}
         className={cn(
-          'mb-4 list-disc list-outside pl-6 text-base leading-[1.75] marker:text-accent space-y-2 font-sans',
+          'mb-4 list-disc list-outside pl-6 text-base leading-[28px] marker:text-accent space-y-2 font-sans',
           props.className,
         )}
       >
@@ -350,7 +350,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       <ol
         {...props}
         className={cn(
-          'mb-4 list-decimal list-outside pl-6 text-base leading-[1.75] marker:text-accent space-y-2 font-sans',
+          'mb-4 list-decimal list-outside pl-6 text-base leading-[28px] marker:text-accent space-y-2 font-sans',
           props.className,
         )}
       >
@@ -358,12 +358,12 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       </ol>
     ),
     li: ({ node: _node, children, ...props }) => (
-      <li {...props} className={cn('text-base leading-[1.75] font-sans', props.className)}>
+      <li {...props} className={cn('text-base leading-[28px] font-sans', props.className)}>
         {children}
       </li>
     ),
     blockquote: ({ node: _node, children, ...props }) => (
-      <blockquote {...props} className={cn('markdown-blockquote my-6 text-base leading-[1.75] font-sans', props.className)}>
+      <blockquote {...props} className={cn('markdown-blockquote my-6 text-base leading-[28px] font-sans', props.className)}>
         {children}
       </blockquote>
     ),
@@ -384,7 +384,7 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
           <code
             {...props}
             className={cn(
-              'bg-surface px-1.5 py-0.5 text-[13px] font-mono text-text',
+              'bg-surface px-[4px] py-[2px] text-[12px] leading-[20px] font-mono text-text',
               className,
             )}
           >
@@ -394,8 +394,8 @@ function createMarkdownComponents(variant: HeadingVariant): Components {
       }
 
       return (
-        <pre className="mb-4 overflow-x-auto border border-border bg-surface p-5 text-text">
-          <code {...props} className={cn('block whitespace-pre text-[13px] font-mono', className)}>
+        <pre className="mb-4 overflow-x-auto border border-border bg-surface p-[20px] text-text">
+          <code {...props} className={cn('block whitespace-pre text-[12px] leading-[20px] font-mono', className)}>
             {children}
           </code>
         </pre>
@@ -485,14 +485,14 @@ function renderParagraph({ node, children, className, fragment, extraProps }: Pa
           className="w-full border border-border"
         />
         {caption ? (
-          <figcaption className="mt-2 text-center font-mono text-[10px] uppercase tracking-[0.04em] text-text-tertiary">{caption}</figcaption>
+          <figcaption className="mt-2 text-center font-mono text-[10px] leading-[16px] uppercase tracking-[0.04em] text-text-tertiary">{caption}</figcaption>
         ) : null}
       </figure>
     )
   }
 
   return (
-    <p {...baseProps} className={cn('mb-4 text-base leading-[1.75] font-sans', className)}>
+    <p {...baseProps} className={cn('mb-4 text-base leading-[28px] font-sans', className)}>
       {children}
     </p>
   )
@@ -554,7 +554,7 @@ export function Markdown({ content, className, pieceId, headingVariant = 'defaul
           <li
             {...mergedProps}
             className={cn(
-              'mb-2 text-base leading-[1.75] font-sans',
+              'mb-2 text-base leading-[28px] font-sans',
               typeof className === 'string' ? className : undefined,
             )}
           >
@@ -566,7 +566,7 @@ export function Markdown({ content, className, pieceId, headingVariant = 'defaul
   }, [baseComponents, fragmentMetadata])
 
   return (
-    <div className={cn('markdown-content max-w-none text-base leading-[1.75] font-sans', className)}>
+    <div className={cn('markdown-content max-w-none text-base leading-[28px] font-sans', className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeSanitize, markdownSchema]]}

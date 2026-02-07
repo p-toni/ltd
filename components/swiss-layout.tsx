@@ -7,6 +7,7 @@ import { PieceReader } from '@/components/piece-reader'
 import { RedThread } from '@/components/red-thread'
 import { CornerMark } from '@/components/corner-mark'
 import { CommandBar } from '@/components/command-bar'
+import { GridOverlay } from '@/components/grid-overlay'
 import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
 
 export function SwissLayout() {
@@ -42,6 +43,7 @@ export function SwissLayout() {
         </main>
       </div>
       <CommandBar />
+      <GridOverlay />
     </div>
   )
 }

@@ -38,7 +38,7 @@ export function PieceReader() {
           <div className="font-serif italic text-[2.5rem] leading-tight text-text-tertiary/30 mb-4">
             &ldquo;&rdquo;
           </div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.06em] text-text-tertiary">
+          <p className="font-mono text-[12px] leading-[16px] uppercase tracking-[0.06em] text-text-tertiary">
             Choose a piece from the left
           </p>
         </div>
@@ -73,13 +73,13 @@ export function PieceReader() {
             <span className="absolute -left-2 -top-8 font-serif italic text-[7rem] leading-none text-text-tertiary/[0.04] select-none pointer-events-none">
               {numeral}
             </span>
-            <span className="relative font-mono text-[11px] uppercase tracking-[0.06em] text-text-tertiary">
+            <span className="relative font-mono text-[12px] leading-[16px] uppercase tracking-[0.06em] text-text-tertiary">
               Piece {numeral}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="reader-title mt-5 font-serif text-[3rem] leading-[1.08] tracking-[-0.03em] text-text">
+          <h1 className="reader-title mt-[24px] font-serif text-[3rem] leading-[56px] tracking-[-0.03em] text-text">
             {selectedPiece.title}
           </h1>
 
@@ -88,13 +88,13 @@ export function PieceReader() {
 
           {/* Excerpt */}
           {selectedPiece.excerpt && (
-            <p className="reader-meta mt-6 font-serif italic text-lg text-text-secondary leading-relaxed">
+            <p className="reader-meta mt-6 font-serif italic text-lg text-text-secondary leading-[28px]">
               {selectedPiece.excerpt}
             </p>
           )}
 
           {/* Metadata bar */}
-          <div className="reader-meta mt-6 font-mono text-[11px] uppercase tracking-[0.04em] text-text-tertiary">
+          <div className="reader-meta mt-6 font-mono text-[12px] leading-[16px] uppercase tracking-[0.04em] text-text-tertiary">
             {dateStr} · {selectedPiece.readTime} · {selectedPiece.wordCount.toLocaleString()} words · {moodLabel}
           </div>
 
@@ -113,7 +113,7 @@ export function PieceReader() {
               <span className="font-serif italic text-lg text-accent/60">fin</span>
               <span className="block w-6 h-px bg-accent/40" />
             </div>
-            <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-text-tertiary/50">
+            <span className="font-mono text-[10px] leading-[16px] uppercase tracking-[0.08em] text-text-tertiary/50">
               Piece {numeral} · {selectedPiece.wordCount.toLocaleString()} words
             </span>
           </div>
