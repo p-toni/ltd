@@ -121,7 +121,7 @@ export function Sidebar() {
           stabilizing the<br />human-AI loop
         </div>
         <div className="mt-2 font-mono text-[10px] leading-[16px] text-text-tertiary tracking-[0.08em] uppercase">
-          by Toni Petrina
+          by Toni Pereira
         </div>
       </div>
     </aside>
