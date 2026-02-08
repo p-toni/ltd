@@ -1,6 +1,13 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
-import { Instrument_Serif, DM_Sans, Space_Mono } from 'next/font/google'
+import { Instrument_Serif, DM_Sans } from 'next/font/google'
+import {
+  GeistPixelSquare,
+  GeistPixelGrid,
+  GeistPixelCircle,
+  GeistPixelTriangle,
+  GeistPixelLine,
+} from 'geist/font/pixel'
 import './globals.css'
 
 const instrumentSerif = Instrument_Serif({
@@ -17,13 +24,6 @@ const dmSans = DM_Sans({
   style: ['normal', 'italic'],
   display: 'swap',
   variable: '--font-sans',
-})
-
-const spaceMono = Space_Mono({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-mono',
 })
 
 const rawSiteUrl =
@@ -65,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} ${dmSans.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`${instrumentSerif.variable} ${dmSans.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelCircle.variable} ${GeistPixelTriangle.variable} ${GeistPixelLine.variable}`}>
       <body className="font-sans antialiased">
         {children}
         <Analytics />
