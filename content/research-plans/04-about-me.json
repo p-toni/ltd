@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "pieceId": 4,
+  "pieceSlug": "04-about-me",
+  "createdAt": "2026-02-08T14:33:44.908Z",
+  "contentHash": "e04b53bebb0600df17a85ac98f5dc0fd8a890174e154ef11df10cea3bd3957ea",
+  "focusAreas": [
+    {
+      "id": 1,
+      "label": "Product Leadership",
+      "rationale": "Understanding the nuances of leading product development in AI and data-driven environments.",
+      "queries": [
+        "Toni Pereira product leadership",
+        "AI product development best practices",
+        "human-AI workflows in product design"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Human-in-the-Loop Systems",
+      "rationale": "Exploring the integration of human judgment in AI systems and product workflows.",
+      "queries": [
+        "human-in-the-loop AI systems",
+        "co-drafting AI tools",
+        "AI counter-pattern search"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Instrumentation and Reliability",
+      "rationale": "Investigating the importance of instrumentation in product development and user-centric design.",
+      "queries": [
+        "product instrumentation techniques",
+        "reliability in AI products",
+        "quality checks in software development"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 4,
+      "label": "AI and Data Integration",
+      "rationale": "Analyzing systems that connect text, data, and code to enhance productivity.",
+      "queries": [
+        "AI data integration systems",
+        "text and data synthesis tools",
+        "code collaboration in AI projects"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Ethics in AI",
+      "rationale": "Examining the ethical considerations and requirements in AI product development.",
+      "queries": [
+        "AI explainability standards",
+        "safety in AI systems",
+        "integrity as a feature in product design"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    }
+  ],
+  "sourcePolicy": {
+    "domains": [],
+    "feeds": [],
+    "recencyDays": 14,
+    "maxResultsPerQuery": 5
+  }
+}

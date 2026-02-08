@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "pieceId": 7,
+  "pieceSlug": "07-co-owning-the-loop",
+  "createdAt": "2026-02-08T14:34:42.714Z",
+  "contentHash": "b7bb8648a62e66a51ef79a86d532094f29613ec3fe19d709cb3fc783f3b1186e",
+  "focusAreas": [
+    {
+      "id": 1,
+      "label": "Toni's Leadership",
+      "rationale": "Exploring the impact of Toni's guidance on project direction and team dynamics.",
+      "queries": [
+        "Toni leadership style",
+        "impact of Toni on team collaboration",
+        "Toni's approach to project management"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Claude Skills Implementation",
+      "rationale": "Understanding the role of Claude skills in enhancing deployment processes.",
+      "queries": [
+        "Claude skills in software deployment",
+        "benefits of Claude skills for build awareness",
+        "Claude Code integration in projects"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 3,
+      "label": "PreToolUse Guards",
+      "rationale": "Investigating the effectiveness of PreToolUse guards in production environments.",
+      "queries": [
+        "PreToolUse guards in software development",
+        "impact of PreToolUse guards on production safety",
+        "how PreToolUse guards improve workflow"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Choreography of Ideas",
+      "rationale": "Examining the metaphor of choreography in the context of software development and idea flow.",
+      "queries": [
+        "choreography in software development",
+        "metaphor of choreography for idea flow",
+        "how choreography influences coding practices"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Trust Building through Communication",
+      "rationale": "Analyzing the role of communication in building trust within teams.",
+      "queries": [
+        "importance of communication in team trust",
+        "how communication affects team dynamics",
+        "building trust through conversations in projects"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    }
+  ],
+  "sourcePolicy": {
+    "domains": [],
+    "feeds": [],
+    "recencyDays": 14,
+    "maxResultsPerQuery": 5
+  }
+}

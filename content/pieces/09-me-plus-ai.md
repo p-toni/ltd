@@ -12,12 +12,21 @@ pinned: true
 I am not “using AI.”
 
 I am regulating a [coupled feedback system](tooltip:E1):
+
+Update (2026-02-08): Recent research emphasizes the critical role of understanding the interaction between AI systems and human decision-making. It highlights that maintaining control in these human-AI loops is essential for effective outcomes. As AI systems become more integrated into decision-making processes, the need for clear feedback mechanisms and awareness of the potential for dysregulation grows. This underscores the importance of the control metrics outlined in this document, ensuring that human agency remains central in the face of rapidly evolving AI capabilities. (Source: https://www.eecs.mit.edu/research/artificial-intelligence-decision-making/)
+
+Update (2026-02-08): The full realization of the potential of human–AI collaboration continues to face several challenges. These challenges include ensuring effective decision-making and maintaining control within the human-AI loop. Understanding these obstacles can enhance the strategies outlined in this document for regulating AI interactions, emphasizing the need for robust frameworks that support human oversight and feedback. By addressing these issues, we can better navigate the complexities of AI-assisted decision-making and maximize the benefits while mitigating risks. (Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC11373149/)
+
 me ↔ model ↔ environment ↔ me
 
 The upside is velocity: faster search, faster drafts, faster iteration.
 
 The risk is not “wrong answers.”
-The risk is a [dysregulated integrated hybrid](tooltip:E5): the loop speeds up while my [human feedback control](tooltip:E2) weakens. I get fluent motion with no stable direction.
+The risk is a [dysregulated integrated hybrid](tooltip:E5): the loop speeds up while my [human feedback control](tooltip:E2) weakens.
+
+Update (2026-02-08): Understanding feedback mechanisms is crucial for regulating the human-AI loop effectively. A feedback mechanism is a loop system wherein the system responds to a perturbation, allowing for adjustments based on the output. This concept is vital in maintaining control over the interaction between human and AI, ensuring that the feedback loop remains balanced and effective. By recognizing how feedback mechanisms operate, one can better navigate the complexities of AI integration and avoid potential pitfalls associated with dysregulated systems. (Source: https://www.biologyonline.com/dictionary/feedback-mechanism)
+
+ I get fluent motion with no stable direction.
 
 So this document is a control spec.
 

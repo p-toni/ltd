@@ -8,15 +8,24 @@ mood:
 excerpt: A private metric for extractable structure, geometry, and loop stability.
 pinned: true
 ---
+
 I keep getting tempted by clean definitions.
 
+Update (2026-02-08): Pattern recognition is a cognitive process that involves matching incoming stimuli with stored information, highlighting the importance of context and constraints in learning. This process emphasizes how individuals extract meaningful patterns from their experiences, aligning with the notion that learning is not merely about the information itself but about how it interacts with personal limitations. Understanding this interaction can enhance our ability to distill useful structures from our experiences, ultimately aiding in the development of effective internal programs for bounded learning. (Source: https://en.wikipedia.org/wiki/Pattern_recognition_(psychology))
+
 Information as entropy.
+
+Update (2026-02-08): Entropy in information theory quantifies the uncertainty or unpredictability of information content. It is a measure of the amount of information that is produced by a stochastic data source, reflecting how much information is needed to describe the state of that source. This concept aligns with the idea that information is not merely a static property but is influenced by personal constraints and context, shaping how we extract and utilize knowledge in our lives. Understanding entropy can deepen our insight into the dynamics of information processing as it relates to individual learning experiences. (Source: https://en.wikipedia.org/wiki/Entropy_(information_theory))
+
 Intelligence as compression.
 Learning as “matching a distribution.”
 
 Those definitions are elegant, but they don’t cash out in my actual life.
 
 In my life, “information” is not what exists in the world. It’s what I can [*pull into myself* under constraints](tooltip:A1): time, attention, energy, compute, mood, calendar, context.
+
+Update (2026-02-08): Recent research highlights that processing capacity bottlenecks significantly restrict our ability to process and act on environmental information, particularly in individuals with ADHD. These limitations align with the concept of personal constraints in information extraction, emphasizing that our cognitive resources are finite. Understanding these bottlenecks can deepen our insight into how individual limitations affect learning and the distillation of information into usable knowledge. This perspective reinforces the idea that effective learning is not merely about the volume of information but about how well we can manage our constraints to extract meaningful insights. (Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC6996017/)
+
 I don’t experience the universe. I experience the slice I can process.
 
 So the question isn’t “how much information is there?”
@@ -35,6 +44,12 @@ When I say “I learned something,” what I mean is:
 * It started generating predictions or choices with low friction.
 
 So “information” isn’t a property of the thing I read. It’s a property of the [*interaction* between that thing and my constraints](tooltip:A1).
+
+Update (2026-02-08): Recent research emphasizes the significance of optimization with constraints, highlighting how structured learning from data can enhance our ability to extract meaningful patterns within personal limits. This framework aligns with the idea that effective learning is not just about the information itself but about how it interacts with our constraints. By focusing on optimization problems that incorporate constraints, we can better understand how to distill information into usable structures, ultimately improving our learning processes. (Source: https://www.sciencedirect.com/science/article/pii/S0377221723003405)
+
+Update (2026-02-08): The framework introduced in 'A Theory of Usable Information under Computational Constraints' emphasizes that the observer's limitations significantly influence the extraction of usable information. This aligns with the notion that information is not merely about the data itself but about how it interacts with one's constraints, such as time and attention. By understanding these dynamics, we can better navigate the complexities of information processing in our lives, enhancing our ability to distill meaningful insights from the chaos of data. (Source: https://openreview.net/forum?id=r1eBeyHFDH)
+
+Update (2026-02-08): The concept of information-processing constraints in decision-making is further explored in the source, which discusses how these constraints can be modeled using Kullback-Leibler divergence. This theoretical framework aligns with the idea that learning is not just about the information available but also about how it interacts with personal limitations. By understanding these constraints, we can better navigate the complexities of extracting meaningful insights from our experiences, reinforcing the notion that the structure of information is crucial for bounded learning. (Source: https://arxiv.org/abs/1604.02080)
 
 Some days, the same paragraph is dead text.
 Other days, it turns into a lever.

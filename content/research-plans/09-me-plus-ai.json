@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "pieceId": 9,
+  "pieceSlug": "09-me-plus-ai",
+  "createdAt": "2026-02-08T14:31:09.879Z",
+  "contentHash": "42ce8cee6014792601d6a1e978c2ceeb38c247ebb28e1b46ad4daaedc76882bc",
+  "focusAreas": [
+    {
+      "id": 1,
+      "label": "Human-AI Feedback Loop",
+      "rationale": "Understanding the dynamics of the human-AI interaction is crucial for maintaining control.",
+      "queries": [
+        "human feedback control mechanisms",
+        "dysregulated integrated hybrid examples",
+        "coupled feedback system in AI"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Control Metrics in AI Usage",
+      "rationale": "Exploring the R3+2+1 control metric can help in assessing AI's influence on decision-making.",
+      "queries": [
+        "R3+2+1 control metric",
+        "decision-making in AI integration",
+        "assumptions in AI feedback loops"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 3,
+      "label": "AI as a Co-author",
+      "rationale": "Investigating the implications of AI as a co-author can reveal risks and benefits.",
+      "queries": [
+        "AI co-authoring risks",
+        "integrated decision-making with AI",
+        "AI writing as a draft artifact"
+      ],
+      "stanceTargets": [
+        "support",
+        "contradict"
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Identity and AI",
+      "rationale": "The concept of identity outsourcing raises ethical and philosophical questions.",
+      "queries": [
+        "identity outsourcing in AI",
+        "AI and personal identity",
+        "who am I questions in AI context"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    }
+  ],
+  "sourcePolicy": {
+    "domains": [],
+    "feeds": [],
+    "recencyDays": 14,
+    "maxResultsPerQuery": 5
+  }
+}

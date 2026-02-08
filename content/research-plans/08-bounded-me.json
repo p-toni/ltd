@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "pieceId": 8,
+  "pieceSlug": "08-bounded-me",
+  "createdAt": "2026-02-08T14:32:34.824Z",
+  "contentHash": "f3677150821d0b40f510e68ede564c184eb0e280dafbebca4b329299d8dfb43e",
+  "focusAreas": [
+    {
+      "id": 1,
+      "label": "Information as Entropy",
+      "rationale": "Exploring the concept of information as a measure of entropy and its implications on learning.",
+      "queries": [
+        "entropy in information theory",
+        "applications of entropy in learning",
+        "information processing constraints"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Learning and Pattern Recognition",
+      "rationale": "Investigating how learning is influenced by the ability to recognize patterns under constraints.",
+      "queries": [
+        "pattern recognition in cognitive science",
+        "learning under constraints",
+        "cognitive load and learning efficiency"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Cognitive Constraints",
+      "rationale": "Understanding the impact of cognitive constraints on information extraction and learning.",
+      "queries": [
+        "cognitive constraints in information processing",
+        "impact of attention on learning",
+        "energy constraints in cognitive tasks"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Information Interaction",
+      "rationale": "Examining the interaction between information and personal constraints in learning.",
+      "queries": [
+        "interaction of information and personal constraints",
+        "contextual learning theories",
+        "information retrieval and personal context"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Computation and Learning",
+      "rationale": "Analyzing how computation can lead to new learning opportunities.",
+      "queries": [
+        "computation in learning processes",
+        "computational thinking and education",
+        "learning outcomes from computational tasks"
+      ],
+      "stanceTargets": [
+        "support",
+        "extend"
+      ]
+    }
+  ],
+  "sourcePolicy": {
+    "domains": [],
+    "feeds": [],
+    "recencyDays": 14,
+    "maxResultsPerQuery": 5
+  }
+}
