@@ -11,13 +11,13 @@ pinned: true
 
 I am not "using AI."
 
-I am regulating a coupled feedback system:
+I am regulating a [coupled feedback system](tooltip:E1):
 me ↔ model ↔ environment ↔ me
 
 The upside is velocity: faster search, faster drafts, faster iteration.
 
 The risk is not "wrong answers."
-The risk is a dysregulated integrated hybrid: the loop speeds up while my human feedback control weakens. I get fluent motion with no stable direction.
+The risk is a [dysregulated integrated hybrid](tooltip:E5): the loop speeds up while my [human feedback control](tooltip:E2) weakens. I get fluent motion with no stable direction.
 
 So this document is a control spec.
 
@@ -88,21 +88,21 @@ Drift is not a moral failure. It's a dynamical regime.
 
 When coupling tightens, three parameters matter:
 
-- **Human–AI exchange** (how much bandwidth and persistence exists between me and the model)
-- **Human feedback control** (my ability to monitor, interpret, constrain)
+- **[Human–AI exchange](tooltip:E3)** (how much bandwidth and persistence exists between me and the model)
+- **[Human feedback control](tooltip:E2)** (my ability to monitor, interpret, constrain)
 - **Latency** (how quickly outputs change my internal state)
 
 High exchange + weak feedback control is the danger zone: the loop becomes **tightly wrong**.
 Errors don't get corrected. They get amplified.
 
-This is the "humanbot" failure mode: the system is integrated but poorly regulated — so it reinforces its own local story.
+This is the "[humanbot](tooltip:E6)" failure mode: the system is integrated but poorly regulated — so it reinforces its own local story.
 
 So my design principle is simple:
 
 **Increase exchange only when feedback control is also increasing.**
 If exchange rises faster than control, I must slow down.
 
-The regulated integrated hybrid is the target: tight integration with strong feedback control.
+The [regulated integrated hybrid](tooltip:E4) is the target: tight integration with strong feedback control.
 
 ---
 
