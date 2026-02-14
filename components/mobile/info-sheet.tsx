@@ -30,6 +30,9 @@ export function InfoSheet({ piece, isOpen, onClose }: InfoSheetProps) {
         aria-hidden
       />
       <section className={clsx(styles.infoSheet, isOpen && styles.infoSheetOpen)} aria-label="Piece info">
+        <div className={styles.infoHandle}>
+          <div className={styles.infoHandleBar} />
+        </div>
         <header className={styles.infoHeader}>
           <span>INFO</span>
           <button type="button" className={styles.infoClose} onClick={onClose} aria-label="Close info">
