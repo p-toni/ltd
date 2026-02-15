@@ -37,6 +37,41 @@ export const PAPER_SOURCES: Record<string, PaperSource> = {
     label: 'arXiv 2601.12837',
     url: 'https://arxiv.org/html/2601.12837v1',
   },
+  F: {
+    id: 'F',
+    label: 'Rozenblit & Keil 2002',
+    url: 'https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/',
+  },
+  G: {
+    id: 'G',
+    label: 'Alter & Oppenheimer 2009',
+    url: 'https://journals.sagepub.com/doi/10.1177/1088868309341564',
+  },
+  H: {
+    id: 'H',
+    label: 'Roediger & Karpicke 2006',
+    url: 'https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x',
+  },
+  I: {
+    id: 'I',
+    label: 'Karpicke & Blunt 2011',
+    url: 'https://www.science.org/doi/10.1126/science.1199327',
+  },
+  J: {
+    id: 'J',
+    label: 'Chi, Feltovich & Glaser 1981',
+    url: 'https://matt.colorado.edu/teaching/highcog/readings/cfg81.pdf',
+  },
+  K: {
+    id: 'K',
+    label: 'Larkin & Simon 1987',
+    url: 'https://wexler.free.fr/library/files/larkin%20%281987%29%20why%20a%20diagram%20is%20%28sometimes%29%20worth%20a%20thousand%20words.pdf',
+  },
+  L: {
+    id: 'L',
+    label: 'Tolman 1948',
+    url: 'https://pubmed.ncbi.nlm.nih.gov/18870876/',
+  },
 }
 
 export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
@@ -177,6 +212,54 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     paper: 'E',
     title: 'Humanbot',
     body: 'Example region: over-attachment plus persistent reinforcement can weaken feedback control despite high coupling.',
+  },
+  F1: {
+    id: 'F1',
+    paper: 'F',
+    title: 'Illusion of explanatory depth',
+    body: 'People systematically overrate how well they understand complex systems; confidence collapses when they attempt a detailed mechanistic explanation.',
+  },
+  F2: {
+    id: 'F2',
+    paper: 'F',
+    title: 'Mechanism drill',
+    body: 'Asking "how does this actually work?" until confidence breaks reveals the exact missing sub-edge in your understanding.',
+  },
+  G1: {
+    id: 'G1',
+    paper: 'G',
+    title: 'Processing fluency',
+    body: 'When something is easy to read or process, we treat it as more familiar, more true, or more "known" than it is. Ease becomes a false signal of understanding.',
+  },
+  H1: {
+    id: 'H1',
+    paper: 'H',
+    title: 'Test-enhanced learning',
+    body: 'Retrieval practice strengthens learning because it forces reconstruction of knowledge rather than re-exposure to it.',
+  },
+  I1: {
+    id: 'I1',
+    paper: 'I',
+    title: 'Retrieval practice vs concept mapping',
+    body: 'Retrieval practice outperformed concept mapping for meaningful learning; reconstruction beats external structuring, especially early.',
+  },
+  J1: {
+    id: 'J1',
+    paper: 'J',
+    title: 'Expert vs novice representations',
+    body: 'Experts organize problems by underlying structure (deep features); novices organize by surface features. More knowledge isn\'t the difference — organization is.',
+  },
+  K1: {
+    id: 'K1',
+    paper: 'K',
+    title: 'Diagrams change computation',
+    body: 'Diagrams aren\'t just memory aids; they change what\'s computationally cheap by making spatial relationships explicit and searchable.',
+  },
+  L1: {
+    id: 'L1',
+    paper: 'L',
+    title: 'Cognitive maps',
+    body: 'Tolman\'s canonical argument: organisms build internal spatial representations ("cognitive maps") rather than just learning stimulus-response chains.',
   },
   SYN1: {
     id: 'SYN1',

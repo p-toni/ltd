@@ -31,9 +31,9 @@ This isn't a preference. It's an operational standard: a way to stop mistaking c
 
 There's a measured failure mode that matters more now than it did pre-LLM: I feel like I understand something until I try to explain its mechanism.
 
-Rozenblit & Keil named this the [illusion of explanatory depth](https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/): people systematically overrate how well they understand complex systems, and confidence collapses when they attempt a detailed explanation.
+Rozenblit & Keil named this the [illusion of explanatory depth](tooltip:F1): people systematically overrate how well they understand complex systems, and confidence collapses when they attempt a detailed explanation.
 
-A second effect makes the trap stickier: processing fluency. When something is easy to read or easy to process, we treat it as more familiar, more true, or more "known" than it is. Alter & Oppenheimer [review this family of effects](https://journals.sagepub.com/doi/10.1177/1088868309341564).
+A second effect makes the trap stickier: [processing fluency](tooltip:G1). When something is easy to read or easy to process, we treat it as more familiar, more true, or more "known" than it is.
 
 LLMs amplify both: they generate mechanism-shaped language with high fluency on demand. The danger isn't only error. The deeper danger is accurate prose that I don't own.
 
@@ -62,7 +62,7 @@ Edges unlock navigational powers:
 - **Debug:** if latency spikes without hit rate change, my edge is wrong.
 - **Teach:** I can walk someone through dependency rather than quote a timeline.
 
-This aligns with what classic work on expertise shows: experts represent problems by underlying structure, not surface features. [Chi, Feltovich & Glaser](https://matt.colorado.edu/teaching/highcog/readings/cfg81.pdf) is a canonical reference.
+This aligns with what classic work on expertise shows: experts [represent problems by underlying structure, not surface features](tooltip:J1).
 
 ---
 
@@ -76,7 +76,7 @@ Here's the human–AI example that made it click:
 
 *Flat intuition:* more clarity and better summaries should improve decisions.
 
-*What happens in practice:* better summaries can increase confidence without increasing ownership. The loop shifts from "think → consult" to "consult → assent," and the [illusion of explanatory depth](https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/) stays intact because the explanation always exists on demand. [Fluency effects](https://journals.sagepub.com/doi/10.1177/1088868309341564) make the risk worse: ease-of-processing becomes a false signal of knowing.
+*What happens in practice:* better summaries can increase confidence without increasing ownership. The loop shifts from "think → consult" to "consult → assent," and the [illusion of explanatory depth](tooltip:F1) stays intact because the explanation always exists on demand. [Fluency effects](tooltip:G1) make the risk worse: ease-of-processing becomes a false signal of knowing.
 
 The bend is: **in a coupled system, clarity can increase drift if it displaces reconstruction.**
 
@@ -106,7 +106,7 @@ That "standing somewhere" sensation has signatures:
 2. **Geometry degrades gracefully.** Forget a detail and the surrounding constraints can often reconstruct it.
 3. **Geometry localizes surprise.** When something breaks, I can name which edge failed and what it invalidates downstream.
 
-The "map" metaphor has a real intellectual lineage — [Tolman's "cognitive maps"](https://pubmed.ncbi.nlm.nih.gov/18870876/) is a canonical early anchor.
+The "map" metaphor has a real intellectual lineage — Tolman's ["cognitive maps"](tooltip:L1) is a canonical early anchor.
 
 ---
 
@@ -122,7 +122,7 @@ These are the checks I run when I suspect I'm holding borrowed coherence.
 | **Teach** — can I build it in someone else? | I can walk a path | I can only relay |
 | **Break** — a fact turns out wrong | damage localizes to an edge | the whole picture destabilizes |
 
-Why this works: it forces reconstruction, not recognition. Retrieval practice strengthens learning because it requires rebuilding knowledge rather than re-exposure. [Roediger & Karpicke](https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x) is the clean canonical reference.
+Why this works: it forces reconstruction, not recognition. [Retrieval practice](tooltip:H1) strengthens learning because it requires rebuilding knowledge rather than re-exposure.
 
 **Curvature test** (as a special case of Break): When surprise repeats in a consistent pattern, it's not just a broken edge — it's evidence that the global shape of my map is wrong. The curvature diagnostic checks not only whether surprise localizes, but whether the *pattern* of surprise reveals a missing coupling or constraint.
 
@@ -165,9 +165,9 @@ Write the core nodes. Force 5–10 edges. For each edge, write the type:
 
 If I can't type an edge, it's probably hand-waving.
 
-**Step 2 — Collapse the illusion (mechanism drill)**
+**Step 2 — Collapse the illusion ([mechanism drill](tooltip:F2))**
 
-Pick one edge and explain the mechanism until confidence breaks. That break marks the missing sub-edge. ([Illusion of explanatory depth](https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/).)
+Pick one edge and explain the mechanism until confidence breaks. That break marks the missing sub-edge.
 
 **Step 3 — Reconstruction loop (anti-fluency engine)**
 
@@ -178,36 +178,24 @@ Pick one edge and explain the mechanism until confidence breaks. That break mark
 
 **Step 4 — Choose the right scaffold for the stage**
 
-For novices, mapping can become search-heavy. Retrieval practice often wins early. [Karpicke & Blunt](https://www.science.org/doi/10.1126/science.1199327) is the clean empirical anchor: retrieval practice outperformed concept mapping for meaningful learning in their experiments.
+For novices, mapping can become search-heavy. [Retrieval practice often wins early](tooltip:I1): it outperformed concept mapping for meaningful learning.
 
 Stage rule:
 
 - **Early:** retrieval practice + reconstruction (solidify nodes/edges).
 - **Mid:** mapping to expose missing edges / neighborhoods.
-- **Late:** diagrams as leverage because representation changes what's computationally cheap ([Larkin & Simon](https://wexler.free.fr/library/files/larkin%20%281987%29%20why%20a%20diagram%20is%20%28sometimes%29%20worth%20a%20thousand%20words.pdf)).
+- **Late:** [diagrams as leverage](tooltip:K1) because representation changes what's computationally cheap.
 
 ---
 
 ## Closing
 
-Models are coherence engines. Humans are fluency-biased.
+Models are coherence engines. Humans are [fluency-biased](tooltip:G1).
 
-So the default mode ("prompt → accept → move on") reliably produces retrieval that feels like geometry — precisely because it lands on our strongest cognitive illusions. ([Illusion of depth](https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/); [fluency](https://journals.sagepub.com/doi/10.1177/1088868309341564).)
+So the default mode ("prompt → accept → move on") reliably produces retrieval that feels like geometry — precisely because it lands on our strongest [cognitive illusions](tooltip:F1).
 
 My standard going forward:
 
 **Use models to expand the search space. Use reconstruction to build the map.**
 
-(The [testing effect](https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x) is the mechanism, not the slogan.)
-
----
-
-## Reference shelf
-
-- **Rozenblit & Keil** — [illusion of explanatory depth](https://pmc.ncbi.nlm.nih.gov/articles/PMC3062901/).
-- **Alter & Oppenheimer** — [processing fluency review](https://journals.sagepub.com/doi/10.1177/1088868309341564).
-- **Roediger & Karpicke** — [test-enhanced learning](https://journals.sagepub.com/doi/10.1111/j.1467-9280.2006.01693.x).
-- **Karpicke & Blunt** — [retrieval practice vs concept mapping](https://www.science.org/doi/10.1126/science.1199327).
-- **Chi, Feltovich & Glaser** — [expert vs novice structure](https://matt.colorado.edu/teaching/highcog/readings/cfg81.pdf).
-- **Larkin & Simon** — [diagrams change computation](https://wexler.free.fr/library/files/larkin%20%281987%29%20why%20a%20diagram%20is%20%28sometimes%29%20worth%20a%20thousand%20words.pdf).
-- **Tolman** — [cognitive maps](https://pubmed.ncbi.nlm.nih.gov/18870876/).
+(The [testing effect](tooltip:H1) is the mechanism, not the slogan.)
