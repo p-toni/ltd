@@ -9,12 +9,14 @@ import { ingestUrl } from './ingest'
 import { loadOrCreatePlan } from './plan'
 import { writeDailyReport } from './report'
 import { gatherSearchResults } from './scout'
+import { gatherAutoResearchResults } from './autoresearch'
 import { verifySource } from './verifier'
 import { buildInsertionProposal } from './editor'
 
 const MAX_SOURCES_PER_PIECE = 6
 const MIN_CONFIDENCE = 0.65
 const DEFAULT_TIME_BUDGET_MINUTES = 6
+const RESEARCH_PROVIDER = process.env.RESEARCH_PROVIDER ?? 'autoresearch'
 
 function isoDateLabel(date = new Date()) {
   return date.toISOString().slice(0, 10)
@@ -72,7 +74,9 @@ async function run() {
     console.log(`\n[Piece ${piece.slug}] Gathering sources...`)
     piecesReviewed += 1
     const plan = await loadOrCreatePlan(piece)
-    const candidates = await gatherSearchResults(plan)
+    const candidates = RESEARCH_PROVIDER === 'autoresearch'
+      ? await gatherAutoResearchResults(piece, plan)
+      : await gatherSearchResults(plan)
 
     if (!candidates.length) {
       console.log(`[Piece ${piece.slug}] No candidates found.`)

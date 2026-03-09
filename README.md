@@ -32,11 +32,27 @@ Set `ENABLE_AI=true` and `NEXT_PUBLIC_ENABLE_AI=true` only if you want to enable
 
 ### Research Swarm (PR-Approved)
 
-The daily research pipeline uses OpenAI + Brave Search to propose short inline updates and opens a PR for review.
+The daily research pipeline now supports an `autoresearch` provider (recommended) and keeps the legacy OpenAI + Brave scout as fallback.
+
+When `RESEARCH_PROVIDER=autoresearch`, the runner treats `karpathy/autoresearch` as an external dependency and automatically syncs the latest `main` branch into `.cache/deps/autoresearch` before execution.
 
 ```bash
-pnpm ts-node scripts/research/run-daily.ts --dry-run
-pnpm ts-node scripts/research/run-daily.ts
+# Recommended: autoresearch as managed dependency (auto-sync each run)
+export RESEARCH_PROVIDER=autoresearch
+
+# Optional overrides
+export AUTORESEARCH_REPO_URL='https://github.com/karpathy/autoresearch.git'
+export AUTORESEARCH_REPO_REF='main'
+export AUTORESEARCH_ENTRYPOINT='main.py'
+
+# Optional custom command template (vars: {query} {title} {slug} {outputDir} {repoDir} {scriptPath})
+# export AUTORESEARCH_COMMAND='python3 "{scriptPath}" --query "{query}" --output-dir "{outputDir}"'
+
+# Fallback to legacy scout
+export RESEARCH_PROVIDER=legacy
+
+pnpm tsx scripts/research/run-daily.ts --dry-run
+pnpm tsx scripts/research/run-daily.ts
 ```
 
 ### Useful Scripts
@@ -47,7 +63,7 @@ pnpm ts-node scripts/research/run-daily.ts
 | `pnpm build`   | Create a production build                    |
 | `pnpm start`   | Run the built app                            |
 | `pnpm lint`    | Lint the codebase with ESLint                |
-| `pnpm ts-node scripts/research/run-daily.ts` | Run the daily research swarm |
+| `pnpm tsx scripts/research/run-daily.ts` | Run the daily research swarm |
 
 ## Content Workflow
 
