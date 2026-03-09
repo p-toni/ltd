@@ -6,6 +6,9 @@ import type { Piece } from '../../lib/pieces'
 import type { DiscoveryPlan, SearchResult } from './types'
 
 const URL_PATTERN = /https?:\/\/[^\s)\]>'\"]+/gi
+const DEFAULT_AUTORESEARCH_REPO = 'https://github.com/karpathy/autoresearch.git'
+const DEFAULT_AUTORESEARCH_REF = 'main'
+const DEFAULT_AUTORESEARCH_ENTRYPOINT = 'main.py'
 
 function toSafeSlug(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
@@ -15,9 +18,53 @@ function applyTemplate(template: string, vars: Record<string, string>) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? '')
 }
 
-function splitCommand(command: string) {
-  const parts = command.match(/(?:[^"]\S*|".+?")+/g) ?? []
-  return parts.map((part) => part.replace(/^"|"$/g, ''))
+async function runCommand(command: string, args: string[], options?: { cwd?: string; stdio?: 'inherit' | 'pipe' }) {
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: options?.cwd ?? process.cwd(),
+      env: process.env,
+      stdio: options?.stdio ?? 'inherit',
+    })
+
+    child.on('error', reject)
+    child.on('exit', (code) => {
+      if (code === 0) {
+        resolve()
+        return
+      }
+      reject(new Error(`Command failed (${command} ${args.join(' ')}), exit code=${String(code)}`))
+    })
+  })
+}
+
+async function pathExists(targetPath: string) {
+  try {
+    await fs.access(targetPath)
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function ensureAutoResearchDependency() {
+  const repoUrl = process.env.AUTORESEARCH_REPO_URL ?? DEFAULT_AUTORESEARCH_REPO
+  const repoRef = process.env.AUTORESEARCH_REPO_REF ?? DEFAULT_AUTORESEARCH_REF
+  const dependencyRoot = path.join(process.cwd(), '.cache', 'deps')
+  const repoDir = path.join(dependencyRoot, 'autoresearch')
+
+  await fs.mkdir(dependencyRoot, { recursive: true })
+
+  const hasRepo = await pathExists(path.join(repoDir, '.git'))
+  if (!hasRepo) {
+    await runCommand('git', ['clone', '--depth', '1', '--branch', repoRef, repoUrl, repoDir])
+    return repoDir
+  }
+
+  await runCommand('git', ['fetch', '--depth', '1', 'origin', repoRef], { cwd: repoDir })
+  await runCommand('git', ['checkout', '--force', 'FETCH_HEAD'], { cwd: repoDir })
+  await runCommand('git', ['clean', '-fd'], { cwd: repoDir })
+
+  return repoDir
 }
 
 async function collectUrlsFromDirectory(dir: string) {
@@ -64,11 +111,6 @@ function buildSearchResults(urls: string[]): SearchResult[] {
 }
 
 export async function gatherAutoResearchResults(piece: Piece, plan: DiscoveryPlan) {
-  const template = process.env.AUTORESEARCH_COMMAND
-  if (!template) {
-    throw new Error('AUTORESEARCH_COMMAND is required when RESEARCH_PROVIDER=autoresearch.')
-  }
-
   const query = [
     ...piece.watchQueries,
     ...plan.focusAreas.flatMap((focusArea) => focusArea.queries),
@@ -81,34 +123,25 @@ export async function gatherAutoResearchResults(piece: Piece, plan: DiscoveryPla
   const outputDir = path.join(process.cwd(), '.cache', 'autoresearch', date, `${piece.id}-${toSafeSlug(piece.slug)}`)
   await fs.mkdir(outputDir, { recursive: true })
 
-  const command = applyTemplate(template, {
-    query,
-    title: piece.title,
-    slug: piece.slug,
-    outputDir,
-  })
+  const repoDir = await ensureAutoResearchDependency()
+  const entrypoint = process.env.AUTORESEARCH_ENTRYPOINT ?? DEFAULT_AUTORESEARCH_ENTRYPOINT
+  const pythonBin = process.env.AUTORESEARCH_PYTHON_BIN ?? 'python3'
+  const scriptPath = path.join(repoDir, entrypoint)
 
-  const [bin, ...args] = splitCommand(command)
-  if (!bin) {
-    throw new Error('AUTORESEARCH_COMMAND produced an empty command.')
+  const customCommand = process.env.AUTORESEARCH_COMMAND
+  if (customCommand) {
+    const renderedCommand = applyTemplate(customCommand, {
+      query,
+      title: piece.title,
+      slug: piece.slug,
+      outputDir,
+      repoDir,
+      scriptPath,
+    })
+    await runCommand('bash', ['-lc', renderedCommand], { cwd: repoDir })
+  } else {
+    await runCommand(pythonBin, [scriptPath, '--query', query, '--output-dir', outputDir], { cwd: repoDir })
   }
-
-  await new Promise<void>((resolve, reject) => {
-    const child = spawn(bin, args, {
-      cwd: process.cwd(),
-      env: process.env,
-      stdio: 'inherit',
-    })
-
-    child.on('error', reject)
-    child.on('exit', (code) => {
-      if (code === 0) {
-        resolve()
-        return
-      }
-      reject(new Error(`Autoresearch command failed with exit code ${String(code)}`))
-    })
-  })
 
   const urls = await collectUrlsFromDirectory(outputDir)
   return buildSearchResults(urls)

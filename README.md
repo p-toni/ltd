@@ -34,10 +34,19 @@ Set `ENABLE_AI=true` and `NEXT_PUBLIC_ENABLE_AI=true` only if you want to enable
 
 The daily research pipeline now supports an `autoresearch` provider (recommended) and keeps the legacy OpenAI + Brave scout as fallback.
 
+When `RESEARCH_PROVIDER=autoresearch`, the runner treats `karpathy/autoresearch` as an external dependency and automatically syncs the latest `main` branch into `.cache/deps/autoresearch` before execution.
+
 ```bash
-# Recommended: wire in karpathy/autoresearch output
+# Recommended: autoresearch as managed dependency (auto-sync each run)
 export RESEARCH_PROVIDER=autoresearch
-export AUTORESEARCH_COMMAND='python /path/to/autoresearch/main.py --query "{query}" --output-dir "{outputDir}"'
+
+# Optional overrides
+export AUTORESEARCH_REPO_URL='https://github.com/karpathy/autoresearch.git'
+export AUTORESEARCH_REPO_REF='main'
+export AUTORESEARCH_ENTRYPOINT='main.py'
+
+# Optional custom command template (vars: {query} {title} {slug} {outputDir} {repoDir} {scriptPath})
+# export AUTORESEARCH_COMMAND='python3 "{scriptPath}" --query "{query}" --output-dir "{outputDir}"'
 
 # Fallback to legacy scout
 export RESEARCH_PROVIDER=legacy
