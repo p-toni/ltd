@@ -109,8 +109,6 @@ If exchange rises faster than control, or closure hardens faster than I can veri
 
 The [regulated integrated hybrid](tooltip:E4) is the target: tight integration with strong feedback control.
 But a good loop resists not only error amplification. It resists premature closure.
-
-Update (2026-03-15): Bennett (2026) formalizes a latency ceiling for integrated hybrids under the Chord assumptions: if relevant links in the control loop exceed the integration window θ, the system can fragment into two agents taking turns rather than one enlarged mind. The bound D ≤ κvθ converts a time budget into a spatial budget. In the BCI case study, 10 ms round-trip latency is marginally feasible for a 20–50 ms candidate window. In cloud AI, raw network speed is not enough: limited concurrency/serialized pipelines can fail co-instantiation even when links are fast. L3 has a physics. (Source: https://www.preprints.org/manuscript/202602.1708/v2)
 ---
 
 ### 4) Flow control (what the model may and may not do)
@@ -246,5 +244,7 @@ The piece succeeds if future-me can re-enter the space quickly, regain the geome
 If I want to feel impressed, I can read papers.
 
 If I want to stay sane and compound, I follow the rules above.
+
+**Post-note (2026-03-15):** Bennett (2026) formalizes a latency ceiling for integrated hybrids under the Chord assumptions: if relevant links in the control loop exceed the integration window θ, the system can fragment into two agents taking turns rather than one enlarged mind. The bound D ≤ κvθ converts a time budget into a spatial budget. In the BCI case study, 10 ms round-trip latency is marginally feasible for a 20–50 ms candidate window. In cloud AI, raw network speed is not enough: limited concurrency/serialized pipelines can fail co-instantiation even when links are fast. L3 has a physics. (Source: https://www.preprints.org/manuscript/202602.1708/v2)
 
 fin
