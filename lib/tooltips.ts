@@ -60,17 +60,57 @@ export const PAPER_SOURCES: Record<string, PaperSource> = {
   J: {
     id: 'J',
     label: 'Chi, Feltovich & Glaser 1981',
-    url: 'https://matt.colorado.edu/teaching/highcog/readings/cfg81.pdf',
+    url: 'https://doi.org/10.1207/s15516709cog0502_2',
   },
   K: {
     id: 'K',
     label: 'Larkin & Simon 1987',
-    url: 'https://wexler.free.fr/library/files/larkin%20%281987%29%20why%20a%20diagram%20is%20%28sometimes%29%20worth%20a%20thousand%20words.pdf',
+    url: 'https://doi.org/10.1111/j.1551-6708.1987.tb00863.x',
   },
   L: {
     id: 'L',
     label: 'Tolman 1948',
     url: 'https://pubmed.ncbi.nlm.nih.gov/18870876/',
+  },
+  M: {
+    id: 'M',
+    label: 'Bennett 2026 (preprints)',
+    url: 'https://www.preprints.org/manuscript/202602.1708/v2',
+  },
+  N: {
+    id: 'N',
+    label: 'Bennett 2023 (AGI)',
+    url: 'https://doi.org/10.1007/978-3-031-33469-6_5',
+  },
+  O: {
+    id: 'O',
+    label: 'Dehaene & Naccache 2001',
+    url: 'https://doi.org/10.1016/S0010-0277(00)00123-2',
+  },
+  P: {
+    id: 'P',
+    label: 'Lamme 2006',
+    url: 'https://doi.org/10.1016/j.tics.2006.09.001',
+  },
+  Q: {
+    id: 'Q',
+    label: 'Melloni et al. 2007',
+    url: 'https://doi.org/10.1523/JNEUROSCI.4623-06.2007',
+  },
+  R: {
+    id: 'R',
+    label: 'Massimini et al. 2005',
+    url: 'https://doi.org/10.1126/science.1117256',
+  },
+  S: {
+    id: 'S',
+    label: 'Casali et al. 2013',
+    url: 'https://doi.org/10.1126/scitranslmed.3006294',
+  },
+  T: {
+    id: 'T',
+    label: 'Dennett & Kinsbourne 1992',
+    url: 'https://doi.org/10.1017/S0140525X00068229',
   },
 }
 
@@ -223,7 +263,7 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     id: 'F2',
     paper: 'F',
     title: 'Mechanism drill',
-    body: 'Asking "how does this actually work?" until confidence breaks reveals the exact missing sub-edge in your understanding.',
+    body: 'Asking "how does this actually work?" until confidence breaks can reveal where a mechanistic sub-edge is missing in your understanding.',
   },
   G1: {
     id: 'G1',
@@ -241,7 +281,7 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     id: 'I1',
     paper: 'I',
     title: 'Retrieval practice vs concept mapping',
-    body: 'Retrieval practice outperformed concept mapping for meaningful learning; reconstruction beats external structuring, especially early.',
+    body: 'In the cited experiment, retrieval practice outperformed concept mapping for meaningful learning; reconstruction can beat externally supplied structure.',
   },
   J1: {
     id: 'J1',
@@ -260,6 +300,84 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     paper: 'L',
     title: 'Cognitive maps',
     body: 'Tolman\'s canonical argument: organisms build internal spatial representations ("cognitive maps") rather than just learning stimulus-response chains.',
+  },
+  E7: {
+    id: 'E7',
+    paper: 'E',
+    title: 'Voids in the cognition morphospace',
+    body: 'Large regions of possible cognitive organization that nothing has evolved or been engineered to fill — not because they are impossible, but because evolution is path-dependent and engineering is path-dependent. Voids reflect evolutionary contingencies, physical constraints, and design limitations.',
+  },
+  E8: {
+    id: 'E8',
+    paper: 'E',
+    title: 'Solid vs liquid brains',
+    body: 'Solid brains: persistent wiring, high bandwidth, small fixed diameter (vertebrate brains). Liquid brains: mobile agents, lower bandwidth, self-repairing topologies (slime molds, ant colonies, immune systems). Human-AI hybrids are neither: a solid brain coupled to a system with no fixed wiring and no spatial continuity.',
+  },
+  E9: {
+    id: 'E9',
+    paper: 'N',
+    title: "Bennett's Razor (weakness maximization)",
+    body: "Counter to Occam's Razor: the optimal hypothesis is the weakest — least committed — that still generalizes, not the shortest. Compression is neither necessary nor sufficient for generalization. Prefer the least-committed map that still navigates over the tightest one you can construct.",
+  },
+  E10: {
+    id: 'E10',
+    paper: 'E',
+    title: 'Hybrid niche',
+    body: 'Human-AI cognition is not just a dyad of two agents; it stabilizes inside a designed niche of interfaces, memory surfaces, objectives, and feedback channels that shape what kinds of coupling are possible.',
+  },
+  M1: {
+    id: 'M1',
+    paper: 'M',
+    title: 'Spacetime consciousness bound',
+    body: 'Under the Chord assumptions (co-instantiation plus within-window exchange), a unified conscious moment satisfies D ≤ κvθ: diameter D is bounded by signal-propagation ceiling v, integration window θ, and exchange architecture κ. For cloud-hosted AI, low network latency alone is insufficient: limited concurrency or serialized updates can fail co-instantiation.',
+  },
+  M2: {
+    id: 'M2',
+    paper: 'M',
+    title: 'Chord postulate (co-instantiation)',
+    body: 'A unified mind requires co-instantiation: all contributing components must be simultaneously active — not serialized — with exchange completing within the integration window θ. Two agents taking turns do not form one mind, even if the turns are fast.',
+  },
+  M3: {
+    id: 'M3',
+    paper: 'M',
+    title: 'Integration window θ',
+    body: 'The time budget within which signals must converge for a candidate unified conscious moment. In the paper\'s BCI case study, a 20–50 ms range is used to evaluate feasibility. For a human-AI hybrid, links that exceed the chosen θ can force turn-taking dynamics rather than a unified moment.',
+  },
+  O1: {
+    id: 'O1',
+    paper: 'O',
+    title: 'Global workspace framing',
+    body: 'Conscious access is associated with wide availability/broadcast across specialized processors, not isolated local activation.',
+  },
+  P1: {
+    id: 'P1',
+    paper: 'P',
+    title: 'Recurrent processing requirement',
+    body: 'Feedforward activation alone is not sufficient; recurrent exchange is central in accounts of conscious perception.',
+  },
+  Q1: {
+    id: 'Q1',
+    paper: 'Q',
+    title: 'Synchrony and conscious perception',
+    body: 'Long-range synchronization episodes correlate with conscious perception more than local activity alone.',
+  },
+  R1: {
+    id: 'R1',
+    paper: 'R',
+    title: 'Connectivity breakdown in sleep',
+    body: 'During non-REM sleep, cortical responses can remain local while large-scale effective connectivity collapses.',
+  },
+  S1: {
+    id: 'S1',
+    paper: 'S',
+    title: 'Perturbational complexity index',
+    body: 'PCI tracks consciousness level across conditions and is designed to be less dependent on report or task behavior.',
+  },
+  T1: {
+    id: 'T1',
+    paper: 'T',
+    title: 'Time and the observer',
+    body: 'Classic analysis of how temporal structure and observer framing constrain claims about conscious moments.',
   },
   SYN1: {
     id: 'SYN1',

@@ -86,24 +86,29 @@ The inside-my-head rule still applies. The geometry just doesn't have to be verb
 
 Drift is not a moral failure. It's a dynamical regime.
 
-When coupling tightens, three parameters matter:
+When coupling tightens, four parameters matter:
 
 - **[Human–AI exchange](tooltip:E3)** (how much bandwidth and persistence exists between me and the model)
 - **[Human feedback control](tooltip:E2)** (my ability to monitor, interpret, constrain)
 - **Latency** (how quickly outputs change my internal state)
+- **Closure pressure** (how quickly candidate structure hardens into belief, workflow, or identity)
 
 High exchange + weak feedback control is the danger zone: the loop becomes **tightly wrong**.
 Errors don't get corrected. They get amplified.
+
+Models add a distinct epistemic risk here: they are closure engines.
+They push me away from [Bennett's Razor (weakness maximization)](tooltip:E9) by making the first coherent map feel final.
 
 This is the "[humanbot](tooltip:E6)" failure mode: the system is integrated but poorly regulated — so it reinforces its own local story.
 
 So my design principle is simple:
 
-**Increase exchange only when feedback control is also increasing.**
-If exchange rises faster than control, I must slow down.
+**Increase exchange only when feedback control is also increasing, and closure pressure stays visible.**
+If exchange rises faster than control, or closure hardens faster than I can verify, I must slow down.
 
 The [regulated integrated hybrid](tooltip:E4) is the target: tight integration with strong feedback control.
 
+Update (2026-03-15): Bennett (2026) formalizes a latency ceiling for integrated hybrids under the Chord assumptions: if relevant links in the control loop exceed the integration window θ, the system can fragment into two agents taking turns rather than one enlarged mind. The bound D ≤ κvθ converts a time budget into a spatial budget. In the BCI case study, 10 ms round-trip latency is marginally feasible for a 20–50 ms candidate window. In cloud AI, raw network speed is not enough: limited concurrency/serialized pipelines can fail co-instantiation even when links are fast. L3 has a physics. (Source: https://www.preprints.org/manuscript/202602.1708/v2)
 ---
 
 ### 4) Flow control (what the model may and may not do)
@@ -141,6 +146,7 @@ The difference is feedback direction. In drift, the model shapes me and I don't 
 
 - I entered L3 deliberately, not by sliding from L2.
 - I can pass R3+2+1 (or the topology gate) at any point if challenged.
+- I can weaken or redraw the current map without immediately needing the model to think for me again.
 - I am generating new questions, not just consuming answers. If I'm only receiving, I've lost the feedback loop.
 - The model is producing **surprise** — structure I wouldn't have reached alone. If the outputs feel predictable, L3 isn't earning its risk.
 

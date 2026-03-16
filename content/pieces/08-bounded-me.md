@@ -15,6 +15,9 @@ Intelligence as compression.
 Learning as “matching a distribution.”
 
 Those definitions are elegant, but they don’t cash out in my actual life.
+Compression may be a frequent symptom of a good map.
+It is not the criterion.
+A map can be compact and still close too early.
 
 In my life, “information” is not what exists in the world. It’s what I can [*pull into myself* under constraints](tooltip:A1): time, attention, energy, compute, mood, calendar, context.
 I don’t experience the universe. I experience the slice I can process.
@@ -175,14 +178,15 @@ Which means the draft has to contain my constraints, not just my references.
 
 Information is not a number.
 
+Update (2026-03-15): Bennett (2026) formalizes a complementary constraint: under the Chord assumptions, a unified conscious moment has a physical size limit D ≤ κvθ, where D is the support diameter, v is the signal-propagation ceiling, θ is the integration window, and κ depends on exchange architecture. A mind can only get so big—not metaphorically, but because signals travel at finite speed. The same logic can fragment cloud-hosted models when limited concurrency blocks co-instantiation (even if links are fast), and it makes colony-scale single moments fail at fine, fast grounding scales. This is about consciousness criteria, but it sharpens my own boundedness lens. (Source: https://www.preprints.org/manuscript/202602.1708/v2)
 > Information is structural signal that (1) a [bounded learner can extract](tooltip:SYN1A), (2) often [crystallizes into geometry](tooltip:SYN1C), (3) [survives chaotic training dynamics](tooltip:SYN1D), and (4) [behaves like flow through a loop](tooltip:SYN1B).
 
 It’s [what my loop can extract under constraints](tooltip:A1)—then keep stable—then reuse.
 
-My job is to [build geometry](tooltip:C1), reduce leakage, and stay in the [convergent basin](tooltip:D1).
+My job is to [build geometry](tooltip:C1), reduce leakage, stay in the [convergent basin](tooltip:D1), and not harden the map faster than my evidence can carry.
 
 This is why I keep building systems. Not because I love tools.
-Because my mind is bounded, and I want to [increase what’s extractable](tooltip:A2) without [increasing fragility](tooltip:D2).
+Because my mind is bounded, and I want to [increase what’s extractable](tooltip:A2) without [increasing fragility](tooltip:D2) through premature closure.
 
 Writing is one of my best tools for that.
 But only when it’s written from inside my head.

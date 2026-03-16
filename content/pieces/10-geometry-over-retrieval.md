@@ -24,6 +24,9 @@ If I can rebuild the structure of an idea with the source closed, I have geometr
 If I can only recall what I read (or re-summon it with a model), I have retrieval.
 
 This isn't a preference. It's an operational standard: a way to stop mistaking coherence for internal structure.
+But geometry is not finished truth.
+A map can be owned and still be overcommitted.
+The better target is the [weakest map that still navigates](tooltip:E9).
 
 ---
 
@@ -121,6 +124,7 @@ These are the checks I run when I suspect I'm holding borrowed coherence.
 | **Predict** — what's around the corner? | specific expectations | no expectations |
 | **Teach** — can I build it in someone else? | I can walk a path | I can only relay |
 | **Break** — a fact turns out wrong | damage localizes to an edge | the whole picture destabilizes |
+| **Relax** — weaken one key edge | map still orients | usefulness collapses with certainty |
 
 Why this works: it forces reconstruction, not recognition. [Retrieval practice](tooltip:H1) strengthens learning because it requires rebuilding knowledge rather than re-exposure.
 
@@ -135,12 +139,12 @@ Operationally: make two independent predictions from different edges. Stress the
 
 ## VI. One system: how this relates to R3+2+1
 
-[Me + AI](/pieces/09-me-plus-ai) gave me R3+2+1 as a verification gate. This piece gives me five tests.
+[Me + AI](/pieces/09-me-plus-ai) gave me R3+2+1 as a verification gate. This piece gives me six tests.
 
 They are complementary layers:
 
 - **R3+2+1 is how I walk.**
-- **The five tests are how I know I actually walked.**
+- **The six tests are how I know I actually walked.**
 
 The mapping is direct:
 
@@ -165,20 +169,27 @@ Write the core nodes. Force 5–10 edges. For each edge, write the type:
 
 If I can't type an edge, it's probably hand-waving.
 
+Then mark the force of the edge:
+
+- **necessary**
+- **likely**
+- **working bridge**
+- **speculative**
+
 **Step 2 — Collapse the illusion ([mechanism drill](tooltip:F2))**
 
-Pick one edge and explain the mechanism until confidence breaks. That break marks the missing sub-edge.
+Pick one edge and explain the mechanism until confidence breaks. That break usually marks where a sub-edge is missing.
 
 **Step 3 — Reconstruction loop (anti-fluency engine)**
 
 1. **Scout** (model allowed): ask for alternative framings, counterexamples, failure modes.
 2. **Close:** no model, no notes.
 3. **Rebuild:** redraw from scratch.
-4. **Test:** rephrase + predict + break.
+4. **Test:** rephrase + predict + break + relax.
 
 **Step 4 — Choose the right scaffold for the stage**
 
-For novices, mapping can become search-heavy. [Retrieval practice often wins early](tooltip:I1): it outperformed concept mapping for meaningful learning.
+For novices, mapping can become search-heavy. [Retrieval practice can outperform concept mapping](tooltip:I1): in the cited experiment, it produced stronger meaningful learning.
 
 Stage rule:
 
@@ -199,3 +210,4 @@ My standard going forward:
 **Use models to expand the search space. Use reconstruction to build the map.**
 
 (The [testing effect](tooltip:H1) is the mechanism, not the slogan.)
+Use weak geometry to keep the map honest.
