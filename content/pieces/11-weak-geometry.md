@@ -230,5 +230,3 @@ Not what sounds complete.
 Not what compresses best.
 
 What I can rebuild, navigate, act from, and still revise without my whole inner city collapsing into its own architecture.
-
-fin
