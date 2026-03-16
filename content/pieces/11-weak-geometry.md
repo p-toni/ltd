@@ -19,27 +19,21 @@ watch_domains:
 
 ## Preamble
 
-[Bounded Me](/pieces/08-bounded-me) gave me an observer-level constraint: cognition is what a bounded system can extract.
-[Me + AI](/pieces/09-me-plus-ai) gave me a control-level constraint: coupling without feedback control drifts.
-[Geometry Over Retrieval](/pieces/10-geometry-over-retrieval) gave me an ownership-level constraint: if I cannot reconstruct, I do not understand.
+[Bounded Me](/pieces/08-bounded-me) gave me the pressure: memory as *"geometry, not storage."* [Me + AI](/pieces/09-me-plus-ai) gave me the control problem: I am regulating a [coupled feedback system](tooltip:E1). [Geometry Over Retrieval](/pieces/10-geometry-over-retrieval) gave me the test: *"understanding is what remains when the source is closed."*
 
-The new preprint does not mainly matter because it lets me speculate harder about hybrid minds.
-It matters because it forces cleaner distinctions.
+This piece is not a sequel. It is a correction.
 
-Useful coupling is one achievement.
-Controlled coupling is another.
-Owned structure is another.
-Strong unity claims are another.
+The earlier move was necessary. Get out of flat text. Stop mistaking fluent recall for structure. Build a map I can actually stand inside.
 
-The paper separates those achievements by construction.
-If a unified moment requires [co-instantiation](tooltip:M2) and within-window exchange, then not every integrated-looking loop is one thing.
+But once I have a map, a new danger appears.
 
-And Bennett's Razor adds a selection rule inside that separation:
-when several maps can guide action, prefer the [least-committed one that still navigates](tooltip:E9).
+A map can harden too early. It can become elegant before it becomes true. It can feel owned, coherent, and navigable while quietly reducing my freedom to still be wrong.
 
-That gives me the next turn in the exploration:
+So the next revision is this:
 
-**not more geometry, but weak geometry.**
+Geometry is not enough.
+
+I need weak geometry.
 
 ---
 
@@ -49,189 +43,171 @@ Retrieval gives me borrowed answers.
 
 Geometry gives me owned structure.
 
-Weak geometry gives me owned structure that preserves possibility while still changing what I do next.
+Weak geometry gives me owned structure that does not pretend to know more than it does.
 
-A good map is not the tightest one or the prettiest one or the most compressed one.
-It is the weakest one that still lets me move.
+A good internal map is not the shortest one, the neatest one, or the one with the most aggressively defended edges. It is the one that preserves the most navigable possibility while still letting me act.
+
+That is the pressure [Bennett's Razor (weakness maximization)](tooltip:E9) adds. Not because I need to import [Michael Timothy Bennett](https://michaeltimothybennett.com/research?utm_source=chatgpt.com)'s whole framework, but because the challenge is sharp: compression may be *"neither necessary nor sufficient"* for generalization, and his alternative proxy is *"the weakest, not the shortest."*
+
+That does not kill geometry.
+
+It disciplines it.
+
+The map is still the point.
+
+But the map should commit less.
 
 ---
 
-## I. Why this matters to the project
+## I. Where the earlier pieces were too eager
 
-The project’s destiny is not to sound coherent.
-It is to compound structure, preserve authorship, and open real new capability.
+In [Bounded Me](/pieces/08-bounded-me), I was already suspicious of definitions that arrive too cleanly. "Information as entropy." "Intelligence as compression." They had the scent of completion before they had earned the weight of reality. What I did not yet have was the right knife for that suspicion. Weakness gives me one. The problem is not only that these definitions fail to cash out in lived cognition. The deeper problem is that they smuggle in a preference for tightness itself, as if better understanding were always the one that closes fastest.
 
-That means I now care about two failure modes:
+In [Geometry Over Retrieval](/pieces/10-geometry-over-retrieval), I said understanding begins when I can draw an edge and defend it. I still think that is right. But now it feels incomplete. Some edges deserve to exist only as temporary bridges, not as permanent beams. If I draw them with too much confidence, the local structure improves while the global truth gets worse. I stop exploring a terrain and start zoning it.
 
-- **flatness** — no structure forms, so I keep borrowing answers
-- **premature geometry** — structure forms, but it hardens before reality has answered back enough to deserve it
+In [Me + AI](/pieces/09-me-plus-ai), I framed the central risk as a [dysregulated integrated hybrid](tooltip:E5): exchange rises, my feedback control weakens, and the loop starts moving faster than I can author it. Weak geometry adds a subtler danger. I can preserve authorship and still close too early. The failure is not that the map came from somewhere else. The failure is that I built it myself, then mistook ownership for maturity.
 
-What makes the second failure dangerous is that it feels like progress.
-The map gets cleaner.
-The prose gets better.
-The answer arrives faster.
-But the freedom to still be wrong quietly disappears.
+So this is the correction:
 
-That matters more in a human-AI loop because models are [fluency engines](tooltip:G1).
-They generate finished-looking structure on demand.
-So the risk is not only misinformation.
-It is [borrowed coherence](tooltip:F1) hardening into my map before I have earned it.
+The opposite of retrieval is not certainty.
 
-Weak geometry is the discipline that resists that.
+The opposite of retrieval is reconstructable structure.
+
+And reconstructable structure should remain weak longer than I think.
 
 ---
 
 ## II. Weak is not vague
 
-"Weak" sounds like indecision until it gets precise.
+"Weak" sounds like fog until it becomes useful.
 
-I do not mean sloppy.
-I do not mean evasive.
-I mean less overcommitted than rival explanations while still being good enough to guide action.
+I do not mean timid. I do not mean indecisive. I do not mean dressing uncertainty in philosophy and calling it wisdom.
 
-A vague map cannot move me.
+I mean something stricter: a weak map rules out less than a stronger rival while still organizing action.
 
-A brittle map moves me too confidently.
+That is why weakness matters. A vague map cannot guide movement. A brittle map guides movement too confidently. Weak geometry lives between them. It says: this edge is real enough to navigate by, but not yet real enough to worship.
 
-Weak geometry lives between them.
-It lets me act without pretending that all the uncertainty has been paid off.
+This matters because overfit structure does not feel like failure. It feels like insight. The map clicks. The language compresses. The territory seems to obey. And once that feeling appears, I start protecting the structure that produced it.
 
-That means the map carries gradients of force.
-Some edges are necessary.
-Some are likely.
-Some are just working bridges.
-Some should stay explicitly speculative.
+That is the moment to be careful.
 
-The mistake is not having a map.
-The mistake is painting every road as load-bearing.
+Because some of the most dangerous maps are not loose maps. They are maps that became persuasive before they became robust.
 
 ---
 
-## III. What the preprint actually changes
+## III. When a map becomes a cage
 
-The most useful thing in the preprint is not the conclusion.
-It is the discipline of claim separation.
+The seduction of geometry is that it feels like standing somewhere. That was the whole gain over retrieval. Retrieval feels like reaching. Geometry feels like ground.
 
-Under [co-instantiation](tooltip:M2), it is not enough that the relevant ingredients appear somewhere across a window.
-They have to be there together, exchanging in time.
+But the ground has a shadow.
 
-My translation is epistemic rather than physical:
-visiting all the right notes across pages, prompts, or sessions is not the same as holding the chord inside me.
+Once I can move inside a map, the map begins to select what I notice next. My questions inherit its shape. My attention starts traveling along its streets. The structure does not merely help me think. It begins to decide what counts as thinkable.
 
-That sharpens piece 10.
-Reconstruction is not "I remember touching all the ingredients."
-It is "I can hold the structure at once well enough to redraw it."
+That is sometimes intelligence.
 
-But the paper warns in the other direction too.
-If I force a chord too early, I can create a single clean story from evidence that should still be allowed to arrive as sequence.
+It is sometimes overfitting with good posture.
 
-So the preprint gives me a useful pair of warnings:
+This is where the Bennett preprint hit me. One of its key claims is that *"a window may be necessary, but it is not sufficient for literal co-presence."* A system can visit all the ingredients inside the interval without ever truly holding them together in [co-instantiation](tooltip:M2). It names that mismatch the *Temporal Gap* ([Preprints](https://www.preprints.org/manuscript/202602.1708?utm_source=chatgpt.com)).
 
-- sequence can masquerade as unity
-- imposed unity can masquerade as understanding
+My use of that idea is more epistemic than physical. I can touch all the notes of an idea across time and still not have a chord. I can also do the opposite. I can force a chord too early, turning sequence into fake simultaneity, collapsing ambiguity into structure before the structure deserves to exist.
 
-And Bennett's Razor gives me the selection rule that goes with those warnings:
-when several maps are still live, prefer the weaker one until reality forces a stronger commitment.
+So there are two ways to fail:
 
-That is the connection I care about.
-Not a metaphysical trophy.
-A better operating law for how I build understanding.
+flatness, where no structure forms;
+
+premature geometry, where structure forms and closes before reality has finished answering back.
+
+The first feels like confusion.
+
+The second feels like mastery.
+
+Only one of them gets praised.
 
 ---
 
-## IV. What this changes in practice
+## IV. Weak geometry
 
-First, it changes what I want from a note or a piece.
+So what do I actually want now?
 
-I no longer want maximum structure.
-I want reconstructable structure with restrained commitment.
+Not a conclusion machine.
 
-Second, it changes what I want from AI.
+Not a perfectly compressed ontology.
+
+Not a graph that pretends every edge is equally real.
+
+I want a geometry that is owned, navigable, and explicitly undercommitted.
+
+Weak geometry has four properties.
+
+First, it is reconstructable. If the source closes, I can still redraw the shape from inside my own head. That remains non-negotiable. [Geometry Over Retrieval](/pieces/10-geometry-over-retrieval) was right: *understanding is what remains when the source is closed.*
+
+Second, it is typed. An edge should not merely exist. It should announce its mode: causal, constraint, tradeoff, dependency, analogy, speculation. This was already latent in the previous piece. Weak geometry makes it mandatory. A map with untyped edges is a city where every road claims to be a highway.
+
+Third, it is graded by commitment. I should be able to say not only what connects to what, but how hard I am willing to lean on that connection. Necessary. Likely. Working bridge. Speculative. Decorative. The point is not endless hesitation. The point is refusing to grant equal ontological weight to edges that have not earned it.
+
+Fourth, it remains revisable under contact. A good map bends before it shatters. If one edge breaks, the whole picture should not panic unless that edge was actually load-bearing.
+
+A good map commits late and moves early.
+
+That is weak geometry.
+
+---
+
+## V. Me + AI under revision
+
+This changes the loop between us too.
+
+The best human-AI relationship is not maximal fusion. It is not "integrate harder and regulate later." The preprint's language is useful here because it gives the intuition a hard edge: beyond a certain point, *"you do not get a bigger mind. You get a bigger committee."* ([Preprints](https://www.preprints.org/manuscript/202602.1708?utm_source=chatgpt.com)).
+
+I do not need to import that line literally into our work. But it exposes something real. Tight coupling is not automatically deeper understanding. High bandwidth is not the same thing as shared structure. A model can increase exchange while also increasing closure pressure. It can make candidate maps arrive too finished.
+
+So the role I want from AI shifts slightly.
 
 Not oracle.
+
 Not decider.
-Not a machine for polishing closure.
 
-I want a pressure chamber.
-Something that expands the search space, keeps rival edges alive, and helps me notice when one elegant story has crowded out a better weaker one.
+Not merely co-author.
 
-Third, it changes what counts as a good map.
+Pressure chamber.
 
-A good map should survive six things:
+A good loop does not just help me produce structure. It helps me preserve useful openness until the world, the mechanism, or the decision itself forces a stronger commitment.
 
-- rephrasing
-- rebuilding
-- prediction
-- teaching
-- breakage
-- relaxation
+That means the model is often most valuable when it increases hypothesis breadth without prematurely stabilizing any one frame. More rival edges. More alternate cuts. More awkward adjacencies. More ways for the current map to discover that it is still provisional.
 
-If weakening one important edge destroys the whole structure, then I do not have geometry.
-I have a verbal arch with one hidden keystone.
+The goal is not permanent looseness.
 
-Fourth, it changes what counts as progress toward destiny.
-
-Progress is not just tighter coupling, more edges, or stronger claims.
-Progress is:
-
-- more structure I can actually re-enter,
-- more agency under coupling,
-- and more frontier without self-deception.
-
-Weak geometry helps with all three because it delays irreversible closure until the loop has earned it.
+The goal is delayed hardening.
 
 ---
 
-## V. The revision pressure on 8, 9, and 10
+## VI. A new diagnostic
 
-This is not a rejection of the previous pieces.
-It is a pressure on them.
+[Geometry Over Retrieval](/pieces/10-geometry-over-retrieval) gave me the core tests: rephrase, rebuild, predict, teach, break.
 
-[Bounded Me](/pieces/08-bounded-me) now reads differently:
-boundedness is not only a limit on what I can extract.
-It is also a limit on how much revision cost I can survive.
-An overcommitted map is expensive for a bounded learner because every correction becomes identity work.
+Weak geometry adds a sixth:
 
-[Me + AI](/pieces/09-me-plus-ai) now needs one more variable:
-not just exchange, control, and latency, but closure pressure.
-The best loop is not the tightest one.
-It is the one that preserves productive openness long enough for better structure to emerge.
+**Relax.**
 
-[Geometry Over Retrieval](/pieces/10-geometry-over-retrieval) now needs one more distinction:
-owned structure is not the same as sufficiently weak structure.
-I can build the map myself and still harden it too early.
+Take one edge I currently rely on and weaken it.
 
-So the new standard is stricter:
+Replace "is" with "may be."
 
-**owned structure, weakly held.**
+Replace "drives" with "constrains."
 
----
+Replace "the mechanism" with "a plausible mechanism."
 
-## VI. What this opens
+Then ask:
 
-If this turn is right, then it opens more than one sentence.
-It opens a design agenda.
+Can the map still orient me?
 
-1. **Maps with force levels**
-Nodes and edges are not enough.
-I need force labels: necessary, likely, working bridge, speculative.
+If weakening one sentence destroys the structure, I do not have geometry. I have a verbal arch with one hidden keystone.
 
-2. **AI loops that preserve branching**
-The system should make alternative framings cheap, not just polished answers cheap.
-Its job is to protect live possibility until verification closes it.
+This matters because many bad maps pass the earlier tests. I can rebuild an overfit structure from memory. I can teach it. I can make predictions from it. The missing question is whether the map remains useful when I reduce its claims to the weakest version that still matches what I actually know.
 
-3. **A new diagnostic**
-Not only "can I rebuild this?"
-Also: "what is the weakest version of this claim that still changes what I do next?"
+If yes, the structure is robust.
 
-4. **Cleaner frontier work**
-If I ever want to push into stronger human-AI unity claims, I now know the bar is much higher than usefulness or intimacy.
-I inherit the empirical burden around [global workspace framing](tooltip:O1), [recurrent processing requirement](tooltip:P1), and [perturbational complexity index](tooltip:S1), not just a feeling of closeness to the tool.
-That frees me to pursue practical progress without smuggling in bigger metaphysics than the system can cash out.
-
-This is why the preprint matters to me.
-Not because it gives me permission to say something grand.
-Because it gives me a better rule for staying honest while building toward something grand.
+If no, the structure was doing theater.
 
 ---
 
@@ -243,10 +219,16 @@ I still want geometry.
 
 But now I trust geometry less when it arrives too polished.
 
-The mature move is not to retreat into vagueness.
-It is to build maps that can orient me, survive contact, and keep some doors unlocked.
-
-Not maximal structure.
-Not maximal closure.
+The mature move is not to return to flat notes, summaries, or borrowed coherence. It is to build maps that keep some doors unlocked.
 
 Owned structure, weakly held.
+
+That is closer to what I mean by understanding now.
+
+Not what sounds complete.
+
+Not what compresses best.
+
+What I can rebuild, navigate, act from, and still revise without my whole inner city collapsing into its own architecture.
+
+fin
