@@ -21,7 +21,7 @@ The risk is a [dysregulated integrated hybrid](tooltip:E5): the loop speeds up w
 
 So this document is a control spec.
 
-Goal: **maximize information exchange without surrendering feedback control.**
+Goal: **maximize information exchange without surrendering feedback control or hardening belief faster than I can verify it.**
 
 ---
 
@@ -94,7 +94,8 @@ When coupling tightens, four parameters matter:
 - **Closure pressure** (how quickly candidate structure hardens into belief, workflow, or identity)
 
 High exchange + weak feedback control is the danger zone: the loop becomes **tightly wrong**.
-Errors don't get corrected. They get amplified.
+Low latency makes it faster. High closure pressure makes it sticky.
+Errors don't just survive. They harden.
 
 Models add a distinct epistemic risk here: they are closure engines.
 They push me away from [Bennett's Razor (weakness maximization)](tooltip:E9) by making the first coherent map feel final.
@@ -107,6 +108,7 @@ So my design principle is simple:
 If exchange rises faster than control, or closure hardens faster than I can verify, I must slow down.
 
 The [regulated integrated hybrid](tooltip:E4) is the target: tight integration with strong feedback control.
+But a good loop resists not only error amplification. It resists premature closure.
 
 Update (2026-03-15): Bennett (2026) formalizes a latency ceiling for integrated hybrids under the Chord assumptions: if relevant links in the control loop exceed the integration window θ, the system can fragment into two agents taking turns rather than one enlarged mind. The bound D ≤ κvθ converts a time budget into a spatial budget. In the BCI case study, 10 ms round-trip latency is marginally feasible for a 20–50 ms candidate window. In cloud AI, raw network speed is not enough: limited concurrency/serialized pipelines can fail co-instantiation even when links are fast. L3 has a physics. (Source: https://www.preprints.org/manuscript/202602.1708/v2)
 ---

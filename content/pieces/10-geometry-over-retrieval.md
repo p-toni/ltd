@@ -168,6 +168,7 @@ Write the core nodes. Force 5–10 edges. For each edge, write the type:
 - **dependency** ("B requires A")
 
 If I can't type an edge, it's probably hand-waving.
+If I can't grade its force, I'm probably overcommitting.
 
 Then mark the force of the edge:
 
@@ -210,4 +211,4 @@ My standard going forward:
 **Use models to expand the search space. Use reconstruction to build the map.**
 
 (The [testing effect](tooltip:H1) is the mechanism, not the slogan.)
-Use weak geometry to keep the map honest.
+Use weakening to keep the map honest.

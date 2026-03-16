@@ -170,7 +170,7 @@ The role I want is different: co-authoring as instrumentation. The AI helps me s
 
 Which means the draft has to contain my constraints, not just my references.
 
-**New (minimal) add:** I’ve started treating “me + AI” as a point in a *coupling space*: how much [human–AI exchange](tooltip:E3) exists, how much [human feedback control](tooltip:E2) I retain, and how much complexity I’m importing. When exchange rises but feedback control weakens, the loop doesn’t get smarter—it gets **tighter and wrong**. It amplifies errors, dependencies, and delusions. My default target is *high control, moderate exchange*: fast scanning, slow believing.
+**New (minimal) add:** I’ve started treating “me + AI” as a coupling problem: how much [human–AI exchange](tooltip:E3) I allow, how much [human feedback control](tooltip:E2) I keep, and how much complexity I invite in. If exchange rises faster than my ability to monitor and reshape it, the loop does not get smarter. It gets **tighter and wrong**. My default target is still the same: fast scanning, slow believing.
 
 ---
 
