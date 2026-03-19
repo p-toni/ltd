@@ -1,95 +1,58 @@
-# Autoresearch: repo-wide speed + efficiency
+# Autoresearch: research pipeline + build speed
 
 ## Goal
-make the research pipeline and build as fast and efficient as possible while keeping all features working
+Make the daily research pipeline (`pnpm research:daily`) and cold build even faster — target the `RESEARCH_TIME_BUDGET_MINUTES` soft limit and embedding generation throughput.
 
 ## Metric discovery
-Read for this session:
-- `README.md`
-- `package.json`
-- `.github/workflows/ci.yml`
-- `.github/workflows/research-daily.yml`
-- `.github/workflows/research-rewrite.yml`
-- `app/`
-- `lib/`
-- `scripts/`
-- `.env.example`
-- `docs/delivery-pipeline.md`
-- build/test config files
-
-Repo facts that matter:
-- CI runs `pnpm lint`, `pnpm test --run`, and `pnpm build` on every push/PR.
-- Daily autoresearch already runs on schedule in `.github/workflows/research-daily.yml`.
-- Daily research has a soft budget via `RESEARCH_TIME_BUDGET_MINUTES` and CI sets it to `4`.
-- The app build statically touches content-heavy code paths (`getPieces`, piece pages, metadata, OG image routes).
-- The research pipeline depends on network + external APIs, which makes it valuable but noisy for a primary local benchmark.
+This repo has two major performance surfaces:
+1. **Cold build** (`pnpm build`) — already improved in the prior session and still important for CI/dev loops.
+2. **Daily research pipeline** (`pnpm research:daily`) — the scheduled workflow has a soft budget (`RESEARCH_TIME_BUDGET_MINUTES`, CI currently sets `4`) and does repeated content loading, per-piece planning, provider setup, output scanning, ingestion, verification, and report work.
+3. **Embedding generation** (`scripts/embed-pieces.ts`) — real throughput depends on remote model latency, but local prep/batching/merge overhead is still worth minimizing.
 
 ## Candidate metrics considered
-1. **`build_ms` ↓** — wall-clock time for `pnpm build`.
-   - Pros: deterministic, always runnable locally, exercised by CI and deploys, touches app/lib/content loading.
-   - Cons: does not directly time the research swarm.
-2. **`ci_ms` ↓** — wall-clock for `pnpm lint && pnpm test --run && pnpm build`.
-   - Pros: mirrors merge-readiness.
-   - Cons: slower, noisier, harder to iterate quickly.
-3. **`research_daily_ms` ↓** — wall-clock for `pnpm research:daily`.
-   - Pros: directly targets the scheduled workflow.
-   - Cons: requires external APIs/network and source freshness; too noisy/fragile for autonomous local looping.
-4. **`vitest_ms` ↓** — wall-clock for `pnpm test --run`.
-   - Pros: stable and quick.
-   - Cons: smaller real-world win than build for this repo.
-5. **`autoresearch_bootstrap_ms` ↓** — time to sync/prepare the embedded autoresearch dependency and launch the provider.
-   - Pros: directly targets daily research cold/warm start cost.
-   - Cons: narrower than full repo value and less representative than build.
+1. **`research_ms` ↓** — deterministic local benchmark of the daily research provider/core loop using a local mock autoresearch repo/command.
+   - Pros: directly targets the scheduled pipeline’s local overhead, avoids network/API noise, fast enough for many experiments.
+   - Cons: does not include real LLM/search latency.
+2. **`build_ms` ↓** — cold `pnpm build`.
+   - Pros: stable, broad, already proven valuable.
+   - Cons: only indirectly targets daily research.
+3. **`embedding_prep_ms` ↓** — deterministic local embedding preparation/batching/merge benchmark.
+   - Pros: stable and directly tied to embedding-script local overhead.
+   - Cons: excludes remote model latency, so incomplete as a primary metric.
+4. **Composite `pipeline_ms` ↓** — sum of research + embedding + build.
+   - Pros: broad.
+   - Cons: slower benchmark and harder attribution.
 
 ## Selected primary metric
-- **Primary:** `build_ms` (ms, lower is better)
+- **Primary:** `research_ms` (ms, lower is better)
 - **Direction:** ↓
 
 ## Why this is the best primary metric
-`pnpm build` is the best repo-wide primary metric because it is:
-- the most reliable performance target that runs everywhere,
-- part of every CI pass and production packaging flow,
-- strongly influenced by app/lib architecture, especially repeated markdown/content loading,
-- fast enough to iterate on many times per session,
-- broad enough that improvements usually help developer feedback loops immediately.
+The biggest remaining real-world win is reducing the deterministic local overhead inside the scheduled research pipeline. The workflow already has a strict-ish time budget, and unlike external API latency, local overhead is fully under our control and can be optimized safely and repeatedly.
 
-The daily research pipeline still matters, so experiments should prefer changes that also avoid hurting `scripts/research/*` and should look for wins that simplify both build-time and research-time content handling.
+We still monitor:
+- `embedding_prep_ms`
+- `build_ms`
+
+via the benchmark script, but `research_ms` is the primary keep/discard metric.
 
 ## Benchmark command
 - `bash auto/autoresearch.sh`
 
-This script runs a quick precheck, removes `.next` to force a cold production build, and then measures `pnpm build`, emitting:
-- `METRIC build_ms=<number>`
-
-## First planned experiment
-Memoize content loading in `lib/pieces.ts` so repeated `getPieces()` / `getPieceFragments()` calls during static generation, metadata generation, and OG route rendering do not repeatedly re-read and re-parse the same markdown files.
-
-Why first:
-- `app/page.tsx`, `app/pieces/[slug]/page.tsx`, `generateStaticParams`, `generateMetadata`, and OG routes all call `getPieces()`.
-- build-time duplication here is a likely broad win with low risk.
-- the same content loader is also used by retrieval/embedding scripts, so improvements can compound.
+This benchmark:
+1. runs a deterministic local research-pipeline benchmark with a mock local autoresearch repo/command,
+2. runs a deterministic local embedding-preparation benchmark,
+3. runs a cold `pnpm build`,
+4. emits:
+   - `METRIC research_ms=<number>`
+   - `METRIC embedding_prep_ms=<number>`
+   - `METRIC build_ms=<number>`
 
 ## Constraints
 - Keep all existing features working.
-- Do not remove research pipeline capabilities.
-- Keep CI green: lint, tests, and build must still pass.
-- Prefer simple, low-risk changes before complex rewrites.
+- Do not weaken the benchmark workload.
+- Do not replace real work with fake no-ops unless the benchmark is explicitly modeling local deterministic overhead that is otherwise dominated by network/API noise.
+- Any benchmark-local mocks must preserve the real control-flow shape of the code being optimized.
 
-## Files in scope
-- `app/**`
-- `lib/**`
-- `scripts/**`
-- `next.config.mjs`
-- `vitest.config.ts`
-- `README.md`
-- `.github/workflows/**`
-- `auto/**`
-- `autoresearch.checks.sh`
-
-## Off limits
-- Do not remove content pieces or generated reports as a shortcut.
-- Do not depend on external paid services for the benchmark.
-
-## Notes for future iterations
-- If build wins flatten out, the next best target is likely research-provider startup overhead in `scripts/research/autoresearch.ts`.
-- If a research-specific benchmark becomes mockable and deterministic, start a new session with that metric rather than overloading this one.
+## First planned experiment
+Cache the autoresearch dependency setup across per-piece calls in `scripts/research/autoresearch.ts`, because `gatherAutoResearchResults()` currently pays repo setup costs repeatedly during a single run.

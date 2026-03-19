@@ -4,13 +4,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" >/dev/null
+pnpm exec tsx auto/benchmark-research.ts
+pnpm exec tsx auto/benchmark-embedding.ts
 
 rm -rf .next
-
 start_ms=$(node -e 'process.stdout.write(String(Date.now()))')
-pnpm build
+pnpm build >/dev/null
 end_ms=$(node -e 'process.stdout.write(String(Date.now()))')
 
-build_ms=$((end_ms - start_ms))
-echo "METRIC build_ms=${build_ms}"
+echo "METRIC build_ms=$((end_ms - start_ms))"
