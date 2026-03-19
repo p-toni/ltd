@@ -179,16 +179,29 @@ export async function getPieceFragments(options?: { minLength?: number }): Promi
 }
 
 function parseMarkdownFile(raw: string, filename: string) {
-  const match = raw.match(FRONTMATTER_PATTERN)
+  let frontmatterStart = 0
+  let delimiter = ''
 
-  if (!match) {
+  if (raw.startsWith('---\n')) {
+    frontmatterStart = 4
+    delimiter = '\n---\n'
+  } else if (raw.startsWith('---\r\n')) {
+    frontmatterStart = 5
+    delimiter = '\r\n---\r\n'
+  } else {
     throw new Error(`Missing frontmatter in ${filename}`)
   }
 
-  const [, frontmatter, body] = match
+  const frontmatterEnd = raw.indexOf(delimiter, frontmatterStart)
+  if (frontmatterEnd === -1) {
+    throw new Error(`Missing frontmatter in ${filename}`)
+  }
+
+  const frontmatter = raw.slice(frontmatterStart, frontmatterEnd)
+  const body = raw.slice(frontmatterEnd + delimiter.length)
   const data = parseFrontmatter(frontmatter)
 
-  return { data, content: body ?? '' }
+  return { data, content: body }
 }
 
 function parseFrontmatter(block: string): ParsedFrontmatter {
