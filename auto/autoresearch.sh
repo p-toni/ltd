@@ -6,6 +6,8 @@ cd "$ROOT"
 
 node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" >/dev/null
 
+rm -rf .next
+
 start_ms=$(node -e 'process.stdout.write(String(Date.now()))')
 pnpm build
 end_ms=$(node -e 'process.stdout.write(String(Date.now()))')

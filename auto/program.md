@@ -58,7 +58,7 @@ The daily research pipeline still matters, so experiments should prefer changes 
 ## Benchmark command
 - `bash auto/autoresearch.sh`
 
-This script runs a quick precheck and then measures `pnpm build`, emitting:
+This script runs a quick precheck, removes `.next` to force a cold production build, and then measures `pnpm build`, emitting:
 - `METRIC build_ms=<number>`
 
 ## First planned experiment

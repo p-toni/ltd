@@ -1,2 +1,4 @@
 {"type":"config","name":"Repo-wide speed + efficiency: build and research pipeline","metricName":"build_ms","metricUnit":"ms","bestDirection":"lower"}
 {"run":1,"commit":"c89c721","metric":9897,"metrics":{},"status":"keep","description":"Baseline session setup: added auto/program.md, auto/autoresearch.sh, and autoresearch.checks.sh; benchmarking pnpm build as primary metric.","timestamp":1773954119374,"segment":0,"confidence":null}
+{"run":2,"commit":"84d42a6","metric":6030,"metrics":{},"status":"keep","description":"Memoized getPieces() and getPieceFragments() in lib/pieces.ts so static generation, metadata, and OG routes reuse parsed content instead of rereading all markdown files.","timestamp":1773954167600,"segment":0,"confidence":null}
+{"type":"config","name":"Repo-wide speed + efficiency: cold pnpm build","metricName":"build_ms","metricUnit":"ms","bestDirection":"lower"}
