@@ -10,6 +10,15 @@ const DEFAULT_AUTORESEARCH_REPO = 'https://github.com/karpathy/autoresearch.git'
 const DEFAULT_AUTORESEARCH_REF = 'main'
 const DEFAULT_AUTORESEARCH_ENTRYPOINT = 'main.py'
 
+interface AutoResearchConfig {
+  repoUrl: string
+  repoRef: string
+  entrypoint: string
+  pythonBin: string
+  customCommand?: string
+}
+
+let configCache: AutoResearchConfig | null = null
 let repoDirPromise: Promise<string> | null = null
 
 function toSafeSlug(value: string) {
@@ -18,6 +27,20 @@ function toSafeSlug(value: string) {
 
 function applyTemplate(template: string, vars: Record<string, string>) {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? '')
+}
+
+function getAutoResearchConfig(): AutoResearchConfig {
+  if (!configCache) {
+    configCache = {
+      repoUrl: process.env.AUTORESEARCH_REPO_URL ?? DEFAULT_AUTORESEARCH_REPO,
+      repoRef: process.env.AUTORESEARCH_REPO_REF ?? DEFAULT_AUTORESEARCH_REF,
+      entrypoint: process.env.AUTORESEARCH_ENTRYPOINT ?? DEFAULT_AUTORESEARCH_ENTRYPOINT,
+      pythonBin: process.env.AUTORESEARCH_PYTHON_BIN ?? 'python3',
+      customCommand: process.env.AUTORESEARCH_COMMAND,
+    }
+  }
+
+  return configCache
 }
 
 async function runCommand(command: string, args: string[], options?: { cwd?: string; stdio?: 'inherit' | 'pipe' }) {
@@ -49,8 +72,7 @@ async function pathExists(targetPath: string) {
 }
 
 async function setupAutoResearchDependency() {
-  const repoUrl = process.env.AUTORESEARCH_REPO_URL ?? DEFAULT_AUTORESEARCH_REPO
-  const repoRef = process.env.AUTORESEARCH_REPO_REF ?? DEFAULT_AUTORESEARCH_REF
+  const { repoUrl, repoRef } = getAutoResearchConfig()
   const dependencyRoot = path.join(process.cwd(), '.cache', 'deps')
   const repoDir = path.join(dependencyRoot, 'autoresearch')
 
@@ -148,11 +170,9 @@ export async function gatherAutoResearchResults(piece: Piece, plan: DiscoveryPla
   await fs.mkdir(outputDir, { recursive: true })
 
   const repoDir = await ensureAutoResearchDependency()
-  const entrypoint = process.env.AUTORESEARCH_ENTRYPOINT ?? DEFAULT_AUTORESEARCH_ENTRYPOINT
-  const pythonBin = process.env.AUTORESEARCH_PYTHON_BIN ?? 'python3'
+  const { entrypoint, pythonBin, customCommand } = getAutoResearchConfig()
   const scriptPath = path.join(repoDir, entrypoint)
 
-  const customCommand = process.env.AUTORESEARCH_COMMAND
   if (customCommand) {
     const renderedCommand = applyTemplate(customCommand, {
       query,
