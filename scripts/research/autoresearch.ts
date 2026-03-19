@@ -10,6 +10,8 @@ const DEFAULT_AUTORESEARCH_REPO = 'https://github.com/karpathy/autoresearch.git'
 const DEFAULT_AUTORESEARCH_REF = 'main'
 const DEFAULT_AUTORESEARCH_ENTRYPOINT = 'main.py'
 
+let repoDirPromise: Promise<string> | null = null
+
 function toSafeSlug(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
@@ -46,7 +48,7 @@ async function pathExists(targetPath: string) {
   }
 }
 
-async function ensureAutoResearchDependency() {
+async function setupAutoResearchDependency() {
   const repoUrl = process.env.AUTORESEARCH_REPO_URL ?? DEFAULT_AUTORESEARCH_REPO
   const repoRef = process.env.AUTORESEARCH_REPO_REF ?? DEFAULT_AUTORESEARCH_REF
   const dependencyRoot = path.join(process.cwd(), '.cache', 'deps')
@@ -65,6 +67,17 @@ async function ensureAutoResearchDependency() {
   await runCommand('git', ['clean', '-fd'], { cwd: repoDir })
 
   return repoDir
+}
+
+async function ensureAutoResearchDependency() {
+  if (!repoDirPromise) {
+    repoDirPromise = setupAutoResearchDependency().catch((error) => {
+      repoDirPromise = null
+      throw error
+    })
+  }
+
+  return repoDirPromise
 }
 
 async function collectUrlsFromDirectory(dir: string) {
