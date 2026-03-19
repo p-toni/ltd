@@ -10,11 +10,17 @@ import type { DiscoveryPlan } from '../scripts/research/types'
 const execFileAsync = promisify(execFile)
 const ROOT = process.cwd()
 const FIXTURE_ROOT = path.join(ROOT, '.cache', 'bench-fixtures', 'mock-autoresearch-src')
-const DEFAULT_REPO_CACHE = path.join(ROOT, '.cache', 'deps', 'autoresearch')
-const DEFAULT_OUTPUT_CACHE = path.join(ROOT, '.cache', 'autoresearch')
+const OUTPUT_CACHE = path.join(ROOT, '.cache', 'autoresearch')
+const ITERATIONS = 5
 
 function nowMs() {
   return Number(process.hrtime.bigint() / 1000000n)
+}
+
+function median(values: number[]) {
+  const sorted = [...values].sort((a, b) => a - b)
+  const middle = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? Math.round((sorted[middle - 1] + sorted[middle]) / 2) : sorted[middle]
 }
 
 async function pathExists(targetPath: string) {
@@ -74,7 +80,7 @@ function buildPlan(piece: Awaited<ReturnType<typeof getPieces>>[number]): Discov
       {
         id: 'fa-01',
         label: 'bench',
-        rationale: 'benchmark research provider overhead',
+        rationale: 'benchmark deterministic research-core overhead',
         queries: [...piece.watchQueries.slice(0, 2), piece.title].filter(Boolean),
         stanceTargets: ['extend'],
       },
@@ -88,28 +94,64 @@ function buildPlan(piece: Awaited<ReturnType<typeof getPieces>>[number]): Discov
   }
 }
 
-async function main() {
-  const repoUrl = await ensureFixtureRepo()
+async function primeRepoSetup(pieces: Awaited<ReturnType<typeof getPieces>>) {
+  const firstPiece = pieces[0]
+  if (!firstPiece) {
+    return
+  }
+  await fs.rm(OUTPUT_CACHE, { recursive: true, force: true })
+  await gatherAutoResearchResults(firstPiece, buildPlan(firstPiece))
+  await fs.rm(OUTPUT_CACHE, { recursive: true, force: true })
+}
 
-  process.env.AUTORESEARCH_REPO_URL = repoUrl
-  process.env.AUTORESEARCH_REPO_REF = 'main'
-  process.env.AUTORESEARCH_COMMAND = 'bash "{repoDir}/mock-autoresearch.sh" "{slug}" "{outputDir}" "{query}"'
-
-  await fs.rm(DEFAULT_REPO_CACHE, { recursive: true, force: true })
-  await fs.rm(DEFAULT_OUTPUT_CACHE, { recursive: true, force: true })
-
+async function runIteration(pieces: Awaited<ReturnType<typeof getPieces>>) {
+  await fs.rm(OUTPUT_CACHE, { recursive: true, force: true })
   const startMs = nowMs()
-  const pieces = await getPieces()
   let totalUrls = 0
+  let peakRssBytes = process.memoryUsage().rss
 
   for (const piece of pieces) {
     const results = await gatherAutoResearchResults(piece, buildPlan(piece))
     totalUrls += results.length
+    const rss = process.memoryUsage().rss
+    if (rss > peakRssBytes) {
+      peakRssBytes = rss
+    }
   }
 
-  const elapsedMs = nowMs() - startMs
-  console.log(`research benchmark: pieces=${pieces.length} urls=${totalUrls} ms=${elapsedMs}`)
-  console.log(`METRIC research_ms=${elapsedMs}`)
+  return {
+    elapsedMs: nowMs() - startMs,
+    peakRssMb: Math.round(peakRssBytes / (1024 * 1024)),
+    totalUrls,
+  }
+}
+
+async function main() {
+  const repoUrl = await ensureFixtureRepo()
+  process.env.AUTORESEARCH_REPO_URL = repoUrl
+  process.env.AUTORESEARCH_REPO_REF = 'main'
+  process.env.AUTORESEARCH_COMMAND = 'bash "{repoDir}/mock-autoresearch.sh" "{slug}" "{outputDir}" "{query}"'
+
+  const pieces = await getPieces()
+  await primeRepoSetup(pieces)
+
+  const researchRuns: number[] = []
+  let maxPeakRssMb = 0
+  let totalUrls = 0
+
+  for (let iteration = 0; iteration < ITERATIONS; iteration += 1) {
+    const result = await runIteration(pieces)
+    researchRuns.push(result.elapsedMs)
+    totalUrls = result.totalUrls
+    if (result.peakRssMb > maxPeakRssMb) {
+      maxPeakRssMb = result.peakRssMb
+    }
+  }
+
+  const researchCoreMs = median(researchRuns)
+  console.log(`research core benchmark: runs=${researchRuns.join(',')} median=${researchCoreMs} peak_rss_mb=${maxPeakRssMb} pieces=${pieces.length} urls=${totalUrls}`)
+  console.log(`METRIC research_core_ms=${researchCoreMs}`)
+  console.log(`METRIC research_peak_rss_mb=${maxPeakRssMb}`)
 }
 
 main().catch((error) => {
