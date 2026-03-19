@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(pnpm build:*)",
+      "Bash(FUNCNEST=200 /Users/ptoni/.nvm/versions/node/v24.13.0/bin/pnpm build:*)",
+      "Bash(PATH=\"/Users/ptoni/.nvm/versions/node/v24.13.0/bin:$PATH\" pnpm build:*)",
+      "Bash(SHELL=/bin/bash /bin/bash:*)",
+      "Bash(export SKIP_SKILL_GUARDRAILS=true)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(command -v:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(pkill:*)",
+      "WebSearch",
+      "WebFetch(domain:alistapart.com)",
+      "WebFetch(domain:maketypework.com)",
+      "mcp__plugin_compound-engineering_context7__resolve-library-id",
+      "WebFetch(domain:vercel.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:learn.programming-hero.com)",
+      "Bash(ls:*)"
+    ]
+  }
+}
