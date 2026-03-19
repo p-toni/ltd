@@ -47,7 +47,10 @@ const FRAGMENT_SPLIT_REGEX = /\n{2,}/
 type FrontmatterValue = string | string[]
 type ParsedFrontmatter = Record<string, FrontmatterValue>
 
-export async function getPieces(): Promise<Piece[]> {
+let piecesPromise: Promise<Piece[]> | null = null
+const fragmentPromises = new Map<number, Promise<PieceFragment[]>>()
+
+async function loadPieces(): Promise<Piece[]> {
   let entries: Dirent[]
 
   try {
@@ -125,30 +128,54 @@ export async function getPieces(): Promise<Piece[]> {
   })
 }
 
+export async function getPieces(): Promise<Piece[]> {
+  if (!piecesPromise) {
+    piecesPromise = loadPieces().catch((error) => {
+      piecesPromise = null
+      throw error
+    })
+  }
+
+  return piecesPromise
+}
+
 export async function getPieceFragments(options?: { minLength?: number }): Promise<PieceFragment[]> {
   const { minLength = DEFAULT_FRAGMENT_MIN_LENGTH } = options ?? {}
-  const pieces = await getPieces()
+  const cached = fragmentPromises.get(minLength)
+  if (cached) {
+    return cached
+  }
 
-  return pieces.flatMap((piece) => {
-    const baseId = `piece-${String(piece.id).padStart(3, '0')}`
-    const segments = piece.content
-      .split(FRAGMENT_SPLIT_REGEX)
-      .map((block) => block.trim())
-      .filter((block) => block.length >= minLength)
+  const fragmentsPromise = getPieces()
+    .then((pieces) => {
+      return pieces.flatMap((piece) => {
+        const baseId = `piece-${String(piece.id).padStart(3, '0')}`
+        const segments = piece.content
+          .split(FRAGMENT_SPLIT_REGEX)
+          .map((block) => block.trim())
+          .filter((block) => block.length >= minLength)
 
-    return segments.map((segment, index) => {
-      const order = index + 1
-      return {
-        id: `${baseId}-fragment-${String(order).padStart(3, '0')}`,
-        pieceId: piece.id,
-        pieceTitle: piece.title,
-        pieceSlug: piece.slug,
-        order,
-        text: segment,
-        wordCount: countWords(segment),
-      }
+        return segments.map((segment, index) => {
+          const order = index + 1
+          return {
+            id: `${baseId}-fragment-${String(order).padStart(3, '0')}`,
+            pieceId: piece.id,
+            pieceTitle: piece.title,
+            pieceSlug: piece.slug,
+            order,
+            text: segment,
+            wordCount: countWords(segment),
+          }
+        })
+      })
     })
-  })
+    .catch((error) => {
+      fragmentPromises.delete(minLength)
+      throw error
+    })
+
+  fragmentPromises.set(minLength, fragmentsPromise)
+  return fragmentsPromise
 }
 
 function parseMarkdownFile(raw: string, filename: string) {

@@ -1,1 +1,2 @@
 {"type":"config","name":"Repo-wide speed + efficiency: build and research pipeline","metricName":"build_ms","metricUnit":"ms","bestDirection":"lower"}
+{"run":1,"commit":"c89c721","metric":9897,"metrics":{},"status":"keep","description":"Baseline session setup: added auto/program.md, auto/autoresearch.sh, and autoresearch.checks.sh; benchmarking pnpm build as primary metric.","timestamp":1773954119374,"segment":0,"confidence":null}
