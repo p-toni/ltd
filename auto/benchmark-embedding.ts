@@ -1,5 +1,8 @@
 import { getPieceFragments, getPieces } from '../lib/pieces'
 
+const ITERATIONS = 200
+const BATCH_SIZE = 16
+
 function nowMs() {
   return Number(process.hrtime.bigint() / 1000000n)
 }
@@ -12,45 +15,65 @@ function chunk<T>(input: T[], size: number): T[][] {
   return result
 }
 
-async function main() {
+async function runIteration() {
   const startMs = nowMs()
-  const [pieces, fragments] = await Promise.all([getPieces(), getPieceFragments()])
+  let peakRssBytes = process.memoryUsage().rss
+  let totalItems = 0
 
-  const fragmentInputs = fragments.map((fragment) => ({
-    id: fragment.id,
-    text: fragment.text.slice(0, 2000),
-    pieceId: fragment.pieceId,
-    pieceSlug: fragment.pieceSlug,
-    pieceTitle: fragment.pieceTitle,
-    fragmentOrder: fragment.order,
-  }))
+  for (let iteration = 0; iteration < ITERATIONS; iteration += 1) {
+    const [pieces, fragments] = await Promise.all([getPieces(), getPieceFragments()])
 
-  const pieceInputs = pieces.map((piece) => ({
-    id: piece.slug,
-    text: [piece.title, piece.excerpt, piece.content.slice(0, 1200)].join('\n\n').slice(0, 2000),
-    pieceId: piece.id,
-    pieceSlug: piece.slug,
-    pieceTitle: piece.title,
-    fragmentOrder: 0,
-  }))
+    const fragmentInputs = fragments.map((fragment) => ({
+      id: fragment.id,
+      text: fragment.text.slice(0, 2000),
+      pieceId: fragment.pieceId,
+      pieceSlug: fragment.pieceSlug,
+      pieceTitle: fragment.pieceTitle,
+      fragmentOrder: fragment.order,
+    }))
 
-  const fragmentBatches = chunk(fragmentInputs, 16)
-  const pieceBatches = chunk(pieceInputs, 16)
+    const pieceInputs = pieces.map((piece) => ({
+      id: piece.slug,
+      text: [piece.title, piece.excerpt, piece.content.slice(0, 1200)].join('\n\n').slice(0, 2000),
+      pieceId: piece.id,
+      pieceSlug: piece.slug,
+      pieceTitle: piece.title,
+      fragmentOrder: 0,
+    }))
 
-  const merged = new Map<string, { id: string; pieceId: number }>()
-  for (const batch of [...fragmentBatches, ...pieceBatches]) {
-    for (const item of batch) {
-      merged.set(item.id, { id: item.id, pieceId: item.pieceId })
+    const fragmentBatches = chunk(fragmentInputs, BATCH_SIZE)
+    const pieceBatches = chunk(pieceInputs, BATCH_SIZE)
+    const merged = new Map<string, { id: string; pieceId: number }>()
+
+    for (const batch of [...fragmentBatches, ...pieceBatches]) {
+      for (const item of batch) {
+        merged.set(item.id, { id: item.id, pieceId: item.pieceId })
+      }
+    }
+
+    totalItems += merged.size
+    const rss = process.memoryUsage().rss
+    if (rss > peakRssBytes) {
+      peakRssBytes = rss
     }
   }
 
   const elapsedMs = nowMs() - startMs
-  const totalItems = fragmentInputs.length + pieceInputs.length
-  const throughput = elapsedMs > 0 ? Math.floor((totalItems * 1000) / elapsedMs) : totalItems
+  const itemsPerSecond = elapsedMs > 0 ? Math.round((totalItems * 1000) / elapsedMs) : totalItems
 
-  console.log(`embedding prep benchmark: items=${totalItems} batches=${fragmentBatches.length + pieceBatches.length} merged=${merged.size} ms=${elapsedMs}`)
-  console.log(`METRIC embedding_prep_ms=${elapsedMs}`)
-  console.log(`METRIC embedding_items_per_s=${throughput}`)
+  return {
+    elapsedMs,
+    itemsPerSecond,
+    peakRssMb: Math.round(peakRssBytes / (1024 * 1024)),
+    totalItems,
+  }
+}
+
+async function main() {
+  const result = await runIteration()
+  console.log(`embedding benchmark: iterations=${ITERATIONS} items=${result.totalItems} ms=${result.elapsedMs} items_per_s=${result.itemsPerSecond} peak_rss_mb=${result.peakRssMb}`)
+  console.log(`METRIC embedding_items_per_s=${result.itemsPerSecond}`)
+  console.log(`METRIC embedding_peak_rss_mb=${result.peakRssMb}`)
 }
 
 main().catch((error) => {

@@ -1,3 +1,2 @@
-- Precompute a lightweight `content/pieces` manifest (slug, title, excerpt, moods, dates, update metadata) into JSON during content changes, so build-time routes can avoid reparsing markdown except when full body text is needed.
-- Investigate whether Next route-level worker isolation is reducing the benefit of module-local caches during cold builds; if so, prefer a generated artifact or framework-level cache over in-process promises.
-- Create a deterministic research-pipeline benchmark with a mocked autoresearch provider + canned source ingestion so a future session can optimize `scripts/research/*` directly without network/API noise.
+- Investigate whether Next route-level worker isolation is reducing the benefit of module-local caches during cold builds; if so, prefer a framework-level cache or a more integrated precompiled-content pipeline instead of ad hoc helper splits.
+- If research-provider wins flatten out, benchmark a more complete deterministic `run-daily` path with mocked ingest/verify/editor stages to expose the next real bottlenecks after provider setup and URL scanning.
