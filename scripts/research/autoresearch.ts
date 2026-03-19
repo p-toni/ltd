@@ -80,30 +80,41 @@ async function ensureAutoResearchDependency() {
   return repoDirPromise
 }
 
-async function collectUrlsFromDirectory(dir: string) {
-  const entries = await fs.readdir(dir, { withFileTypes: true })
+async function collectUrlsFromDirectory(rootDir: string) {
   const urls = new Set<string>()
+  const pendingDirs = [rootDir]
 
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name)
-    if (entry.isDirectory()) {
-      const nested = await collectUrlsFromDirectory(fullPath)
-      nested.forEach((url) => urls.add(url))
+  while (pendingDirs.length > 0) {
+    const dir = pendingDirs.pop()
+    if (!dir) {
       continue
     }
 
-    if (!entry.isFile()) {
-      continue
+    const entries = await fs.readdir(dir, { withFileTypes: true })
+    const filePaths: string[] = []
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        pendingDirs.push(fullPath)
+        continue
+      }
+
+      if (!entry.isFile()) {
+        continue
+      }
+
+      const lower = entry.name.toLowerCase()
+      if (lower.endsWith('.md') || lower.endsWith('.txt') || lower.endsWith('.json')) {
+        filePaths.push(fullPath)
+      }
     }
 
-    const lower = entry.name.toLowerCase()
-    if (!lower.endsWith('.md') && !lower.endsWith('.txt') && !lower.endsWith('.json')) {
-      continue
+    const contents = await Promise.all(filePaths.map((filePath) => fs.readFile(filePath, 'utf8')))
+    for (const content of contents) {
+      const matches = content.match(URL_PATTERN) ?? []
+      matches.forEach((url) => urls.add(url.replace(/[.,;:]$/, '')))
     }
-
-    const content = await fs.readFile(fullPath, 'utf8')
-    const matches = content.match(URL_PATTERN) ?? []
-    matches.forEach((url) => urls.add(url.replace(/[.,;:]$/, '')))
   }
 
   return [...urls]
