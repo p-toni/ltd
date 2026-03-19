@@ -1,13 +1,7 @@
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { Instrument_Serif, DM_Sans } from 'next/font/google'
-import {
-  GeistPixelSquare,
-  GeistPixelGrid,
-  GeistPixelCircle,
-  GeistPixelTriangle,
-  GeistPixelLine,
-} from 'geist/font/pixel'
+import { GeistPixelSquare } from 'geist/font/pixel'
 import './globals.css'
 
 const instrumentSerif = Instrument_Serif({
@@ -65,7 +59,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${instrumentSerif.variable} ${dmSans.variable} ${GeistPixelSquare.variable} ${GeistPixelGrid.variable} ${GeistPixelCircle.variable} ${GeistPixelTriangle.variable} ${GeistPixelLine.variable}`}>
+    <html lang="en" className={`${instrumentSerif.variable} ${dmSans.variable} ${GeistPixelSquare.variable}`}>
       <body className="font-sans antialiased">
         {children}
         <Analytics />

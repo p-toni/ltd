@@ -22,10 +22,6 @@
   --font-serif: "Instrument Serif", Georgia, serif;
   --font-sans: "DM Sans", "Helvetica Neue", sans-serif;
   --font-mono: var(--font-geist-pixel-square), monospace;
-  --font-pixel-grid: var(--font-geist-pixel-grid), monospace;
-  --font-pixel-circle: var(--font-geist-pixel-circle), monospace;
-  --font-pixel-triangle: var(--font-geist-pixel-triangle), monospace;
-  --font-pixel-line: var(--font-geist-pixel-line), monospace;
 }
 
 .dashboard-light {
@@ -45,10 +41,6 @@
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
-  --font-pixel-grid: var(--font-pixel-grid);
-  --font-pixel-circle: var(--font-pixel-circle);
-  --font-pixel-triangle: var(--font-pixel-triangle);
-  --font-pixel-line: var(--font-pixel-line);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
