@@ -1,4 +1,3 @@
-import { buildFragmentEmbeddingInputs, buildPieceEmbeddingInputs, forEachEmbeddingBatch } from '../lib/embedding'
 import { getPieceFragments, getPieces } from '../lib/pieces'
 
 const ITERATIONS = 200
@@ -6,6 +5,14 @@ const BATCH_SIZE = 16
 
 function nowMs() {
   return Number(process.hrtime.bigint() / 1000000n)
+}
+
+function chunk<T>(input: T[], size: number): T[][] {
+  const result: T[][] = []
+  for (let index = 0; index < input.length; index += size) {
+    result.push(input.slice(index, index + size))
+  }
+  return result
 }
 
 async function runIteration() {
@@ -16,21 +23,33 @@ async function runIteration() {
   for (let iteration = 0; iteration < ITERATIONS; iteration += 1) {
     const [pieces, fragments] = await Promise.all([getPieces(), getPieceFragments()])
 
-    const fragmentInputs = buildFragmentEmbeddingInputs(fragments)
-    const pieceInputs = buildPieceEmbeddingInputs(pieces)
+    const fragmentInputs = fragments.map((fragment) => ({
+      id: fragment.id,
+      text: fragment.text.slice(0, 2000),
+      pieceId: fragment.pieceId,
+      pieceSlug: fragment.pieceSlug,
+      pieceTitle: fragment.pieceTitle,
+      fragmentOrder: fragment.order,
+    }))
+
+    const pieceInputs = pieces.map((piece) => ({
+      id: piece.slug,
+      text: [piece.title, piece.excerpt, piece.content.slice(0, 1200)].join('\n\n').slice(0, 2000),
+      pieceId: piece.id,
+      pieceSlug: piece.slug,
+      pieceTitle: piece.title,
+      fragmentOrder: 0,
+    }))
+
+    const fragmentBatches = chunk(fragmentInputs, BATCH_SIZE)
+    const pieceBatches = chunk(pieceInputs, BATCH_SIZE)
     const merged = new Map<string, { id: string; pieceId: number }>()
 
-    await forEachEmbeddingBatch(fragmentInputs, BATCH_SIZE, (batch) => {
+    for (const batch of [...fragmentBatches, ...pieceBatches]) {
       for (const item of batch) {
         merged.set(item.id, { id: item.id, pieceId: item.pieceId })
       }
-    })
-
-    await forEachEmbeddingBatch(pieceInputs, BATCH_SIZE, (batch) => {
-      for (const item of batch) {
-        merged.set(item.id, { id: item.id, pieceId: item.pieceId })
-      }
-    })
+    }
 
     totalItems += merged.size
     const rss = process.memoryUsage().rss
