@@ -10,18 +10,19 @@ import path from 'node:path'
 import { config as loadEnv } from 'dotenv'
 import { HfInference } from '@huggingface/inference'
 
-import {
-  buildFragmentEmbeddingInputs,
-  buildPieceEmbeddingInputs,
-  forEachEmbeddingBatch,
-  mergeEmbeddingRecords,
-  type EmbeddingInput,
-  type EmbeddingRecord,
-} from '../lib/embedding'
 import { getPieceFragments, getPieces } from '../lib/pieces'
 
 loadEnv({ path: path.resolve(process.cwd(), '.env.local'), override: false })
 loadEnv({ path: path.resolve(process.cwd(), '.env'), override: false })
+
+interface EmbeddingRecord {
+  id: string
+  pieceId: number
+  pieceSlug: string
+  pieceTitle: string
+  fragmentOrder: number
+  embedding: number[]
+}
 
 interface EmbeddingPayload {
   version: string
@@ -52,21 +53,40 @@ async function main() {
   const existingFragments = new Map(existing?.fragments.map((f) => [f.id, f]))
   const existingPieces = new Map(existing?.pieceEmbeddings.map((p) => [p.id, p]))
 
-  const pendingFragments = buildFragmentEmbeddingInputs(
-    fragments.filter((fragment) => !existingFragments.has(fragment.id)),
-  )
-  const pendingPieces = buildPieceEmbeddingInputs(pieces.filter((piece) => !existingPieces.has(piece.slug)))
+  const pendingFragments = fragments.filter((fragment) => !existingFragments.has(fragment.id))
+  const pendingPieces = pieces.filter((piece) => !existingPieces.has(piece.slug))
 
-  const newFragmentEmbeddings = await embedItems(hf, pendingFragments)
-  const newPieceEmbeddings = await embedItems(hf, pendingPieces)
+  const newFragmentEmbeddings = await embedItems(
+    hf,
+    pendingFragments.map((fragment) => ({
+      id: fragment.id,
+      text: fragment.text,
+      pieceId: fragment.pieceId,
+      pieceSlug: fragment.pieceSlug,
+      pieceTitle: fragment.pieceTitle,
+      fragmentOrder: fragment.order,
+    })),
+  )
+
+  const newPieceEmbeddings = await embedItems(
+    hf,
+    pendingPieces.map((piece) => ({
+      id: piece.slug,
+      text: [piece.title, piece.excerpt, piece.content.slice(0, 1200)].join('\n\n'),
+      pieceId: piece.id,
+      pieceSlug: piece.slug,
+      pieceTitle: piece.title,
+      fragmentOrder: 0,
+    })),
+  )
 
   const payload: EmbeddingPayload = {
     version: 'nv-embed-v2::pieces-v1',
     model: MODEL_ID,
     createdAt: new Date().toISOString(),
     dimensions: newFragmentEmbeddings[0]?.embedding.length ?? existing?.dimensions ?? 0,
-    fragments: mergeEmbeddingRecords(existing?.fragments ?? [], newFragmentEmbeddings),
-    pieceEmbeddings: mergeEmbeddingRecords(existing?.pieceEmbeddings ?? [], newPieceEmbeddings),
+    fragments: mergeEmbeddings(existing?.fragments ?? [], newFragmentEmbeddings),
+    pieceEmbeddings: mergeEmbeddings(existing?.pieceEmbeddings ?? [], newPieceEmbeddings),
   }
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true })
@@ -77,20 +97,21 @@ async function main() {
 
 async function embedItems(
   hf: HfInference,
-  items: EmbeddingInput[],
+  items: Array<{ id: string; text: string; pieceId: number; pieceSlug: string; pieceTitle: string; fragmentOrder: number }>,
 ): Promise<EmbeddingRecord[]> {
   if (items.length === 0) {
     return []
   }
 
+  const batches = chunk(items, BATCH_SIZE)
   const results: EmbeddingRecord[] = []
 
-  console.log(`Embedding ${items.length} items (${Math.ceil(items.length / BATCH_SIZE)} batches) with ${MODEL_ID}`)
+  console.log(`Embedding ${items.length} items (${batches.length} batches) with ${MODEL_ID}`)
 
-  await forEachEmbeddingBatch(items, BATCH_SIZE, async (batch, index, batchCount) => {
+  for (const [index, batch] of batches.entries()) {
     const response = await hf.featureExtraction({
       model: MODEL_ID,
-      inputs: batch.map((item) => item.text),
+      inputs: batch.map((item) => item.text.slice(0, 2000)),
     })
 
     const vectors = Array.isArray(response) ? response : [response]
@@ -111,8 +132,8 @@ async function embedItems(
       })
     })
 
-    console.log(`Batch ${index + 1}/${batchCount} complete`)
-  })
+    console.log(`Batch ${index + 1}/${batches.length} complete`)
+  }
 
   return results
 }
@@ -131,6 +152,22 @@ async function loadExisting(force: boolean) {
     }
     throw error
   }
+}
+
+function mergeEmbeddings(existing: EmbeddingRecord[], fresh: EmbeddingRecord[]): EmbeddingRecord[] {
+  const merged = new Map(existing.map((record) => [record.id, record]))
+  for (const record of fresh) {
+    merged.set(record.id, record)
+  }
+  return Array.from(merged.values()).sort((a, b) => a.id.localeCompare(b.id))
+}
+
+function chunk<T>(input: T[], size: number): T[][] {
+  const result: T[][] = []
+  for (let i = 0; i < input.length; i += size) {
+    result.push(input.slice(i, i + size))
+  }
+  return result
 }
 
 main().catch((error) => {
