@@ -28,6 +28,8 @@ jobs:
 
       - name: Run research swarm
         env:
+          LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
           RESEARCH_TIME_BUDGET_MINUTES: 4
@@ -47,4 +49,5 @@ jobs:
             content/pieces
             content/proposals
             content/research-plans
+            content/wiki
             public/research/status.json
