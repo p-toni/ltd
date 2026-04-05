@@ -59,6 +59,7 @@ async function seedFromTooltips(): Promise<number> {
         pieceRefs: [],
         sourceUrls: paperSource ? [paperSource.url] : [],
         tags: [],
+        status: 'published',
       },
       body: [
         '## Summary',
@@ -106,6 +107,7 @@ async function seedFromTooltips(): Promise<number> {
         pieceRefs: [],
         sourceUrls: [paper.url],
         tags: ['paper'],
+        status: 'published',
       },
       body: [
         '## Summary',
@@ -144,7 +146,7 @@ async function seedFromPieces(): Promise<number> {
       console.log(`[seed]   Found ${entities.length} entities`)
 
       for (const entity of entities) {
-        await findOrCreateWikiPage(entity, piece.slug)
+        await findOrCreateWikiPage(entity, piece.slug, 'published')
         count += 1
       }
     } catch (error) {

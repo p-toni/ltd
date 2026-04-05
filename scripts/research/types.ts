@@ -73,6 +73,7 @@ export interface RunStats {
 // ── Wiki types ──────────────────────────────────────────────
 
 export type WikiPageKind = 'concept' | 'entity' | 'source'
+export type WikiPageStatus = 'draft' | 'published' | 'rejected'
 
 export interface WikiPageMeta {
   id: string
@@ -84,6 +85,7 @@ export interface WikiPageMeta {
   pieceRefs: string[]
   sourceUrls: string[]
   tags: string[]
+  status: WikiPageStatus
 }
 
 export interface WikiPage {
@@ -94,7 +96,7 @@ export interface WikiPage {
 
 export interface WikiLogEntry {
   timestamp: string
-  operation: 'created' | 'updated' | 'seeded' | 'lint'
+  operation: 'created' | 'updated' | 'seeded' | 'lint' | 'published' | 'rejected'
   pageId: string
   detail: string
 }

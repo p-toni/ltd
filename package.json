@@ -12,6 +12,7 @@
     "research:rewrite": "tsx scripts/research/run-rewrite.ts",
     "wiki:seed": "tsx scripts/research/seed-wiki.ts",
     "wiki:lint": "tsx scripts/research/lint.ts",
+    "wiki:digest": "tsx scripts/research/digest.ts",
     "inbox:process": "tsx scripts/research/inbox.ts"
   },
   "dependencies": {

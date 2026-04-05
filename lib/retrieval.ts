@@ -4,6 +4,7 @@ import path from 'node:path'
 import { HfInference } from '@huggingface/inference'
 
 import { getPieceFragments, getPieces, type Piece, type PieceFragment } from './pieces'
+import { loadPublishedWikiSlugs } from '../scripts/research/wiki'
 
 type Vector = number[]
 
@@ -76,7 +77,21 @@ const EMBEDDING_PATH = path.join(process.cwd(), 'public', 'embeddings', 'pieces-
 let embeddingStorePromise: Promise<LoadedEmbeddingStore> | null = null
 let fragmentMapPromise: Promise<Map<string, PieceFragment>> | null = null
 let piecesPromise: Promise<Piece[]> | null = null
+let publishedWikiSlugsPromise: Promise<Set<string>> | null = null
 let hfClient: HfInference | null = null
+
+function wikiPageKey(recordId: string) {
+  // Embedding record IDs look like `wiki-{kind}-{id}-fragment-{order}`;
+  // the page key is the same without the `-fragment-{order}` tail.
+  return recordId.replace(/-fragment-\d+$/, '')
+}
+
+async function getPublishedWikiSlugs() {
+  if (!publishedWikiSlugsPromise) {
+    publishedWikiSlugsPromise = loadPublishedWikiSlugs()
+  }
+  return publishedWikiSlugsPromise
+}
 
 function vectorNorm(vector: Vector) {
   return Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0))
@@ -206,10 +221,11 @@ export async function retrieveContext(query: string, options: RetrievalOptions =
     return { fragments: [], pieces: [], wikiFragments: [] }
   }
 
-  const [store, fragmentMap, allPieces, queryEmbedding] = await Promise.all([
+  const [store, fragmentMap, allPieces, publishedWikiSlugs, queryEmbedding] = await Promise.all([
     loadEmbeddingStore(),
     getFragmentMap(),
     getPiecesCached(),
+    getPublishedWikiSlugs(),
     embedQuery(trimmed),
   ])
 
@@ -260,6 +276,7 @@ export async function retrieveContext(query: string, options: RetrievalOptions =
     .filter(Boolean) as RetrievedPiece[]
 
   const wikiFragments: RetrievedWikiFragment[] = store.wikiEmbeddings
+    .filter((record) => publishedWikiSlugs.has(wikiPageKey(record.id)))
     .map((record) => ({
       record,
       score: cosineSimilarity(queryEmbedding, record),

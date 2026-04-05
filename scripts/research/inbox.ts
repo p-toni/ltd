@@ -202,6 +202,7 @@ async function main() {
         pieceRefs: relevantPieces.map((p) => p.slug),
         sourceUrls: [item.url],
         tags: item.tags,
+        status: 'draft',
       },
       body: [
         '## Summary',

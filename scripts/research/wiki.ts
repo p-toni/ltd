@@ -12,7 +12,10 @@ import type {
   WikiPage,
   WikiPageKind,
   WikiPageMeta,
+  WikiPageStatus,
 } from './types'
+
+const WIKI_STATUSES: WikiPageStatus[] = ['draft', 'published', 'rejected']
 
 const WIKI_ROOT = path.join(process.cwd(), 'content', 'wiki')
 const WIKI_KINDS: WikiPageKind[] = ['concept', 'entity', 'source']
@@ -26,6 +29,7 @@ interface IndexEntry {
   filePath: string
   title: string
   pieceRefCount: number
+  status: WikiPageStatus
 }
 
 let indexCache: Map<string, IndexEntry> | null = null
@@ -58,6 +62,7 @@ async function ensureIndex(): Promise<Map<string, IndexEntry>> {
             filePath,
             title: meta.title,
             pieceRefCount: meta.pieceRefs.length,
+            status: meta.status,
           })
         }
       } catch {
@@ -121,6 +126,12 @@ function parseFrontmatter(frontmatter: string, filePath: string): WikiPageMeta |
   const kind = parseYamlScalar(frontmatter, 'kind') as WikiPageKind
   if (!id || !WIKI_KINDS.includes(kind)) return null
 
+  const rawStatus = parseYamlScalar(frontmatter, 'status') as WikiPageStatus
+  // Pages written before the review flow default to published
+  // (the seed pass is hand-curated, and unreviewed pipeline pages
+  // must explicitly carry status: draft to show up in the digest)
+  const status = WIKI_STATUSES.includes(rawStatus) ? rawStatus : 'published'
+
   return {
     id,
     kind,
@@ -131,6 +142,7 @@ function parseFrontmatter(frontmatter: string, filePath: string): WikiPageMeta |
     pieceRefs: parseYamlList(frontmatter, 'pieceRefs'),
     sourceUrls: parseYamlList(frontmatter, 'sourceUrls'),
     tags: parseYamlList(frontmatter, 'tags'),
+    status,
   }
 }
 
@@ -154,6 +166,7 @@ function serializeWikiPage(page: WikiPage): string {
     `pieceRefs: ${serializeStringArray(m.pieceRefs)}`,
     `sourceUrls: ${serializeStringArray(m.sourceUrls)}`,
     `tags: ${serializeStringArray(m.tags)}`,
+    `status: ${m.status}`,
     '---',
     '',
     page.body.trim(),
@@ -235,6 +248,41 @@ export async function listWikiPages(kind?: WikiPageKind): Promise<WikiPageMeta[]
   }
 
   return results
+}
+
+// ── Status queries ──────────────────────────────────────────
+
+/**
+ * Set of wiki record IDs (as emitted by embed-pieces.ts) whose pages
+ * are currently published. Callers filter wiki embeddings against this
+ * set to suppress drafts/rejected from retrieval without re-embedding.
+ */
+export async function loadPublishedWikiSlugs(): Promise<Set<string>> {
+  const index = await ensureIndex()
+  const slugs = new Set<string>()
+  for (const [id, entry] of index) {
+    if (entry.status === 'published') {
+      slugs.add(`wiki-${entry.kind}-${id}`)
+    }
+  }
+  return slugs
+}
+
+/**
+ * Flip a wiki page's status and persist it. Returns null if the page
+ * cannot be found. Used by the digest review route.
+ */
+export async function setWikiPageStatus(
+  id: string,
+  kind: WikiPageKind,
+  status: WikiPageStatus,
+): Promise<WikiPage | null> {
+  const page = await loadWikiPage(id, kind)
+  if (!page) return null
+  page.meta.status = status
+  page.meta.updatedAt = new Date().toISOString().slice(0, 10)
+  await writeWikiPage(page)
+  return page
 }
 
 // ── Log ─────────────────────────────────────────────────────
@@ -325,10 +373,12 @@ Rules:
 export async function findOrCreateWikiPage(
   entity: ExtractedEntity,
   pieceSlug: string,
+  status: WikiPageStatus = 'draft',
 ): Promise<WikiPage> {
   const existing = await loadWikiPage(entity.slug, entity.kind)
   if (existing) {
-    // Merge: add pieceRef if missing
+    // Merge: add pieceRef if missing. Never re-draft a page the user
+    // has already reviewed — new evidence appends silently.
     if (!existing.meta.pieceRefs.includes(pieceSlug)) {
       existing.meta.pieceRefs.push(pieceSlug)
       existing.meta.updatedAt = new Date().toISOString().slice(0, 10)
@@ -349,6 +399,7 @@ export async function findOrCreateWikiPage(
       pieceRefs: [pieceSlug],
       sourceUrls: [],
       tags: [],
+      status,
     },
     body: `## Summary\n\n${entity.summary}\n\n## Connections\n\n- [${pieceSlug}](/pieces/${pieceSlug})\n`,
     filePath: '',
@@ -440,6 +491,7 @@ export async function updateWikiFromVerification(
         pieceRefs: [piece.slug],
         sourceUrls: [source.url],
         tags: [],
+        status: 'draft',
       },
       body: [
         '## Summary',
