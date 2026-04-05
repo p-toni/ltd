@@ -10,7 +10,9 @@ import path from 'node:path'
 import { config as loadEnv } from 'dotenv'
 import { HfInference } from '@huggingface/inference'
 
-import { getPieceFragments, getPieces } from '../lib/pieces'
+import { getPieceFragments, getPieces, type PieceFragment } from '../lib/pieces'
+import { listWikiPages, loadWikiPage } from './research/wiki'
+import type { WikiPageMeta } from './research/types'
 
 loadEnv({ path: path.resolve(process.cwd(), '.env.local'), override: false })
 loadEnv({ path: path.resolve(process.cwd(), '.env'), override: false })
@@ -31,6 +33,7 @@ interface EmbeddingPayload {
   dimensions: number
   fragments: EmbeddingRecord[]
   pieceEmbeddings: EmbeddingRecord[]
+  wikiEmbeddings?: EmbeddingRecord[]
 }
 
 const MODEL_ID = 'sentence-transformers/all-MiniLM-L6-v2'
@@ -47,11 +50,16 @@ async function main() {
 
   const hf = new HfInference(hfToken)
 
-  const [pieces, fragments] = await Promise.all([getPieces(), getPieceFragments()])
+  const [pieces, fragments, wikiPages] = await Promise.all([
+    getPieces(),
+    getPieceFragments(),
+    listWikiPages(),
+  ])
 
   const existing = await loadExisting(force)
   const existingFragments = new Map(existing?.fragments.map((f) => [f.id, f]))
   const existingPieces = new Map(existing?.pieceEmbeddings.map((p) => [p.id, p]))
+  const existingWiki = new Map(existing?.wikiEmbeddings?.map((w) => [w.id, w]) ?? [])
 
   const pendingFragments = fragments.filter((fragment) => !existingFragments.has(fragment.id))
   const pendingPieces = pieces.filter((piece) => !existingPieces.has(piece.slug))
@@ -80,6 +88,32 @@ async function main() {
     })),
   )
 
+  // Wiki fragments
+  const wikiFragmentItems: Array<{
+    id: string; text: string; pieceId: number; pieceSlug: string; pieceTitle: string; fragmentOrder: number
+  }> = []
+
+  for (const meta of wikiPages) {
+    const page = await loadWikiPage(meta.id, meta.kind)
+    if (!page) continue
+    const paragraphs = page.body.split(/\n{2,}/).filter((p) => p.trim().length >= 48)
+    paragraphs.forEach((text, order) => {
+      const fragId = `wiki-${meta.kind}-${meta.id}-fragment-${order}`
+      if (!existingWiki.has(fragId)) {
+        wikiFragmentItems.push({
+          id: fragId,
+          text: `${meta.title}: ${text.trim()}`.slice(0, 2000),
+          pieceId: 0,
+          pieceSlug: `wiki/${meta.kind}s/${meta.id}`,
+          pieceTitle: meta.title,
+          fragmentOrder: order,
+        })
+      }
+    })
+  }
+
+  const newWikiEmbeddings = await embedItems(hf, wikiFragmentItems)
+
   const payload: EmbeddingPayload = {
     version: 'nv-embed-v2::pieces-v1',
     model: MODEL_ID,
@@ -87,6 +121,7 @@ async function main() {
     dimensions: newFragmentEmbeddings[0]?.embedding.length ?? existing?.dimensions ?? 0,
     fragments: mergeEmbeddings(existing?.fragments ?? [], newFragmentEmbeddings),
     pieceEmbeddings: mergeEmbeddings(existing?.pieceEmbeddings ?? [], newPieceEmbeddings),
+    wikiEmbeddings: mergeEmbeddings(existing?.wikiEmbeddings ?? [], newWikiEmbeddings),
   }
 
   await fs.mkdir(path.dirname(OUTPUT_PATH), { recursive: true })

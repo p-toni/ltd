@@ -14,7 +14,7 @@ const OUTPUT_CACHE = path.join(ROOT, '.cache', 'autoresearch')
 const ITERATIONS = 5
 
 function nowMs() {
-  return Number(process.hrtime.bigint() / 1000000n)
+  return Number(process.hrtime.bigint() / BigInt(1000000))
 }
 
 function median(values: number[]) {

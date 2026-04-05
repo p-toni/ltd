@@ -4,7 +4,7 @@ const ITERATIONS = 200
 const BATCH_SIZE = 16
 
 function nowMs() {
-  return Number(process.hrtime.bigint() / 1000000n)
+  return Number(process.hrtime.bigint() / BigInt(1000000))
 }
 
 function chunk<T>(input: T[], size: number): T[][] {

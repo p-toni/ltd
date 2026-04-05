@@ -9,7 +9,10 @@
     "start": "next start",
     "test": "vitest",
     "research:daily": "tsx scripts/research/run-daily.ts",
-    "research:rewrite": "tsx scripts/research/run-rewrite.ts"
+    "research:rewrite": "tsx scripts/research/run-rewrite.ts",
+    "wiki:seed": "tsx scripts/research/seed-wiki.ts",
+    "wiki:lint": "tsx scripts/research/lint.ts",
+    "inbox:process": "tsx scripts/research/inbox.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

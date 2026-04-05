@@ -5,6 +5,7 @@ import { useTacticalBlogContext } from '@/components/tactical-blog-provider'
 import {
   CHAT_ROLE_LABEL,
   CITATION_REGEX,
+  WIKI_CITATION_REGEX,
   type ChatMessage,
 } from '@/hooks/use-tactical-blog-experience'
 import { cn } from '@/lib/utils'
@@ -68,26 +69,43 @@ export function CommandBar() {
       const isError = message.role === 'error'
       const chunks: Array<string | JSX.Element> = []
       let lastIndex = 0
-      const regex = new RegExp(CITATION_REGEX.source, 'g')
+      const combined = new RegExp(`${CITATION_REGEX.source}|${WIKI_CITATION_REGEX.source}`, 'g')
       let match: RegExpExecArray | null
 
-      while ((match = regex.exec(message.content)) !== null) {
-        const [full, pieceStr, fragmentStr] = match
+      while ((match = combined.exec(message.content)) !== null) {
+        const full = match[0]
         if (match.index > lastIndex) {
           chunks.push(message.content.slice(lastIndex, match.index))
         }
-        const pieceId = Number(pieceStr)
-        const fragmentOrder = fragmentStr ? Number(fragmentStr) : undefined
-        chunks.push(
-          <button
-            key={`${message.id}-${match.index}`}
-            type="button"
-            className="inline-flex items-center border border-accent/40 bg-accent-muted text-accent text-[10px] tracking-[0.04em] px-1.5 mx-0.5 uppercase font-mono"
-            onClick={() => handleCitationClick(pieceId, fragmentOrder)}
-          >
-            {full}
-          </button>,
-        )
+
+        if (full.startsWith('[#')) {
+          // Piece citation
+          const pieceId = Number(match[1])
+          const fragmentOrder = match[2] ? Number(match[2]) : undefined
+          chunks.push(
+            <button
+              key={`${message.id}-${match.index}`}
+              type="button"
+              className="inline-flex items-center border border-accent/40 bg-accent-muted text-accent text-[10px] tracking-[0.04em] px-1.5 mx-0.5 uppercase font-mono"
+              onClick={() => handleCitationClick(pieceId, fragmentOrder)}
+            >
+              {full}
+            </button>,
+          )
+        } else {
+          // Wiki citation [W:slug]
+          const wikiSlug = match[3]
+          chunks.push(
+            <a
+              key={`${message.id}-${match.index}`}
+              href={`/${wikiSlug}`}
+              className="inline-flex items-center border border-text-tertiary/40 bg-bg-secondary text-text-secondary text-[10px] tracking-[0.04em] px-1.5 mx-0.5 uppercase font-mono hover:text-text-primary"
+            >
+              {full}
+            </a>,
+          )
+        }
+
         lastIndex = match.index + full.length
       }
 

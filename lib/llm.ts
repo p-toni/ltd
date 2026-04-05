@@ -26,7 +26,7 @@ const AGENT_ANTHROPIC_MODEL = 'claude-3-5-sonnet-20240620'
 function buildContextPrompt(prompt: string, retrieval: RetrievalResult) {
   const lines: string[] = []
 
-  if (retrieval.pieces.length || retrieval.fragments.length) {
+  if (retrieval.pieces.length || retrieval.fragments.length || retrieval.wikiFragments?.length) {
     lines.push('CONTEXT:')
 
     retrieval.pieces.forEach(({ piece, score }) => {
@@ -45,6 +45,13 @@ function buildContextPrompt(prompt: string, retrieval: RetrievalResult) {
         lines.push(`${prefix} ${snippet} · score ${score.toFixed(2)}`)
       })
     }
+    if (retrieval.wikiFragments?.length) {
+      lines.push('')
+      lines.push('WIKI:')
+      retrieval.wikiFragments.forEach(({ wikiSlug, title, score }) => {
+        lines.push(`[W:${wikiSlug}] ${title} · score ${score.toFixed(2)}`)
+      })
+    }
   } else {
     lines.push('No direct matches found in the archive. Answer using general knowledge, but state the gap.')
   }
@@ -57,7 +64,7 @@ function buildContextPrompt(prompt: string, retrieval: RetrievalResult) {
 function buildSystemPrompt() {
   return [
     'You are the tactical blog synthesizer.',
-    'Answer concisely using the provided context fragments. When citing, reference the fragment IDs like [#004-F001].',
+    'Answer concisely using the provided context fragments. When citing, reference the fragment IDs like [#004-F001]. When citing wiki pages, use [W:page-id] format.',
     'If context is insufficient, explicitly say so before offering general guidance.',
   ].join(' ')
 }

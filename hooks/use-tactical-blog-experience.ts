@@ -40,6 +40,7 @@ export const CHAT_CONTENT_CLASSNAME: Record<ChatRole, string> = {
 }
 
 export const CITATION_REGEX = /\[#(\d{3})(?:-F(\d{3}))?]/g
+export const WIKI_CITATION_REGEX = /\[W:([\w/-]+)]/g
 
 type NavigationAnnouncement = 'NEXT' | 'PREV' | 'GOTO'
 

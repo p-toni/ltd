@@ -12,6 +12,7 @@ import { gatherSearchResults } from './scout'
 import { gatherAutoResearchResults } from './autoresearch'
 import { verifySource } from './verifier'
 import { buildInsertionProposal } from './editor'
+import { updateWikiFromVerification } from './wiki'
 
 const MAX_SOURCES_PER_PIECE = 6
 const MIN_CONFIDENCE = 0.65
@@ -112,6 +113,14 @@ async function run() {
       }
 
       const insertion = await buildInsertionProposal(piece, ingested, verification, dateLabel)
+
+      // Feed wiki from verified source
+      try {
+        await updateWikiFromVerification(piece, ingested, verification, dateLabel)
+      } catch (wikiError) {
+        console.warn(`[wiki] Update failed for ${candidate.url}:`, (wikiError as Error).message)
+      }
+
       proposals.push(insertion)
     }
 

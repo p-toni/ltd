@@ -23,6 +23,7 @@ interface StoredEmbeddingPayload {
   dimensions: number
   fragments: StoredEmbeddingRecord[]
   pieceEmbeddings?: StoredEmbeddingRecord[]
+  wikiEmbeddings?: StoredEmbeddingRecord[]
 }
 
 interface LoadedVector extends StoredEmbeddingRecord {
@@ -36,6 +37,7 @@ interface LoadedEmbeddingStore {
   dimensions: number
   fragments: LoadedVector[]
   pieceEmbeddings: LoadedVector[]
+  wikiEmbeddings: LoadedVector[]
 }
 
 export interface RetrievedFragment {
@@ -45,6 +47,14 @@ export interface RetrievedFragment {
 
 export interface RetrievedPiece {
   piece: Piece
+  score: number
+}
+
+export interface RetrievedWikiFragment {
+  id: string
+  wikiSlug: string
+  title: string
+  text: string
   score: number
 }
 
@@ -102,6 +112,11 @@ async function loadEmbeddingStore() {
         norm: vectorNorm(record.embedding),
       }))
 
+      const wikiEmbeddings = (payload.wikiEmbeddings ?? []).map((record) => ({
+        ...record,
+        norm: vectorNorm(record.embedding),
+      }))
+
       return {
         version: payload.version,
         model: payload.model,
@@ -109,6 +124,7 @@ async function loadEmbeddingStore() {
         dimensions: payload.dimensions,
         fragments,
         pieceEmbeddings,
+        wikiEmbeddings,
       }
     })()
   }
@@ -181,12 +197,13 @@ function clamp(value: number, min: number, max: number) {
 export interface RetrievalResult {
   fragments: RetrievedFragment[]
   pieces: RetrievedPiece[]
+  wikiFragments: RetrievedWikiFragment[]
 }
 
 export async function retrieveContext(query: string, options: RetrievalOptions = {}): Promise<RetrievalResult> {
   const trimmed = query.trim()
   if (!trimmed) {
-    return { fragments: [], pieces: [] }
+    return { fragments: [], pieces: [], wikiFragments: [] }
   }
 
   const [store, fragmentMap, allPieces, queryEmbedding] = await Promise.all([
@@ -242,9 +259,26 @@ export async function retrieveContext(query: string, options: RetrievalOptions =
     })
     .filter(Boolean) as RetrievedPiece[]
 
+  const wikiFragments: RetrievedWikiFragment[] = store.wikiEmbeddings
+    .map((record) => ({
+      record,
+      score: cosineSimilarity(queryEmbedding, record),
+    }))
+    .filter(({ score }) => score >= minScore)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limitFragments)
+    .map(({ record, score }) => ({
+      id: record.id,
+      wikiSlug: record.pieceSlug,
+      title: record.pieceTitle,
+      text: '', // text is in the embedding record ID, resolved at render time
+      score,
+    }))
+
   return {
     fragments,
     pieces,
+    wikiFragments,
   }
 }
 

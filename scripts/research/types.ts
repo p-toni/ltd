@@ -69,3 +69,51 @@ export interface RunStats {
   proposals: number
   updatesApplied: number
 }
+
+// ── Wiki types ──────────────────────────────────────────────
+
+export type WikiPageKind = 'concept' | 'entity' | 'source'
+
+export interface WikiPageMeta {
+  id: string
+  kind: WikiPageKind
+  title: string
+  aliases: string[]
+  createdAt: string
+  updatedAt: string
+  pieceRefs: string[]
+  sourceUrls: string[]
+  tags: string[]
+}
+
+export interface WikiPage {
+  meta: WikiPageMeta
+  body: string
+  filePath: string
+}
+
+export interface WikiLogEntry {
+  timestamp: string
+  operation: 'created' | 'updated' | 'seeded' | 'lint'
+  pageId: string
+  detail: string
+}
+
+export interface ExtractedEntity {
+  name: string
+  kind: WikiPageKind
+  slug: string
+  aliases: string[]
+  summary: string
+}
+
+// ── Inbox types ─────────────────────────────────────────────
+
+export interface InboxItem {
+  url: string
+  note: string
+  clippedAt: string
+  tags: string[]
+  status: 'pending' | 'processed' | 'rejected'
+  processedAt?: string
+}
