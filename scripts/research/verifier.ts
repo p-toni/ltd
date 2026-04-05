@@ -34,11 +34,6 @@ function extractAnchors(piece: Piece) {
 }
 
 export async function verifySource(piece: Piece, source: IngestedSource) {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required to verify sources.')
-  }
-
   const systemPrompt =
     'You are a research verifier. Judge if the source supports, extends, or contradicts the piece. Output JSON only.'
 
@@ -72,7 +67,6 @@ Additional rules:
 `
 
   return completeJson<VerificationResult>({
-    apiKey,
     systemPrompt,
     userPrompt,
     maxTokens: 700,

@@ -48,11 +48,6 @@ function buildFallbackPlan(piece: Piece, nowIso: string, contentHash: string): D
 }
 
 async function generatePlan(piece: Piece, nowIso: string, contentHash: string) {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required to generate discovery plans.')
-  }
-
   const systemPrompt =
     'You are the editor-in-chief. Create a discovery plan for a research swarm. Output JSON only.'
 
@@ -86,7 +81,6 @@ Constraints:
 `
 
   const plan = await completeJson<DiscoveryPlan>({
-    apiKey,
     systemPrompt,
     userPrompt,
     maxTokens: 900,

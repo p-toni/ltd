@@ -329,11 +329,6 @@ export async function rebuildIndex(): Promise<void> {
 // ── Entity extraction ───────────────────────────────────────
 
 export async function extractEntities(text: string): Promise<ExtractedEntity[]> {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required to extract entities.')
-  }
-
   const systemPrompt =
     'You are a knowledge extraction engine. Extract concepts, entities, and sources from the given text. Output JSON only.'
 
@@ -356,7 +351,6 @@ Rules:
 - Slugs must be unique and descriptive`
 
   const result = await completeJson<{ entities: ExtractedEntity[] }>({
-    apiKey,
     systemPrompt,
     userPrompt,
     maxTokens: 1200,

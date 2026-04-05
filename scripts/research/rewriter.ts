@@ -8,11 +8,6 @@ export async function buildRewrite(
   intent: string,
   scope: string,
 ): Promise<RewriteResult> {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required to build rewrites.')
-  }
-
   const systemPrompt =
     'You are a senior editor. Rewrite the piece using the sources. Output JSON only.'
 
@@ -44,7 +39,6 @@ Constraints:
 `
 
   return completeJson<RewriteResult>({
-    apiKey,
     systemPrompt,
     userPrompt,
     maxTokens: 1200,
