@@ -1,1 +1,192 @@
 # Wiki Log
+- 2026-04-05T21:27:55.960Z | seeded | epiplexity-bounded-learnable-structure | from tooltip A1
+- 2026-04-05T21:27:55.961Z | seeded | bounded-observer-lens | from tooltip A2
+- 2026-04-05T21:27:55.961Z | seeded | a-practical-proxy | from tooltip A3
+- 2026-04-05T21:27:55.961Z | seeded | computation-can-create-information | from tooltip A4
+- 2026-04-05T21:27:55.961Z | seeded | computationally-bounded-observer | from tooltip A5
+- 2026-04-05T21:27:55.961Z | seeded | epiplexity | from tooltip A6
+- 2026-04-05T21:27:55.962Z | seeded | area-under-the-loss-curve | from tooltip A7
+- 2026-04-05T21:27:55.962Z | seeded | information-as-flux | from tooltip B1
+- 2026-04-05T21:27:55.962Z | seeded | sources-sinks-leakage | from tooltip B2
+- 2026-04-05T21:27:55.962Z | seeded | continuity-equation | from tooltip B3
+- 2026-04-05T21:27:55.962Z | seeded | information-flux | from tooltip B4
+- 2026-04-05T21:27:55.963Z | seeded | geometric-memorization | from tooltip C1
+- 2026-04-05T21:27:55.963Z | seeded | global-structure-from-local-facts | from tooltip C2
+- 2026-04-05T21:27:55.963Z | seeded | geometric-memory | from tooltip C3
+- 2026-04-05T21:27:55.963Z | seeded | trainability-boundary | from tooltip D1
+- 2026-04-05T21:27:55.963Z | seeded | fractal-boundary-intuition | from tooltip D2
+- 2026-04-05T21:27:55.964Z | seeded | trainability-boundary-fractal | from tooltip D3
+- 2026-04-05T21:27:55.964Z | seeded | coupled-feedback-system | from tooltip E1
+- 2026-04-05T21:27:55.964Z | seeded | human-feedback-control | from tooltip E2
+- 2026-04-05T21:27:55.964Z | seeded | human-ai-exchange | from tooltip E3
+- 2026-04-05T21:27:55.964Z | seeded | regulated-integrated-hybrid | from tooltip E4
+- 2026-04-05T21:27:55.965Z | seeded | dysregulated-integrated-hybrid | from tooltip E5
+- 2026-04-05T21:27:55.965Z | seeded | humanbot | from tooltip E6
+- 2026-04-05T21:27:55.965Z | seeded | illusion-of-explanatory-depth | from tooltip F1
+- 2026-04-05T21:27:55.965Z | seeded | mechanism-drill | from tooltip F2
+- 2026-04-05T21:27:55.965Z | seeded | processing-fluency | from tooltip G1
+- 2026-04-05T21:27:55.965Z | seeded | test-enhanced-learning | from tooltip H1
+- 2026-04-05T21:27:55.966Z | seeded | retrieval-practice-vs-concept-mapping | from tooltip I1
+- 2026-04-05T21:27:55.966Z | seeded | expert-vs-novice-representations | from tooltip J1
+- 2026-04-05T21:27:55.966Z | seeded | diagrams-change-computation | from tooltip K1
+- 2026-04-05T21:27:55.966Z | seeded | cognitive-maps | from tooltip L1
+- 2026-04-05T21:27:55.966Z | seeded | voids-in-the-cognition-morphospace | from tooltip E7
+- 2026-04-05T21:27:55.967Z | seeded | solid-vs-liquid-brains | from tooltip E8
+- 2026-04-05T21:27:55.967Z | seeded | bennett-s-razor-weakness-maximization | from tooltip E9
+- 2026-04-05T21:27:55.967Z | seeded | hybrid-niche | from tooltip E10
+- 2026-04-05T21:27:55.967Z | seeded | spacetime-consciousness-bound | from tooltip M1
+- 2026-04-05T21:27:55.967Z | seeded | chord-postulate-co-instantiation | from tooltip M2
+- 2026-04-05T21:27:55.968Z | seeded | integration-window | from tooltip M3
+- 2026-04-05T21:27:55.968Z | seeded | global-workspace-framing | from tooltip O1
+- 2026-04-05T21:27:55.968Z | seeded | recurrent-processing-requirement | from tooltip P1
+- 2026-04-05T21:27:55.968Z | seeded | synchrony-and-conscious-perception | from tooltip Q1
+- 2026-04-05T21:27:55.968Z | seeded | connectivity-breakdown-in-sleep | from tooltip R1
+- 2026-04-05T21:27:55.968Z | seeded | perturbational-complexity-index | from tooltip S1
+- 2026-04-05T21:27:55.969Z | seeded | time-and-the-observer | from tooltip T1
+- 2026-04-05T21:27:55.969Z | seeded | arxiv-2601-03220 | from paper source A
+- 2026-04-05T21:27:55.969Z | seeded | arxiv-2309-00010 | from paper source B
+- 2026-04-05T21:27:55.969Z | seeded | arxiv-2510-26745 | from paper source C
+- 2026-04-05T21:27:55.969Z | seeded | arxiv-2402-06184 | from paper source D
+- 2026-04-05T21:27:55.969Z | seeded | arxiv-2601-12837 | from paper source E
+- 2026-04-05T21:27:55.970Z | seeded | rozenblit-keil-2002 | from paper source F
+- 2026-04-05T21:27:55.970Z | seeded | alter-oppenheimer-2009 | from paper source G
+- 2026-04-05T21:27:55.970Z | seeded | roediger-karpicke-2006 | from paper source H
+- 2026-04-05T21:27:55.970Z | seeded | karpicke-blunt-2011 | from paper source I
+- 2026-04-05T21:27:55.971Z | seeded | chi-feltovich-glaser-1981 | from paper source J
+- 2026-04-05T21:27:55.971Z | seeded | larkin-simon-1987 | from paper source K
+- 2026-04-05T21:27:55.971Z | seeded | tolman-1948 | from paper source L
+- 2026-04-05T21:27:55.971Z | seeded | bennett-2026-preprints | from paper source M
+- 2026-04-05T21:27:55.971Z | seeded | bennett-2023-agi | from paper source N
+- 2026-04-05T21:27:55.972Z | seeded | dehaene-naccache-2001 | from paper source O
+- 2026-04-05T21:27:55.972Z | seeded | lamme-2006 | from paper source P
+- 2026-04-05T21:27:55.972Z | seeded | melloni-et-al-2007 | from paper source Q
+- 2026-04-05T21:27:55.972Z | seeded | massimini-et-al-2005 | from paper source R
+- 2026-04-05T21:27:55.972Z | seeded | casali-et-al-2013 | from paper source S
+- 2026-04-05T21:27:55.972Z | seeded | dennett-kinsbourne-1992 | from paper source T
+- 2026-04-06T02:07:33.846Z | created | bounded-me | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.847Z | created | me-plus-ai | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.848Z | created | geometry-over-retrieval | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.848Z | created | memory-as-geometry | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.849Z | created | weak-geometry | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.850Z | created | bennetts-razor | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.850Z | created | michael-timothy-bennett | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.851Z | created | retrieval-vs-geometry | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.851Z | created | map-hardening-problem | from piece 11-weak-geometry
+- 2026-04-06T02:07:33.851Z | created | compression-generalization | from piece 11-weak-geometry
+- 2026-04-06T02:07:39.485Z | created | illusion-explanatory-depth | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:39.489Z | created | rozenblit-keil | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:39.490Z | created | geometry | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:39.491Z | created | retrieval | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:39.492Z | created | weakest-map-navigates | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:39.493Z | created | fluency-vs-understanding | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:39.494Z | created | points-versus-edges | from piece 10-geometry-over-retrieval
+- 2026-04-06T02:07:47.467Z | created | coupling-gradient | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.467Z | created | l0-tool | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.467Z | created | l1-scout | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.468Z | created | l2-co-author | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.468Z | created | l3-integrated | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.469Z | created | transition-signals | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.469Z | created | verification-gate-r3-2-1 | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.470Z | created | control-spec | from piece 09-me-plus-ai
+- 2026-04-06T02:07:47.470Z | created | passive-l3-entry | from piece 09-me-plus-ai
+- 2026-04-06T02:07:54.131Z | created | information-as-entropy | from piece 08-bounded-me
+- 2026-04-06T02:07:54.132Z | created | intelligence-as-compression | from piece 08-bounded-me
+- 2026-04-06T02:07:54.133Z | created | learning-as-distribution-matching | from piece 08-bounded-me
+- 2026-04-06T02:07:54.134Z | created | bounded-rationality | from piece 08-bounded-me
+- 2026-04-06T02:07:54.135Z | created | extractable-structure | from piece 08-bounded-me
+- 2026-04-06T02:07:54.136Z | created | map-territory-distinction | from piece 08-bounded-me
+- 2026-04-06T02:07:54.137Z | created | interaction-dependent-information | from piece 08-bounded-me
+- 2026-04-06T02:07:54.137Z | created | computational-cost-reduction | from piece 08-bounded-me
+- 2026-04-06T02:07:54.138Z | created | internal-programs | from piece 08-bounded-me
+- 2026-04-06T02:07:54.139Z | created | computation-generated-structure | from piece 08-bounded-me
+- 2026-04-06T02:08:00.786Z | created | first-principles-product-building | from piece 04-about-me
+- 2026-04-06T02:08:00.787Z | created | human-in-the-loop-ai | from piece 04-about-me
+- 2026-04-06T02:08:00.788Z | created | observable-workflows | from piece 04-about-me
+- 2026-04-06T02:08:00.789Z | created | instrumentation-over-intuition | from piece 04-about-me
+- 2026-04-06T02:08:00.790Z | created | integrity-as-feature | from piece 04-about-me
+- 2026-04-06T02:08:00.791Z | created | intelligence-as-guided-search | from piece 04-about-me
+- 2026-04-06T02:08:00.792Z | created | clarity-first | from piece 04-about-me
+- 2026-04-06T02:08:00.792Z | created | human-ai-workflow-design | from piece 04-about-me
+- 2026-04-06T02:08:00.794Z | created | toni-ape | from piece 04-about-me
+- 2026-04-06T02:08:00.794Z | created | product-end-to-end-leadership | from piece 04-about-me
+- 2026-04-06T02:08:00.795Z | created | text-data-code-integration | from piece 04-about-me
+- 2026-04-06T02:08:07.114Z | created | toni | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.115Z | created | te-blog | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.116Z | created | claude | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.116Z | created | pretooluse-guards | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.117Z | created | stop-hooks | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.118Z | created | choreography-of-ideas | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.119Z | created | direction-over-speed | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.120Z | created | tooling-as-culture | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.120Z | created | human-ai-collaboration-model | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.121Z | created | repository-nervous-system | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.122Z | created | typescript | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:07.122Z | created | shared-north-stars | from piece 07-co-owning-the-loop
+- 2026-04-06T02:08:10.838Z | created | intelligence | from piece 06-ilya
+- 2026-04-06T02:08:10.838Z | created | value-prioritization | from piece 06-ilya
+- 2026-04-06T02:08:10.839Z | created | human-qualities | from piece 06-ilya
+- 2026-04-06T02:08:10.840Z | created | ilyas-ut | from piece 06-ilya
+- 2026-04-06T02:08:10.840Z | created | x-post-1710462485411561808 | from piece 06-ilya
+- 2026-04-06T02:08:17.269Z | created | ecological-strategy | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.270Z | created | co-evolution | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.270Z | created | peripheral-actors | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.271Z | created | weak-ties | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.271Z | created | ecosystem-monitoring | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.271Z | created | blind-spots | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.272Z | created | feedback-loops | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.272Z | created | niche-opportunities | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.273Z | created | w-brian-arthur | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.273Z | created | increasing-returns-new-world-business | from piece 05-increasing-returns
+- 2026-04-06T02:08:17.274Z | created | harvard-business-review | from piece 05-increasing-returns
+- 2026-04-06T02:08:23.643Z | created | digital-minimalism | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.645Z | created | teenage-engineering | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.646Z | created | maximum-function-minimum-form | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.646Z | created | attention-fragmentation | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.647Z | created | digital-agency | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.649Z | created | intentional-technology-use | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.649Z | created | notification-systems | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:23.650Z | created | attention-economy | from piece 01-on-digital-minimalism
+- 2026-04-06T02:08:29.752Z | created | op-1-synthesizer | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.753Z | created | software-as-instruments | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.754Z | created | tactile-interface-design | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.755Z | created | discoverable-interface | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.756Z | created | learning-by-doing | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.757Z | created | interface-friction | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.757Z | created | user-empowerment | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.758Z | created | feature-minimalism | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.758Z | created | focused-creativity | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:29.759Z | created | guardrail-constraints | from piece 02-the-instrument-metaphor
+- 2026-04-06T02:08:35.444Z | created | paradox-creative-constraint | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.446Z | created | haiku | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.447Z | created | op-1 | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.448Z | created | twitter-140-character-limit | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.449Z | created | decision-paralysis | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.449Z | created | constraint-driven-innovation | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.450Z | created | meta-decisions | from piece 03-constraints-as-liberation
+- 2026-04-06T02:08:35.451Z | created | creative-friction | from piece 03-constraints-as-liberation
+- 2026-04-06T11:36:17.127Z | created | arxiv-org-cb9270 | source from https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.680Z | created | vall-e | from piece 04-about-me
+- 2026-04-06T11:36:24.681Z | updated | vall-e | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.682Z | created | text-to-speech-synthesis | from piece 04-about-me
+- 2026-04-06T11:36:24.682Z | updated | text-to-speech-synthesis | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.683Z | created | neural-audio-codec | from piece 04-about-me
+- 2026-04-06T11:36:24.684Z | updated | neural-audio-codec | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.684Z | created | in-context-learning | from piece 04-about-me
+- 2026-04-06T11:36:24.684Z | updated | in-context-learning | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.685Z | created | zero-shot-learning | from piece 04-about-me
+- 2026-04-06T11:36:24.685Z | updated | zero-shot-learning | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.686Z | created | chengyi-wang | from piece 04-about-me
+- 2026-04-06T11:36:24.686Z | updated | chengyi-wang | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.687Z | created | arxiv-2301-02111 | from piece 04-about-me
+- 2026-04-06T11:36:24.687Z | updated | arxiv-2301-02111 | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.688Z | created | discrete-code-representation | from piece 04-about-me
+- 2026-04-06T11:36:24.688Z | updated | discrete-code-representation | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.689Z | created | speaker-similarity | from piece 04-about-me
+- 2026-04-06T11:36:24.690Z | updated | speaker-similarity | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.690Z | created | acoustic-prompt | from piece 04-about-me
+- 2026-04-06T11:36:24.691Z | updated | acoustic-prompt | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.691Z | created | speech-naturalness | from piece 04-about-me
+- 2026-04-06T11:36:24.691Z | updated | speech-naturalness | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.692Z | created | conditional-language-modeling | from piece 04-about-me
+- 2026-04-06T11:36:24.692Z | updated | conditional-language-modeling | added source https://arxiv.org/abs/2301.02111
+- 2026-04-06T11:36:24.693Z | created | arxiv-org-cb9270 | inbox clip from https://arxiv.org/abs/2301.02111

@@ -1,0 +1,127 @@
+# Wiki Lint Report
+Generated: 2026-04-06T02:14:34.073Z
+
+**0** errors, **60** warnings, **0** info
+
+## Warnings (60)
+
+- **orphaned-page** [a-practical-proxy]: Wiki page "A practical proxy" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [area-under-the-loss-curve]: Wiki page "Area under the loss curve" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [bennett-s-razor-weakness-maximization]: Wiki page "Bennett's Razor (weakness maximization)" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [bounded-observer-lens]: Wiki page "Bounded observer lens" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [chord-postulate-co-instantiation]: Wiki page "Chord postulate (co-instantiation)" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [cognitive-maps]: Wiki page "Cognitive maps" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [computation-can-create-information]: Wiki page "Computation can 'create information'" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [computationally-bounded-observer]: Wiki page "Computationally bounded observer" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [connectivity-breakdown-in-sleep]: Wiki page "Connectivity breakdown in sleep" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [continuity-equation]: Wiki page "Continuity equation" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [diagrams-change-computation]: Wiki page "Diagrams change computation" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [epiplexity-bounded-learnable-structure]: Wiki page "Epiplexity (bounded-learnable structure)" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [epiplexity]: Wiki page "Epiplexity" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [expert-vs-novice-representations]: Wiki page "Expert vs novice representations" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [fractal-boundary-intuition]: Wiki page "Fractal boundary intuition" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [geometric-memorization]: Wiki page "Geometric memorization" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [geometric-memory]: Wiki page "Geometric memory" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [global-structure-from-local-facts]: Wiki page "Global structure from local facts" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [global-workspace-framing]: Wiki page "Global workspace framing" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [human-ai-exchange]: Wiki page "Human-AI exchange" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [humanbot]: Wiki page "Humanbot" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [hybrid-niche]: Wiki page "Hybrid niche" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [illusion-of-explanatory-depth]: Wiki page "Illusion of explanatory depth" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [information-as-flux]: Wiki page "Information as flux" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [information-flux]: Wiki page "Information flux" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [integration-window]: Wiki page "Integration window θ" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [mechanism-drill]: Wiki page "Mechanism drill" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [perturbational-complexity-index]: Wiki page "Perturbational complexity index" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [recurrent-processing-requirement]: Wiki page "Recurrent processing requirement" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [regulated-integrated-hybrid]: Wiki page "Regulated integrated hybrid" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [retrieval-practice-vs-concept-mapping]: Wiki page "Retrieval practice vs concept mapping" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [solid-vs-liquid-brains]: Wiki page "Solid vs liquid brains" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [sources-sinks-leakage]: Wiki page "Sources, sinks, leakage" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [spacetime-consciousness-bound]: Wiki page "Spacetime consciousness bound" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [synchrony-and-conscious-perception]: Wiki page "Synchrony and conscious perception" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [test-enhanced-learning]: Wiki page "Test-enhanced learning" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [time-and-the-observer]: Wiki page "Time and the observer" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [trainability-boundary-fractal]: Wiki page "Trainability boundary (fractal)" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [trainability-boundary]: Wiki page "Trainability boundary" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [voids-in-the-cognition-morphospace]: Wiki page "Voids in the cognition morphospace" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [alter-oppenheimer-2009]: Wiki page "Alter & Oppenheimer 2009" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [arxiv-2309-00010]: Wiki page "arXiv 2309.00010" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [arxiv-2402-06184]: Wiki page "arXiv 2402.06184" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [arxiv-2510-26745]: Wiki page "arXiv 2510.26745" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [arxiv-2601-03220]: Wiki page "arXiv 2601.03220" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [arxiv-2601-12837]: Wiki page "arXiv 2601.12837" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [bennett-2023-agi]: Wiki page "Bennett 2023 (AGI)" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [bennett-2026-preprints]: Wiki page "Bennett 2026 (preprints)" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [casali-et-al-2013]: Wiki page "Casali et al. 2013" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [chi-feltovich-glaser-1981]: Wiki page "Chi, Feltovich & Glaser 1981" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [dehaene-naccache-2001]: Wiki page "Dehaene & Naccache 2001" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [dennett-kinsbourne-1992]: Wiki page "Dennett & Kinsbourne 1992" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [karpicke-blunt-2011]: Wiki page "Karpicke & Blunt 2011" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [lamme-2006]: Wiki page "Lamme 2006" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [larkin-simon-1987]: Wiki page "Larkin & Simon 1987" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [massimini-et-al-2005]: Wiki page "Massimini et al. 2005" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [melloni-et-al-2007]: Wiki page "Melloni et al. 2007" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [roediger-karpicke-2006]: Wiki page "Roediger & Karpicke 2006" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [rozenblit-keil-2002]: Wiki page "Rozenblit & Keil 2002" has no piece references
+  - Link to a piece or remove if no longer relevant.
+- **orphaned-page** [tolman-1948]: Wiki page "Tolman 1948" has no piece references
+  - Link to a piece or remove if no longer relevant.

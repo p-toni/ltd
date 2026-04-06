@@ -1,1 +1,173 @@
 # Wiki Index
+Generated: 2026-04-06
+
+## Concepts (125)
+- [A practical proxy](/wiki/concepts/a-practical-proxy) — 0 piece refs
+- [Area under the loss curve](/wiki/concepts/area-under-the-loss-curve) — 0 piece refs
+- [Attention Economy](/wiki/concepts/attention-economy) — 1 piece refs
+- [Attention Fragmentation](/wiki/concepts/attention-fragmentation) — 1 piece refs
+- [Bennett's Razor](/wiki/concepts/bennetts-razor) — 1 piece refs
+- [Bennett's Razor (weakness maximization)](/wiki/concepts/bennett-s-razor-weakness-maximization) — 0 piece refs
+- [Blind Spots](/wiki/concepts/blind-spots) — 1 piece refs
+- [Bounded observer lens](/wiki/concepts/bounded-observer-lens) — 0 piece refs
+- [Bounded rationality](/wiki/concepts/bounded-rationality) — 1 piece refs
+- [Chord postulate (co-instantiation)](/wiki/concepts/chord-postulate-co-instantiation) — 0 piece refs
+- [Choreography of ideas](/wiki/concepts/choreography-of-ideas) — 1 piece refs
+- [Clarity First](/wiki/concepts/clarity-first) — 1 piece refs
+- [Co-evolution](/wiki/concepts/co-evolution) — 1 piece refs
+- [Cognitive maps](/wiki/concepts/cognitive-maps) — 0 piece refs
+- [Compression and Generalization](/wiki/concepts/compression-generalization) — 1 piece refs
+- [Computation can 'create information'](/wiki/concepts/computation-can-create-information) — 0 piece refs
+- [Computation-generated structure](/wiki/concepts/computation-generated-structure) — 1 piece refs
+- [Computational cost reduction](/wiki/concepts/computational-cost-reduction) — 1 piece refs
+- [Computationally bounded observer](/wiki/concepts/computationally-bounded-observer) — 0 piece refs
+- [Connectivity breakdown in sleep](/wiki/concepts/connectivity-breakdown-in-sleep) — 0 piece refs
+- [Constraint-Driven Innovation](/wiki/concepts/constraint-driven-innovation) — 1 piece refs
+- [Continuity equation](/wiki/concepts/continuity-equation) — 0 piece refs
+- [Control Spec](/wiki/concepts/control-spec) — 1 piece refs
+- [Coupled feedback system](/wiki/concepts/coupled-feedback-system) — 2 piece refs
+- [Coupling Gradient](/wiki/concepts/coupling-gradient) — 1 piece refs
+- [Creative Friction](/wiki/concepts/creative-friction) — 1 piece refs
+- [Decision Paralysis](/wiki/concepts/decision-paralysis) — 1 piece refs
+- [Diagrams change computation](/wiki/concepts/diagrams-change-computation) — 0 piece refs
+- [Digital Agency](/wiki/concepts/digital-agency) — 1 piece refs
+- [Digital Minimalism](/wiki/concepts/digital-minimalism) — 1 piece refs
+- [Direction over speed](/wiki/concepts/direction-over-speed) — 1 piece refs
+- [Discoverable Interface](/wiki/concepts/discoverable-interface) — 1 piece refs
+- [Dysregulated integrated hybrid](/wiki/concepts/dysregulated-integrated-hybrid) — 1 piece refs
+- [Ecological Strategy](/wiki/concepts/ecological-strategy) — 1 piece refs
+- [Ecosystem Monitoring](/wiki/concepts/ecosystem-monitoring) — 1 piece refs
+- [Epiplexity](/wiki/concepts/epiplexity) — 0 piece refs
+- [Epiplexity (bounded-learnable structure)](/wiki/concepts/epiplexity-bounded-learnable-structure) — 0 piece refs
+- [Expert vs novice representations](/wiki/concepts/expert-vs-novice-representations) — 0 piece refs
+- [Extractable structure](/wiki/concepts/extractable-structure) — 1 piece refs
+- [Feature Minimalism](/wiki/concepts/feature-minimalism) — 1 piece refs
+- [Feedback Loops](/wiki/concepts/feedback-loops) — 1 piece refs
+- [First Principles Product Building](/wiki/concepts/first-principles-product-building) — 1 piece refs
+- [Fluency vs Understanding](/wiki/concepts/fluency-vs-understanding) — 1 piece refs
+- [Focused Creativity](/wiki/concepts/focused-creativity) — 1 piece refs
+- [Fractal boundary intuition](/wiki/concepts/fractal-boundary-intuition) — 0 piece refs
+- [Geometric memorization](/wiki/concepts/geometric-memorization) — 0 piece refs
+- [Geometric memory](/wiki/concepts/geometric-memory) — 0 piece refs
+- [Geometry](/wiki/concepts/geometry) — 1 piece refs
+- [Global structure from local facts](/wiki/concepts/global-structure-from-local-facts) — 0 piece refs
+- [Global workspace framing](/wiki/concepts/global-workspace-framing) — 0 piece refs
+- [Guardrail Constraints](/wiki/concepts/guardrail-constraints) — 1 piece refs
+- [Human feedback control](/wiki/concepts/human-feedback-control) — 1 piece refs
+- [Human Qualities](/wiki/concepts/human-qualities) — 1 piece refs
+- [Human-AI collaboration model](/wiki/concepts/human-ai-collaboration-model) — 1 piece refs
+- [Human-AI exchange](/wiki/concepts/human-ai-exchange) — 0 piece refs
+- [Human-AI Workflow Design](/wiki/concepts/human-ai-workflow-design) — 1 piece refs
+- [Human-in-the-Loop AI](/wiki/concepts/human-in-the-loop-ai) — 1 piece refs
+- [Humanbot](/wiki/concepts/humanbot) — 0 piece refs
+- [Hybrid niche](/wiki/concepts/hybrid-niche) — 0 piece refs
+- [Illusion of explanatory depth](/wiki/concepts/illusion-of-explanatory-depth) — 0 piece refs
+- [Illusion of Explanatory Depth](/wiki/concepts/illusion-explanatory-depth) — 1 piece refs
+- [Information as entropy](/wiki/concepts/information-as-entropy) — 1 piece refs
+- [Information as flux](/wiki/concepts/information-as-flux) — 0 piece refs
+- [Information flux](/wiki/concepts/information-flux) — 0 piece refs
+- [Instrumentation Over Intuition](/wiki/concepts/instrumentation-over-intuition) — 1 piece refs
+- [Integration window θ](/wiki/concepts/integration-window) — 0 piece refs
+- [Integrity as a Feature](/wiki/concepts/integrity-as-feature) — 1 piece refs
+- [Intelligence](/wiki/concepts/intelligence) — 1 piece refs
+- [Intelligence as compression](/wiki/concepts/intelligence-as-compression) — 1 piece refs
+- [Intelligence as Guided Search](/wiki/concepts/intelligence-as-guided-search) — 1 piece refs
+- [Intentional Technology Use](/wiki/concepts/intentional-technology-use) — 1 piece refs
+- [Interaction-dependent information](/wiki/concepts/interaction-dependent-information) — 1 piece refs
+- [Interface Friction](/wiki/concepts/interface-friction) — 1 piece refs
+- [Internal programs](/wiki/concepts/internal-programs) — 1 piece refs
+- [L0 — Tool](/wiki/concepts/l0-tool) — 1 piece refs
+- [L1 — Scout](/wiki/concepts/l1-scout) — 1 piece refs
+- [L2 — Co-author](/wiki/concepts/l2-co-author) — 1 piece refs
+- [L3 — Integrated](/wiki/concepts/l3-integrated) — 1 piece refs
+- [Learning as distribution matching](/wiki/concepts/learning-as-distribution-matching) — 1 piece refs
+- [Learning by Doing](/wiki/concepts/learning-by-doing) — 1 piece refs
+- [Map Hardening Problem](/wiki/concepts/map-hardening-problem) — 1 piece refs
+- [Map-territory distinction](/wiki/concepts/map-territory-distinction) — 1 piece refs
+- [Maximum Function, Minimum Form](/wiki/concepts/maximum-function-minimum-form) — 1 piece refs
+- [Mechanism drill](/wiki/concepts/mechanism-drill) — 0 piece refs
+- [Memory as Geometry](/wiki/concepts/memory-as-geometry) — 2 piece refs
+- [Meta-Decisions](/wiki/concepts/meta-decisions) — 1 piece refs
+- [Niche Opportunities](/wiki/concepts/niche-opportunities) — 1 piece refs
+- [Notification Systems](/wiki/concepts/notification-systems) — 1 piece refs
+- [Observable Workflows](/wiki/concepts/observable-workflows) — 1 piece refs
+- [Paradox of Creative Constraint](/wiki/concepts/paradox-creative-constraint) — 1 piece refs
+- [Passive L3 Entry](/wiki/concepts/passive-l3-entry) — 1 piece refs
+- [Peripheral Actors](/wiki/concepts/peripheral-actors) — 1 piece refs
+- [Perturbational complexity index](/wiki/concepts/perturbational-complexity-index) — 0 piece refs
+- [Points versus Edges](/wiki/concepts/points-versus-edges) — 1 piece refs
+- [PreToolUse guards](/wiki/concepts/pretooluse-guards) — 1 piece refs
+- [Processing fluency](/wiki/concepts/processing-fluency) — 1 piece refs
+- [Product End-to-End Leadership](/wiki/concepts/product-end-to-end-leadership) — 1 piece refs
+- [Recurrent processing requirement](/wiki/concepts/recurrent-processing-requirement) — 0 piece refs
+- [Regulated integrated hybrid](/wiki/concepts/regulated-integrated-hybrid) — 0 piece refs
+- [Repository nervous system](/wiki/concepts/repository-nervous-system) — 1 piece refs
+- [Retrieval](/wiki/concepts/retrieval) — 1 piece refs
+- [Retrieval practice vs concept mapping](/wiki/concepts/retrieval-practice-vs-concept-mapping) — 0 piece refs
+- [Retrieval vs Geometry Distinction](/wiki/concepts/retrieval-vs-geometry) — 1 piece refs
+- [Shared north stars](/wiki/concepts/shared-north-stars) — 1 piece refs
+- [Software as Instruments](/wiki/concepts/software-as-instruments) — 1 piece refs
+- [Solid vs liquid brains](/wiki/concepts/solid-vs-liquid-brains) — 0 piece refs
+- [Sources, sinks, leakage](/wiki/concepts/sources-sinks-leakage) — 0 piece refs
+- [Spacetime consciousness bound](/wiki/concepts/spacetime-consciousness-bound) — 0 piece refs
+- [Stop hooks](/wiki/concepts/stop-hooks) — 1 piece refs
+- [Synchrony and conscious perception](/wiki/concepts/synchrony-and-conscious-perception) — 0 piece refs
+- [Tactile Interface Design](/wiki/concepts/tactile-interface-design) — 1 piece refs
+- [Test-enhanced learning](/wiki/concepts/test-enhanced-learning) — 0 piece refs
+- [Text-Data-Code Integration](/wiki/concepts/text-data-code-integration) — 1 piece refs
+- [Time and the observer](/wiki/concepts/time-and-the-observer) — 0 piece refs
+- [Tooling as culture](/wiki/concepts/tooling-as-culture) — 1 piece refs
+- [Trainability boundary](/wiki/concepts/trainability-boundary) — 0 piece refs
+- [Trainability boundary (fractal)](/wiki/concepts/trainability-boundary-fractal) — 0 piece refs
+- [Transition Signals](/wiki/concepts/transition-signals) — 1 piece refs
+- [User Empowerment](/wiki/concepts/user-empowerment) — 1 piece refs
+- [Value Prioritization](/wiki/concepts/value-prioritization) — 1 piece refs
+- [Verification Gate R3+2+1](/wiki/concepts/verification-gate-r3-2-1) — 1 piece refs
+- [Voids in the cognition morphospace](/wiki/concepts/voids-in-the-cognition-morphospace) — 0 piece refs
+- [Weak Geometry](/wiki/concepts/weak-geometry) — 1 piece refs
+- [Weak Ties](/wiki/concepts/weak-ties) — 1 piece refs
+- [Weakest Map That Still Navigates](/wiki/concepts/weakest-map-navigates) — 1 piece refs
+
+## Entitys (35)
+- [Alter & Oppenheimer 2009](/wiki/entitys/alter-oppenheimer-2009) — 0 piece refs
+- [arXiv 2309.00010](/wiki/entitys/arxiv-2309-00010) — 0 piece refs
+- [arXiv 2402.06184](/wiki/entitys/arxiv-2402-06184) — 0 piece refs
+- [arXiv 2510.26745](/wiki/entitys/arxiv-2510-26745) — 0 piece refs
+- [arXiv 2601.03220](/wiki/entitys/arxiv-2601-03220) — 0 piece refs
+- [arXiv 2601.12837](/wiki/entitys/arxiv-2601-12837) — 0 piece refs
+- [Bennett 2023 (AGI)](/wiki/entitys/bennett-2023-agi) — 0 piece refs
+- [Bennett 2026 (preprints)](/wiki/entitys/bennett-2026-preprints) — 0 piece refs
+- [Casali et al. 2013](/wiki/entitys/casali-et-al-2013) — 0 piece refs
+- [Chi, Feltovich & Glaser 1981](/wiki/entitys/chi-feltovich-glaser-1981) — 0 piece refs
+- [Claude](/wiki/entitys/claude) — 1 piece refs
+- [Dehaene & Naccache 2001](/wiki/entitys/dehaene-naccache-2001) — 0 piece refs
+- [Dennett & Kinsbourne 1992](/wiki/entitys/dennett-kinsbourne-1992) — 0 piece refs
+- [Haiku](/wiki/entitys/haiku) — 1 piece refs
+- [Harvard Business Review](/wiki/entitys/harvard-business-review) — 1 piece refs
+- [Ilyas Ut](/wiki/entitys/ilyas-ut) — 1 piece refs
+- [Karpicke & Blunt 2011](/wiki/entitys/karpicke-blunt-2011) — 0 piece refs
+- [Lamme 2006](/wiki/entitys/lamme-2006) — 0 piece refs
+- [Larkin & Simon 1987](/wiki/entitys/larkin-simon-1987) — 0 piece refs
+- [Massimini et al. 2005](/wiki/entitys/massimini-et-al-2005) — 0 piece refs
+- [Melloni et al. 2007](/wiki/entitys/melloni-et-al-2007) — 0 piece refs
+- [Michael Timothy Bennett](/wiki/entitys/michael-timothy-bennett) — 1 piece refs
+- [OP-1](/wiki/entitys/op-1-synthesizer) — 1 piece refs
+- [OP-1](/wiki/entitys/op-1) — 1 piece refs
+- [Roediger & Karpicke 2006](/wiki/entitys/roediger-karpicke-2006) — 0 piece refs
+- [Rozenblit & Keil](/wiki/entitys/rozenblit-keil) — 1 piece refs
+- [Rozenblit & Keil 2002](/wiki/entitys/rozenblit-keil-2002) — 0 piece refs
+- [te-blog](/wiki/entitys/te-blog) — 1 piece refs
+- [teenage.engineering](/wiki/entitys/teenage-engineering) — 1 piece refs
+- [Tolman 1948](/wiki/entitys/tolman-1948) — 0 piece refs
+- [Toni](/wiki/entitys/toni) — 1 piece refs
+- [Toni Ape](/wiki/entitys/toni-ape) — 1 piece refs
+- [Twitter 140-Character Limit](/wiki/entitys/twitter-140-character-limit) — 1 piece refs
+- [TypeScript](/wiki/entitys/typescript) — 1 piece refs
+- [W. Brian Arthur](/wiki/entitys/w-brian-arthur) — 1 piece refs
+
+## Sources (5)
+- [Bounded Me](/wiki/sources/bounded-me) — 2 piece refs
+- [Geometry Over Retrieval](/wiki/sources/geometry-over-retrieval) — 1 piece refs
+- [Increasing Returns and the New World of Business](/wiki/sources/increasing-returns-new-world-business) — 1 piece refs
+- [Me + AI](/wiki/sources/me-plus-ai) — 2 piece refs
+- [X Post 1710462485411561808](/wiki/sources/x-post-1710462485411561808) — 1 piece refs
