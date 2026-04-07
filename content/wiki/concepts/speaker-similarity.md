@@ -8,7 +8,7 @@ updatedAt: 2026-04-06
 pieceRefs: [04-about-me]
 sourceUrls: [https://arxiv.org/abs/2301.02111]
 tags: []
-status: draft
+status: rejected
 ---
 
 ## Summary
