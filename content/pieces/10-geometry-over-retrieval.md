@@ -212,3 +212,5 @@ My standard going forward:
 
 (The [testing effect](tooltip:H1) is the mechanism, not the slogan.)
 Use weakening to keep the map honest.
+
+**Update (2026-04-12):** [Allowed Ignorance](/pieces/12-allowed-ignorance) sharpens the "source closed" test: understanding is not just reconstruction, but reconstruction after faithful collapse of variation. The tests in Section V are not only diagnostics of grasp — they are stress tests on declared equivalences. A map that passes Rephrase and Rebuild may still fail if the equivalences it relies on were premature.

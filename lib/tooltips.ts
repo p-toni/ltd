@@ -409,4 +409,16 @@ export const TOOLTIP_DEFINITIONS: Record<string, TooltipDefinition> = {
     title: 'B — Fisher information flow',
     body: 'Information can be represented as local density plus flux with a continuity equation and sources/sinks.',
   },
+  SYN2: {
+    id: 'SYN2',
+    paper: 'A',
+    title: 'Equivalence-making (synthesis A + N)',
+    body: 'Not a quote. The primitive act of model formation is not compression but equivalence-making: declaring which visible differences can be treated as one usable state. A: extractable structure depends on observer constraints. N: generalization favors the weakest justified equivalences, not the shortest encoding. Combined: a bounded mind models by licensing collapses, and each collapse is a bet about structure.',
+  },
+  SYN3: {
+    id: 'SYN3',
+    paper: 'E',
+    title: 'Borrowed cuts (synthesis E + N)',
+    body: 'Not a quote. When AI-generated structure arrives already simplified, the human may absorb equivalences they did not choose. E: in a coupled feedback system, exchange can outpace feedback control. N: premature or wrong equivalences delete signal rather than compress it. Combined: borrowed cuts are equivalences authored by the system, not ratified by the human — a subtler failure than error.',
+  },
 }
